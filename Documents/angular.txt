@@ -1,0 +1,2033 @@
+
+Angular: The Complete Guide (2020 Edition)
+----------------------------------------
+
+1. Getting started
+--------------------
+Course Introduction
+----------
+-we will be building a reactive web application
+
+What is Angular?
+----------
+-a JavaScript framework which allows us to create Single Page Applications (SPAs)
+-JavaScript is much quicker at retrieving data corresponding to different pages of the application than the server => reactive application => single page application
+-practic, JavaScript schimba codul din spatele paginii la runtime => pagina nu se reimprospateaza
+
+Angular vs Angular 2 vs Angular 9
+----------
+-Angular 1 = also called AngularJS
+-Angular 2 = complete re-write of AngularJS, simply named "Angular"
+-Angular 9 = every new version releases every 6 months
+
+Project Setup and First App
+----------
+-to create a new project:
+ng new Project
+-with no Routing and using CSS
+-to start up a local server:
+ng serve
+.you must be in the correct directory, "cd Recipes"
+-daca nu pui "-o", nu deschide browser-ul
+
+Editing the First App
+----------
+-"src/app"
+-Angular allows us to mix static HTML code with dynamic elements => "{{title}}"
+-the ".html" = template
+-the ".css" = styling
+-the ".ts" = class
+-whatever the class is exporting, in our case "title" will be available in the template, in the .html file => basically databinding
+-the "selector" defined in the class is basically our own custom HTML tag
+-in our case "<app-root>"
+-you can check the name of the custom tag by Inspecting the source code or by going into the one and only "index.html"
+-it will basically replace the custom tag in the "index.html" with the class you have defined in the ".ts"
+-we will be using a directive so that the text underneath the input form changes dynamically:
+<input type="text" [(ngModel)]="name">
+<p>{{name}}</p>
+-it basically takes (listens to) whatever you type in the form and stores it into "name"
+-for it to work, we need an import in the "app.module.ts" for "ngModel"...
+import { FormsModule } from '@angular/forms';
+...and under "imports" for "@NgModule":
+imports: [
+	BrowserModule,
+	FormsModule
+],
+
+The Course Structure
+----------
+-"NgModule" is a directive
+-(?)
+
+How to get the Most out of the Course
+----------
+-videos, assignments, course project, Q&A section
+
+What is TypeScript?
+----------
+-adds strong typing, every variable has a datatype
+-TypeScript gets compiled into JavaScript so that the browser can run it
+
+A Basic Project Setup using Bootstrap for Styling
+----------
+-Bootstrap adds styling
+npm i -g bootstrap@3
+npm i --save bootstrap@3
+-we need to add a dependency to it in "angular.json", instead of using "src/styles.css" we add:
+"styles": [
+	"node_modules/bootstrap/dist/css/bootstrap.min.css",
+	"src/styles.css"
+],
+
+
+2. The Basics
+--------------------
+Module Introduction
+----------
+-understading a basic Angular application
+
+How an Angular App gets Loaded and Started
+----------
+-the "index.html" is the file served by the server to the browser
+-the <app-root> tag is basically the Application's Root Component
+-Angular uses the tag to replace the content in "index.html"
+-the CLI injects the <script> tag in index.html => the scripts will contain our code
+-"main.ts" is the first file that gets executed
+-the AppModule is the Application's Root Component which gets bootstrapped in "main.ts" and thus starts the application
+-the bootstrap array in "app.module.ts"
+-(?)
+
+Components are Important!
+----------
+-building components allows you to modularise your application and re-use code
+
+Creating a New Component
+----------
+-in "src/app" => componenta "server"
+-we need a class so that Angular can instantiate objects based off it
+-add the "@Component()" decorator in which you add an object
+-that object must contain the "selector" and the "templateUrl"
+
+Understanding the Role of AppModule and Component Declaration
+----------
+-for the AppModule we use the "@NgModule" decorator
+-we don't use the "bootstrap" array, that one is only used to inject into "index.html" => we want to inject into "AppModule" => we want to inject in the "declarations" array:
+declarations: [
+	AppComponent,
+	ServerComponent
+],
+-you need to tell Angular if you have defined additional components, it does not do that automatically
+
+Using Custom Components
+----------
+-basically add the tag "<app-server></app-server>" into "app.component.html"
+
+Creating Components with the CLI & Nesting Components
+----------
+ng generate component Servers
+-make sure to update AppModule and also include <app-servers> in "app.component.html"
+
+Working with Component Templates
+----------
+-you can define the .html code in the class, in the .ts file, but we use "template" instead of "templateUrl"
+-you can only have one or the other
+-"inline template" when you don't use the external file
+-you need to include the "template" or "templateUrl"
+
+Working with Component Styles
+----------
+-you can reference multiple style sheets => "styleUrls" is an array []
+-you can also have "inline styling" but it must be enclosed within "[]"
+
+Fully Understanding the Component Selector
+----------
+-it must have an unique name
+-you can transform a selector to be an attribute, so instead of...
+<app-server></app-server>
+...by itself, you have it within a <div>...
+<div app-server></div>
+...and use it as an attribute of <div>
+-for this to work, you need to define the selector as "[app-server]" instead of simply "app-server"
+-you can also select by class if the selector is defined ".app-server":
+<div class="app-server"></div>
+-it's recommended to use the Component as an HTML tag
+
+Practicing Components
+----------
+-creeaza componenta "warning-alert" si "sucess-alert" si style it up a bit with red and green backgrounds
+
+[OPTIONAL] Assignment Solution
+----------
+-am uitat sa prefixez componenta cu "app-"
+-nu uitam sa actualizam AppModule sub "declarations"
+
+What is Databinding?
+----------
+-allows us to introduce dynamic content in our application
+-output data from the TypeScript code in the HTML with "String Interpolation" or "Property Binding"
+-input data from the HTML in the TypeScript code with "Event Binding"
+-"Event Binding" = reacting to user input, clicking a button, etc.
+-when combining output and input data => Two-Way Binding
+
+String Interpolation
+----------
+-"{{name}}"
+-exemplu:
+<p>Server with ID {{id}} is {{status}}.</p>
+-trebuie sa avem in "server.component.ts", in clasa pe care o exportam, campurile "id" si "status"
+-inauntrul "{{}}" putem apela chiar si functii daca ele se rezolva la un String, adica daca returneaza un String:
+<p>Server with ID {{ id }} is {{status}} (using a method: {{getServerStatus()}}).</p>
+.daca nu pun "()" la functie, practic va scrie:
+getServerStatus(){
+	return this.status;
+}
+-daca pun "()" atunci va apela practic functia si va afisa:
+Server with ID 2 is online (using a method: online).
+-String Interpolation works out of the box
+
+Property Binding
+----------
+-nu a mers din prima pentru ca uitasem ca am folosit "inline template"
+-you can use an HTML attribute to bind to a field in the class
+-instead of having...
+<button class="btn btn-primary" disabled>
+	Add Server
+</button>
+...which makes the button disabled permanently, you enclose it in "[]" and use a field to change its value:
+<button class="btn btn-primary" [disabled]="allowNewServer">
+	Add Server
+</button>
+-se observa acel "disabled"
+-de asemenea, in clasa, avem "allowNewServer" de tip boolean
+
+Property Binding vs String Interpolation
+----------
+-cele doua sunt echivalente, asta...
+<p [innerText]="allowNewServer">
+</p>
+...cu asta:
+<p>
+	{{allowNewServer}}
+</p>
+-property binding se foloseste daca vrei sa schimbi atributul unui tag HTML
+-string interpolation se foloseste cand vrei sa afisezi un String
+
+Event Binding
+----------
+-in loc sa folosim atributul "onclick" al butonului, folosim event binding cu "()"...
+<button class="btn btn-primary" [disabled]="allowNewServer" (click)="onCreateServer()">
+...unde onCreateServer() este o metoda a componentei Servers
+
+Bindable Properties and Events
+----------
+-putem da un "console.log()" de evenimentul la care sa ne legam pentru a vedea la ce proprietati si evenimente putem face binding
+-pentru evenimente "()" se foloseste "click" si nu "onclick":
+(click)=".."
+-YOUR_ELEMENT properties sau YOUR_ELEMENT events pe Google
+
+Passing and Using Data with Event Binding
+----------
+-"$event" poate fi folosit in template si ne poate spune informatii despre un eveniment
+-de exemplu, ne poate da locatia unde s-a dat click cu mouse-ul sau ne poate da ultima litera inserata in formular:
+<input (input)="onUpdateServerName($event)">
+-daca ii dam "console.log(event)" in "onUpdateServerName()" vom avea proprietatea "data" care va contine ultima litera inserata in formular:
+data: "A"
+-putem da direct "console.log(event.data);"
+-practic, "$event" ne da acces la toate datele legate de eveniment
+-"target" reprezinta elementul HTML de care s-a legat acest eveniment
+-daca vrem sa vedem tot continutul formularului, ne trebuie proprietatea "value"
+-"value" este sub "target" => console.log(event.target.value);
+-a trebuit sa facem un cast pentru a prelua valoarea intr-un String:
+this.serverName = (<HTMLInputElement>event.target).value;
+
+Important: FormsModule is Required for Two-Way-Binding!
+----------
+-avem nevoie de directiva "ngModel" din...
+import { FormsModule } from '@angular/forms';
+-directiva trebuie pusa sub array-ul "imports" din AppModule
+
+Two-Way-Databinding
+----------
+-Two-Way-Databinding ne face viata mai usoara si nu mai avem nevoie de "$event", dar avem nevoie de directiva "ngModel"
+-se observa ca primul <input> nu reactioneaza cand scrii in el, spre deosebire de cel cu "ngModel"
+.cu alte cuvinte, textul din primul formular nu se actualizeaza cand completam al doilea formular, dar al doilea formular se actualizeaza cand completam primul formular => nu exista two-way databinding intre primul formular si ce input primim de la utilizator
+-(?)
+
+Combining all Forms of Databinding
+----------
+-in primul rand, am folosit property databinding to enable the button after 2 seconds
+-al doilea rand, prin two-way databinding preluam numele server-ului din formular si putem crea un obiect de componenta "Server" cu acest nume personalizat => putem crea un nou "Server"
+-in al treilea rand, am folosit event binding to listen to the "Add Server" button when it is clicked
+
+Practicing Databinding
+----------
+-cerinte:
+1. Add a Input Field which updates a property ('username') via Two-Way-Binding
+2. Output the username property via String Interpolation in a paragraph below user input
+3. Add a button which may only be clicked if the 'username' is not an empty String
+4. Upon clicking the button, the username should be reset to an empty String
+
+[OPTIONAL] Assignment Solution
+----------
+-eu am facut o componenta "Users", el a modificat "AppRoot"
+-el a facut cu property binding si a pus direct acolo o expresie logica:
+<button [disabled]="username === ''">..</button>
+-de asemenea, a pus o expresie pentru event binding:
+<button (click)="username = ''">..</button>
+-practic, cand se apasa butonul => "username" devine un String gol
+
+Understanding Directives
+----------
+-directives = instructions in the DOM
+-acolo unde folosesti <app-warning-alert>, practic Angular va pune in DOM componenta definita de selectorul "app-warning-alert" => componentele sunt directive
+-componentele sunt directive dar cu template, remember that we have the "templateUrl" in the "@Component" decorator
+-exista si directive fara template:
+<p appTurnGreen>This is a green background</p>
+-unde "appTurnGreen" este un selector pentru decoratorul "@Directive":
+@Directive({
+	selector: '[appTurnGreen]'
+})
+..
+
+Using ngIf to Output Data Conditionally
+----------
+-we will be using the "ngIf" directive to conditionally show "Server was created, server name is ..":
+<p *ngIf="serverCreated">Server was created, server name is {{serverName}}.</p>
+-"*" means that it's a structural component => because it is conditional, it may or may not change the DOM
+
+Enhancing ngIf with an Else Condition
+----------
+-folosind "<ng-template>" poti marca locul in DOM unde vrei sa se insereze eventual o componenta, de exemplu daca vrei un "else" la acel "ngIf" de mai sus:
+<ng-template #noServer>
+	<p>No server was created!</p>
+</ng-template>
+-practic, prin "#noServer" am creat un marker in care vom pune o componenta sau nu, in functie de o conditie
+-trebuie sa modificam "ngIf" astfel incat sa introducem conditia "else" si acest marker "#noServer":
+<p *ngIf="serverCreated; else noServer">Server was created, server name is {{serverName}}.</p>
+
+Styling Elements Dynamically with ngStyle
+----------
+-"ngStyle" allows dynamic styling
+-"attribute directives" = they don't remove or add elements, they just change the ones they are placed on => no need to use "*"
+-"[]" usually means that we want to bind to a property on a given directive, for example "[ngStyle]":
+<p [ngStyle]="{backgroundColor:getColor()}">Server with name {{ name }} is {{status}}.</p>
+-"getColor()" este o functie a componentei "Server"
+-property binding != directive, we are just binding to a property of a directive => basically you can property bind on a directive, but a directive is not the same thing as property binding
+
+Applying CSS Classes Dynamically with ngClass
+----------
+-"ngClass" is a directive which will attach a custom .css class to an element conditionally (dynamically)
+-in our example, we make the text white using a .css class called ".online" only if the server status is "online":
+<p [ngStyle]="{backgroundColor:getColor()}"
+[ngClass]="{online: status === 'online'}">
+Server with name {{ name }} is {{status}}.</p>
+-"online" is a .css class which we have defined as an inline style for the "Server" component:
+styles: [`
+		.online{
+			color:white;
+		}
+		`]
+-basically, only adds a .css class if a certain condition is true
+
+Outputting Lists with ngFor
+----------
+-we will use "ngFor" to populate the server list when we press the "Add Server" button:
+<app-server *ngFor="let server of servers"></app-server>
+-again, we use "*" because "ngFor" is a structural directive
+-one by one, the server names from the variable "servers" are assigned to the local variable "let server"
+-for now, it is known that you cannot input a server name and have that name be used when creating the server => we will be doing that in a later module
+
+Practicing Directives
+----------
+1. Add a button with "Display Details" as text.
+2. Add a paragraph with any content of your choice (e.g. 'Secret Password = tuna')
+3. Toggle the displaying of that paragraph with the button created in the first step.
+4. Log all button clicks in an array and output that array below the secret paragraph (maybe log a timestamp or simply incrementing a number).
+5. Start at the 5th log item, give all future log items a blue background via ngStyle and white color with ngClass.
+
+[OPTIONAL] Assignment Solution
+----------
+-este diferenta intre "if(this.checkNumberOfClicks()){..}" si "if(this.checkNumberOfClicks){", adica fara "()" => nu se apela functia corect
+-o metoda mai simpla de adauga cate un 1 in array:
+this.clicksArray.push(this.clicksArray.length + 1);
+-am combinat pana la urma raspunsul meu cu raspunsul lui:
+<p [ngStyle]="{backgroundColor:getColour()}" [ngClass]="{future: checkNumberOfClicks()}">
+	Log: {{clicks}}
+</p>
+<div *ngFor="let click of clicksArray" [ngStyle]="{backgroundColor: click >= 5 ? 'lightskyblue' : 'transparent'}"
+	[ngClass]="{'white-text': click >=5}">
+	{{click}}
+</div>
+-se poate observa ca in "<div>" putem folosi acel element "click" pe care l-am definit in interiorul "ngFor"
+-de asemenea, observam ca folosim "{}" in ambele directive si ca am scris "backgroundColor" in camelCase in loc de "'background-color'"
+-mie nu mi-a mers solutia pentru ca nu initializeasem array-ul in constructor:
+this.clicksArray = new Array;
+
+Getting the Index when using ngFor
+----------
+-to the assignment above, we have added a timestamp instead of logging a number
+-we had to change the way our function checked if the number was greater than 5
+-dintr-un "ngFor" putem extrage index-ul elementului peste care se face iterarea:
+<div *ngFor="let date of datesArray; let i = index" [ngStyle]="{backgroundColor: i >= 5 ? 'lightskyblue' : 'transparent'}"
+	[ngClass]="{'white-text': i >=5}">
+	{{date}}
+</div>
+-se observa "<div *ngFor="let date of datesArray; let i = index"" => putem folosi pe "i" pentru a face comparatia cu 5
+
+3. Course Project - The Basics
+--------------------
+Project Introduction
+----------
+-a recipe book and shopping list app
+-there needs to be a plan before building the application
+
+Planning the App
+----------
+-laying out the structure of the app
+-also, figuring out what components you need
+-first, define the features: "recipe book" and "shopping list"
+-second, think about which components you need for these two features: a root component, a header component which allows us to navigate through the two features, a shopping list component (for keeping the items in the shopping list), a shopping list edit component (for managing the shopping list), a recipe list component, a recipe item component and a recipe detail component (displays details for the currently selected item), see 3-01.jpg
+-the idea is having a separation of concerns for each component
+-also, we need an "Ingredient" class, a structure which will be able to hold all the details about items in the recipe book and also the shoppping list, see 3-02.jpg
+-a "Recipe" class which will hold the name of the recipe, how long it takes to cook it, etc., see 3-03.jpg
+-having an "Ingredient" and a "Recipe" class will allow us to easily exchange data between the different components
+
+Installing Bootstrap Correctly
+----------
+-the command:
+npm install --save bootstrap@3
+-if in trouble, see 045.html and 046.mp4 video
+
+Setting up the Application
+----------
+-we want version 3 of Bootstrap
+-we want to include the Bootstrap dependency in the "angular-cli.json" file, under the "styles" array
+.basically, we inform CLI we need Bootstrap for our project
+-we need to search the path to "node_modules/bootstrap/dist/css/bootstrap"
+-because we need the path relative to "index.html" and not to "angular.json" => the final path is:
+"node_modules/bootstrap/dist/css/bootstrap.min.css"
+-the actual name of the configuration file might be "angular.json" instead of "angular-cli.json"
+
+Creating the Components
+----------
+-"app.module.ts" needs to be updated for every component created
+-comanda pentru a genera o componenta fara fisierul de unit test:
+ng g c recipe-list --spec false
+-daca vrem sa generam o componenta in folder-ul "recipes":
+ng g c recipes/recipe-list --spec false
+-el a pus "recipe-item" inauntrul "recipe-list", which makes more sense, a recipe item is part of a recipe list
+
+Using the Components
+----------
+-we build the general layout of the app, calling the components by their selector in their respective places
+
+Adding a Navigation Bar
+----------
+-adds 2 links to "Recipes" and "Shopping list" and the "Manage" link to get a drop down hamburger style menu
+
+Alternative Non-Collapsable Navigation Bar
+----------
+-because we didn't implement the functionality of the "Manage" hamburger menu, the app is not responsive on smaller screens
+-we will replace "collapse navbar-collapse" with "navbar-default" in "header.component.html"
+-alternatively, you can implement the hamburger menu, see 050.html
+
+Creating a "Recipe" Model
+----------
+-we will add a "recipes" array in "recipe-list" component which will hold all of the recipes
+-we need a class called "Recipe", otherwise known as a model => "recipe.model.ts"
+-we use vanilla TypeScript for the model, no Angular decorator needed
+-to be able to instantiate from this class, we need to define the "constructor()" function
+-by instantiate we mean using the "new" keyword
+
+Adding Content to the Recipes Components
+----------
+-how to tell TypeScript we are dealing with an array of "Recipe" objects:
+recipes: Recipe[] = [];
+-we can put an image link (URL) directly into the "imagePath" property of the "Recipe" object
+-we will add the code for a single "Recipe" item directly into "recipe-list" component
+
+Outputting a List of Recipes with ngFor
+----------
+-vom folosi "*ngFor" pe elementul "<a>" pentru a avea acces si in interiorul "<div>" si in interiorul "<img>" la acelasi element din array-ul "recipes" pe care l-am definit in "recipe-list"
+-you can either use string interpolation...
+<img src="{{recipe.imagePath}}" ..>
+...or property binding:
+<img [src]="recipe.imagePath" ..>
+-string interpolation se foloseste de atributul "src" built-in tag-ul "<img>" => nu avem nevoie de "[]"
+-property binding se foloseste de properietatea "src" => avem nevoie de "[]" => "[src]"
+-"[src]" asteapta un String ca rezultat al expresiei de dupa "=" => punem "recipe.imagePath"
+-property binding permite excluderea "{{}}"
+.practic, string interpolation inseamna "{{}}"
+.practic, property binding inseamna "[]"
+
+Displaying Recipe Details
+----------
+-the "recipe-detail" will be in the column on the right
+-we will also add buttons which allow for deletion and editing of a recipe
+-ideally, we want the "recipe-detail" to update as we click on a recipe from the list, but we can't do that because we don't know how to do the communication between "recipe-list" component and "recipe-detail" component
+.we have the same problem between "recipe" and "recipe-list"
+-basically we don't know how to do cross component communication
+
+Working on the ShoppingListComponent
+----------
+-we will add the "ingredients" array in the "shopping-list" component
+
+Creating an "Ingredient" Model
+----------
+-we will create a class "Ingredient" to be used with the array "ingredients" from "shopping-list"
+-ca in orice clasa, putem avea modificatori de acces: "public", "private", etc.
+-daca scrii in "constructor()"...
+constructor(public name: String, public amount: number) {..}
+...e acelasi lucru cu:
+export class Ingredient {
+	public name: String = '';
+	public amount: number = 0;
+
+	constructor(name: String, amount: number) {
+		this.name = name;
+		this.amount = amount;
+	}
+}
+
+Creating and Outputting the Shopping List
+----------
+-defining the type for the "ingredients" array:
+ingredients: Ingredient[] = [];
+-we will populate the array with dummy data and use it in the "shopping-list" component
+
+Adding a Shopping List Edit Section
+----------
+-we will create a form without the "action" attribute in the "shopping-list-edit"
+-we will have a button "Add" which will be of type "submit"
+
+Wrap Up & Next Steps
+----------
+-we still need to make the cross component communication
+-also, we want to separate the "Recipe" section from the "Shopping list"
+
+
+4. Debugging
+--------------------
+Understanding Angular Error Messages
+----------
+-"Error in ./AppComponent class AppComponent - inline template:4:6 caused by: Cannot read property 'push' of undefined"
+-we know where in the app: "AppComponent"
+-sometimes, the ":4:6" refers to the final version of the code so you might not find the error at that exact line and column number
+-we tried to call "push()" on something which at that moment was "undefined"
+-we therefore look in the "AppComponent" for a variable on which we used "push()"
+-we find that the variable "servers" was "undefined" because it was not initialized in the constructor() or somewhere else
+
+Debugging Code in the Browser Using Sourcemaps
+----------
+-by clicking on the "server" we want to delete it
+-there is a problem, however, because deleting the last "server" is not working
+-we will debug, using "Sources->main.bundle.js" in Chrome
+-TypeScript is not what runs in the browser, we need to debug using the original code => we will use the sourcemaps
+-in development mode only, sourcemaps will map the TypeScript to the JavaScript that runs in the browser => basically allowing us to debug the JavaScript running in the browser using the TypeScript which we have written
+-the bug we were having: we were trying to delete a "server" using the index, but that index did not exist
+-instead of going in the "main.bundle.js", you can go to "webpack://" and under the "." folder there should be the source files on which you can debug directly
+
+Using Augury to Dive into Angular Apps
+----------
+-"Augury" is an extension for Chrome which will enable a new section in the Chrome developer tools
+-it's basically like the React Dev Tools, it allows you to see the "state" in real time, see 4-01.png
+
+
+5. Components & Databinding Deep Dive
+--------------------
+Module Introduction
+----------
+-we will use the given project files and enhance it using deeper knowledge about components and databinding
+
+Splitting Apps into Components
+----------
+-there are two separate input fields which output two different things
+-we will separate the two input fields into two components, "Cockpit" and "ServerElement"
+-to skip generation of test files in Angular >=8:
+ng g c ServerElement --skipTests=true
+-we have left the "serverElements" array in the "app.component.ts"
+-we only moved the properties "newServerName" and "newServerContent" into "cockpit" component
+-we somehow want to use one "serverElements" array in both "server-element" component and also "cockpit" component
+-"server-element" will be only one instance of a server, it's not a list of "servers"
+-we somehow have to get every new server we create by pressing the "Add Server" button, which is in the "cockpit" component into the "serverElements" array which is in the root "app-component"
+.we basically want to inform the root "app-component" that one of its child components, "cockpit" in our example, changed the information within the "serverElements" array
+-at the same time, we want to get the data we defined for a server from the "cockpit" component and be able to use it within the "server-element" component so that we populate the application with the list of servers created by the users => we somehow need to be able to pass data between components => cross component communication
+
+Property & Event Binding Overview
+----------
+-cross component communication
+-we need to be able to send that into a component and also receive information about an event that happened in a component
+-we can bind to default properties and events of HTML objects, but also we can bind to Directives and Components, see 5-01.jpg
+
+Binding to Custom Properties
+----------
+-first, comment out "onAddServer()" and "onAddBlueprint()" so the app won't crash
+-because we want to acces a single element in "server-element" component using string interpolation...
+<div class="panel-heading">{{ element.name }}</div>
+...it makes sense to have that element as a variable inside of "server-element.component.ts":
+element = {};
+-we will add properties to this object, "type", "name" and "content"
+-the problem is, we cannot access "element" from outside "server-element", so the property "[element]" being bound to the "server-element" component in the root "app-component"
+<app-server-element *ngFor="let server of serverElements" [element]="server">
+...won't work
+.notice "server" is used both in "*ngFor" and also in the property
+-by default, properties of components are only accessible from inside the said components => we cannot see "element" outside of the "server-element" component
+-for the parent component, "app-component" to be able to see "element" we need to define within "server-element" which properties we want to make available for binding => use the "@Input" decorator:
+@Input()
+element = {
+	type: String,
+	name: String,
+	content: String
+};
+-the "@Input" decorator is available in the '@angular/core' import
+-we have basically achieved custom property binding, "[element]" is a custom property to which we were able to bind
+-basically, wherever we use the selector, so wherever we call that specific component we will be able to see its "element" property
+-the only bug I had was because I did not initialize "serverElements" array:
+serverElements = [{
+	type: 'server',
+	name: 'PRAID-10',
+	content: 'This server is running'
+}];
+-practic, in "app-component.html", vom itera peste array-ul "serverElements" iar fiecare obiect din array va trece pe rand prin variabila "server"...
+<app-server-element *ngFor="let server of serverElements"
+			[element]="server"></app-server-element>
+...si de asemenea, fiecare "server" va fi un obiect de tip "element" care este o proprietate a "server-element":
+element = {
+	type: String,
+	name: String,
+	content: String
+};
+-"[element]" este proprietatea, "server" este obiectul care este dat proprietatii
+
+Assigning an Alias to Custom Properties
+----------
+-previously we used "@Input" to bind to our own custom properties
+-we can use an alias in "@Input(srvElement)" to refer to the same property as before:
+@Input('srvElement') element = {
+	type: String,
+	name: String,
+	content: String
+};
+-we update "app-component" because now, the property name is no longer "[element]", but "[srvElement]":
+<app-server-element *ngFor="let server of serverElements"
+			[srvElement]="server"></app-server-element>
+
+Binding to Custom Events
+----------
+-what if we have a component and we want to inform the parent component?
+-therefore, what we want from "cockpit" now is to be able to access "name" and "content"
+-let's use "onAddServer()" as an example from the "cockpit" component:
+-we need to emit an event from the "cockpit" element and we also want to pass in some data when that event is emitted:
+addedServer = new EventEmitter<{ serverName: String, serverContent: String }>();
+-we now want to redefine the "onAddServer()" method from...
+onAddServer() {
+	this.serverElements.push({
+	type: 'server',
+	name: this.newServerName,
+	content: this.newServerContent
+	});
+}
+...to:
+onAddServer() {
+	this.addedServer.emit({
+		serverName: this.newServerName,
+		serverContent: this.newServerContent
+	})
+}
+-what this basically does is: when the "Add Server" button is clicked, the content of the input field is taken into "newServerName" and "newServerContent" variables
+.that content is passed to a new object which has "serverName" and "serverContent" as 
+-after the object has been created with the data provided by the user, an event is emitted to let the parent component know we can extract data from the "cockpit":
+<app-cockpit (addedServer)="onAddedServer($event)"></app-cockpit>
+.we now have added a call to "onAddServer()" which is in the "app-component" once the "cockpit" component has emitted the fact it is ready to send data which has been inserted by the user in the input fields
+-"onAddServer()" will receive as parameter "$event" which contains all the information we need about the event
+-therefore, we will add "onAddedServer()" to "app-component"
+onAddedServer(serverData: { serverName: string, serverContent: string }) {
+	this.serverElements.push({
+		type: 'server',
+		name: serverData.serverName,
+		content: serverData.serverContent
+	});
+}
+-"onAddServer()" will now receive an object with two properties, "serverName" and "serverContent", which we can pass into the "serverElements" array
+-we need the "@Output" decorator from the "@angular/core" as the final step to make it clear that the two EventEmitters, "addedServer" and "addedBlueprint" are accessible from outside the "cockpit":
+@Output() addedServer = new EventEmitter<{ serverName: String, serverContent: String }>();
+-basically "@Output" makes the two EventEmitters, "addedServer" and "addedBlueprint" listenable outside the "cockpit" component => we can extract data from them in the parent "app-component"
+
+Assigning an Alias to Custom Events
+----------
+-just like with "@Input", you can use an alias for "@Output":
+@Output('bpCreated') addedBlueprint = ..;
+-you also have to update it where you listen for that event:
+<app-cockpit (bpCreated)="onAddedBlueprint($event)">..
+
+Custom Property and Event Binding Summary
+----------
+-the problem with the above approach is that "cockpit" emits an event, "app-component" listens to that event, gets the data from the event and if need be, will pass that data to say another child => there is a chain of input/output data which can grow and become very complicated => we will use "Services"
+-for simple apps though, this approach is not bad, "Services" is just another approach which may work better in some scenarios
+
+Understanding View Encapsulation
+----------
+-even though you have defined styles for the "app-component" and "cockpit" and "server-element" reside within the "app-component", because of Angular, the styles are not applied to children of "app-component"
+-this is not a bad approach by Angular because it makes sure that one component can only use the styles defined for itself => the styles for "app-component" only affect "app-component"
+-Angular gives the HTML elements, "<div", "<p>", etc. the same attribute based on which component they reside in => in "cockpit", all the HTML elements will have a class of "_ngcontent-ejo-1", for example, in "server-element", all the HTML elements will have a class of "_ngcontent-ejo-2", and so on => basically the definition of "View Encapsulation" in Angular
+-ShadowDOM (?)
+
+More on View Encapsulation
+----------
+-the default "View Encapsulation" defined above can be overridden
+-for example, we can add the "encapsulation" property of the "@Component" decorator in the "server-element":
+@Component({
+	encapsulation: ViewEncapsulation.Emulated // None, Native
+	..
+})
+-if set to "None", you will no longer see the attribute "_ngcontent-ejo-2" on the elements defined within the "server-element" component => "server-element" will no longer use View Encapsulation, but the other components will still have the "_ngcontent-ejo-.." attributes attached to them and at the same time, the .css which is in the "server-element" will affect the other components as well (globally)
+.deci, desi am setat ".p {..}" pentru "server-element", afecteaza si paragraful "<p>" din "cockpit"
+-"Native" is to be used in the browsers which support the ShadowDOM
+-"Emulated" is the default
+
+Using Local References in Templates
+----------
+-using two-way databinding is not necessary to get the data from the input field since we only want that data to be passed to parent component, "app-component", once the event is emitted
+-using a local reference you are able to reference the entire input field, not just the value inputted by the user:
+<input type="text" class="form-control" #serverNameInput>
+-this "#serverNameInput" can then be put everywhere inside the template, so for example we can add it to "onAddServer()"
+<button class="btn btn-primary" (click)="onAddServer(serverNameInput)">Add Server</button>
+.the local reference cannot be used in TypeScript code, unless you pass it as an argument like we've done above
+-basically, we have passed the entire "<input>" element as a parameter to the "onAddServer()" function so we can then grab the "value" property of it (in "cockpit"):
+onAddServer(nameInput: HTMLInputElement) {
+	this.addedServer.emit({
+		serverName: nameInput.value,
+		serverContent: this.newServerContent
+	})
+}
+
+@ViewChild() in Angular 8+
+----------
+-the syntax is changed from...
+@ViewChild('serverContentInput') serverContentInput: ElementRef;
+...to:
+@ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;
+-for Angular 9, { static: true } does not need to be changed to { static: false } when trying to access the selected element in "ngOnInit()", see 074.html
+
+Getting Access to the Template & DOM with @ViewChild
+----------
+-there is a way to get access to the template and the DOM before calling a method
+.see above how we had to call "onAddServer()" to get the local reference "#serverNameInput"
+-we need the the "@ViewChild" decorator from "@angular/core"
+-unlike the "local reference" from above, we pass an "Element Ref"
+-basically, through an "Element Ref" you get access to elements of the template and of the DOM
+-bugs:
+-aparea "[Object] object" pentru ca trebuia sa se trimita "value" al elementului respectiv
+-we have basically achieved the same functionality as with two-way binding
+-it's very important to not modify the DOM using the "@ViewChild" decorator
+-it is important to note that...
+..
+<input type="text" class="form-control" #serverNameInput>
+<label>Server Content</label>
+<input type="text" class="form-control" #blueprintNameInput>
+<button class="btn btn-primary" (click)="onAddServer(serverNameInput)">Add Server</button>
+<button class="btn btn-primary" (click)="onAddBlueprint(serverNameInput)">Add Server Blueprint</button>
+..
+-we are passing the same local reference "#serverNameInput" to both "onAddServer()" and "onAddBlueprint()"
+-also, "#blueprintNameInput" will be modified inside the TypeScript code, as you can see we don't pass it around anywhere within the template of the "cockpit" component
+-practic, e vorba de informatii diferite, "#serverNameInput" pentru numele server-ului si "#blueprintNameInput" pentru continutul server-ului
+
+Projecting Content into Components with ng-content
+----------
+-instead of having...
+<p>
+	<strong *ngIf="element.type === 'server'" style="color: red">{{ element.content }}</strong>
+	<em *ngIf="element.type === 'blueprint'">{{ element.content }}</em>
+</p>
+...in "server-element", you can replace it with...
+<ng-content></ng-content>
+...and put the original code in "app-component"
+-"ng-content" is a directive even though it is called as a component
+.we will have to replace "element" with "server"
+-in this context, what "<ng-content>" does is it will project the whole original code "<p>..</p>" where we have called "<ng-content>", so in "app-component"
+-notice how the original code "<p>..</p>" was put between the "<app-server-element>" tag of the "app-component" => it will be projected in the "server-element" component because that is where we called "<ng-content>"
+
+Understanding the Component Lifecycle
+----------
+-see 077.pdf
+-explaining the "ngOnInit()" and other lifecycle hooks
+-"ngOnInit()" = one of the lifecycle hooks in Angular
+-when using a component, Angular instantiates it and places it within the DOM where we use the selector for it (where we place it within the templates)
+
+Seeing Lifecycle Hooks in Action
+----------
+-constructor gets called before "ngOnInit()"
+-it's important to specify "..implements OnInit, OnChanges {..}" when testing out hooks so that Angular knows exactly which function you are overriding
+-"OnChanges" is implemented for "ngOnChanges()", which is the only hook which uses a parameter
+-"ngOnChanges()" gets called before "ngOnInit()" and after the constructor
+-if you were to output "changes" which is the paramater received by "ngOnChanges()" it will look like...
+{element: SimpleChange}
+	element: SimpleChange
+		currentValue:
+			content: "This server is not running."
+			name: "PRAID-10"
+			type: "server"
+	..
+-as you can see, it has an "element" property which in our component is a property decorated with "@Input":
+@Input('srvElement') element = {
+	type: String,
+	name: String,
+	content: String
+};
+-"ngOnChanges()" has a property called "previousValue" that stores the previous value of "element"
+-this might be useful if you want to store or process that information in some way before Angular gets rid of it
+-because we've added a function which modifies the "serverElements" array, called "onChangeFirst()" we will see the "ngOnChanges()" function in action:
+{name: SimpleChange}
+	name: SimpleChange
+		currentValue: "Changed!"
+		firstChange: false
+		previousValue: "PRAID-10"
+	..
+-notice how the server name was previously "PRAID-10", but now it's given a hardcoded value of "Changed!" => functionality behind "ngOnChanges()"
+-also note how it also changed the name of the server in the server list on the left, under the input fields
+.it changed in both instances because there is a reference to the object => it got updated in both instances
+-"ngDoCheck()" is called on every change detection run, so everytime Angular runs a change detection => it will get called everytime we press "Change first element" and "Add server"
+.it might get called twice while in Development Mode because Angular does an extra check in Development Mode
+-"ngAfterContentInit()" is called when we project with "<ng-content>" => because we only project once => it will only get called once
+-"ngAfterContentChecked()" is called after each change detection cycle
+-"ngAfterViewInit()" and "ngAfterViewChecked()" get called after "ngAfterContentChecked"
+-"ngOnDestroy()" is called before the object gets destroyed
+-hooks are useful when you want to inject code at a specific phase in the lifecycle of a component
+
+Lifecycle Hooks and Template Access
+----------
+-if you add the "#heading" to the header "<div>" in "server-element", you will notice that the property "textContent" of the "<div" will only get initialized after "ngAfterViewInit()"
+-it will not get initialized in "ngOnInit()"
+-it should output "PRAID-10" and "PRAID-V"
+
+@ContentChild() in Angular 8+
+----------
+-the syntax is changed from...
+@ContentChild('contentParagraph') paragraph: ElementRef;
+...to:
+@ContentChild('contentParagraph', {static: true}) paragraph: ElementRef;
+-you have to use { static: true } instead of { static: false } when trying to access the selected element in "ngOnInit()", see 080.html
+
+Getting Access to ng-content with @ContentChild
+----------
+-"@ContentChild" is similar to "@ViewChild"
+-we will add the "#contentParagraph" local reference to the "<p>" in "app-component":
+<p #contentParagraph>..</p>
+.remember that we were projecting this "<p>" with "<ng-content>" in "server-element"
+-we have added "#contentParagraph" so that we can use it in "server-element" where it will eventually be projected
+-if we were to use this local reference in "app-component", we could've used "@ViewChild"
+-because we want to use this in the actual child, we will use "@ContentChild"
+.note, that is why we have two hooks, one for "ngAfterViewInit()" and "ngAfterContentInit()"
+-basically, you get acces to that "<ng-content>", which is the projection of the "<p>", using "@ContentChild"
+-it should output "This server is not running."
+
+Wrap Up
+----------
+-we learned about data binding with custom properties and custom events
+-about cross component communication
+-access elements in the DOM
+-local references
+-lifecycle hooks
+
+Practicing Property & Event Binding and View Encapsulation
+----------
+1. Create three new components: GameControl, Odd and Even
+2. The GameControl Component should have buttons to start and stop the game
+3. When starting the game, an event (holding a incrementing number) should get emitted each second (ref = setInterval())
+4. The event should be listenable from outside the component
+5. When stopping the game, no more events should get emitted (clearInterval(ref))
+6. A new Odd component should get created for every odd number emitted, the same should happen for the Even Component (on even numbers)
+7. Simply output Odd - NUMBER or Even - NUMBER in the two components
+8. Style the element (e.g. paragraph) holding your output text differently in both components
+
+[OPTIONAL] Assignment Solution
+----------
+-el voia ca atunci cand trece 1 secunda sa se emita un eveniment:
+onStartedInterval() {
+	this.interval = setInterval(() => {
+		console.log('onStartedInterval():');
+		console.log(`this.value = ${this.value}`);
+		this.intervalStarted.emit(this.value + 1);
+		this.value++;
+	}, 1000);
+}
+-in "appRoot" we need to listen to the same custom event we have defined in "game-control"
+-pusesem...
+<button (intervalStarted)='onStartedInterval()'>
+...in loc de:
+<button (click)='onStartedInterval()'>
+.ideea e ca noi vrem sa ascultam la evenimentul de click al butonului, si nu la "EventEmitter" pe care noi l-am definit in interiorul "game-control"
+-am fost pe aproape cu faptul ca trebuia sa folosim un array pentru "odds" si unul pentru "evens"
+-"intervalStarted" era un EventEmitter => l-am decorat cu "@Output" pentru a fi vizibil din afara "game-control"
+-"intervalStarted" emitea la fiecare secunda un numar care crestea de la secunda la secunda cu 1
+.cu alte cuvinte, la fiecare secunda aveam o variabila care crestea cu 1 si pe care o foloseam ca output
+-"number" din "odds" si "even" era o proprietate String decorata cu "@Input" pentru ca foloseam in template (in .html) string interpolation ca sa ii transmitem valoarea primita din interiorul componentei "game-control"...
+<p>EVEN - {{number}} </p>
+...adica aveam nevoie de o proprietate in care sa putem atribui o valoare
+-in "app-component" am folosit 2 array-uri, una pentu "odds" si alta pentru "evens"
+-apoi, am folosit array-ul pentru a itera prin el si sa ii dam la fiecare secunda valoarea din array componentei "even":
+<app-even *ngFor="let even of evens" [number]="even"></app-even>
+-in EventEmitter trebuie sa ii dai ca parametru ce vrei sa scoata ca output:
+@Output() intervalStarted = new EventEmitter<number>();
+-noi aici aveam ca output un simplu numar, dar in exemplul anterior aveam un obiect cu "type", "name" si "content"
+-se observa ca in "app-component"...
+<app-game-control (intervalStarted)="onIntervalIncrease($event)"></app-game-control>
+...ascultam la acelasi "intervalStarted", care este un EventEmitter si care este definit in "game-control" => este exact acelasi eveniment
+-de asemenea, cu "$event" trimitem numarul acela ca parametru si deci in "app-component" putem despacheta direct valoarea:
+onIntervalIncrease(value: number) {..}
+-to have "odds" and "evens" alternate, you would have to use one single array to hold both of them
+
+
+6. Course Project - Components & Databinding
+--------------------
+Introduction
+----------
+-we will add navigation but it will not be the final solution
+-also when we click on a recipe we want to see its details
+
+Adding Navigation with Event Binding and ngIf
+----------
+-we need information from the "header", we need to know if "Recipes" or "Shopping list" was clicked
+-uitasem sa pun "$event" ca parametru pentru "onSelectedLink($event)" in "<app-header>" din "app-component":
+<app-header (clickedLink)='onSelectedLink($event)'></app-header>
+-"ngIf" putea fi pus direct ori pe "<app-recipe>" ori pe "<app-shopping-list>":
+<app-recipe *ngIf="clickedLink === 'recipe'; else shopping"></app-recipe>
+
+Passing Recipe Data with Property Binding
+----------
+-we will refactor "recipe-list" component
+-vom lua codul care afisa o reteta din "recipe-list" si il vom atasa in "recipe-item"
+-am uitat sa adaug "@Input" pentru proprietatea "recipe" din "recipe-list"
+-din nou, in loc sa il pun pe "<div>", for-ul care itereaza prin reteta il puteam pune direct in "<recipe-item>":
+<recipe-item *ngFor="let selectedRecipe of recipes" [recipe]="selectedRecipe"></recipe-item>
+
+Passing Data with Event and Property Binding (Combined)
+----------
+-when we click on a recipe, we want to see its details
+-we need to emit an event on the "recipe-item" component to get which recipe was clicked
+-get this event to the "recipe" component to pass down the event data to "recipe-detail" component
+-trebuia sa folosesc "<a>" care era deja in "recipe-item", acolo puneam un EventEmitter
+-nu era nevoie sa trimitem pe care link s-a dat click pentru ca noi oricum in "recipe-list" iteram prin "recipes" si puteam sa trimitem ca parametru reteta din interiorul componentei "recipe-list" si nu din "recipe-item"
+-retinem ca in interiorul componentei "recipe-list" am emis un alt eveniment, fata de cel din "recipe-item"
+-we listen for the event in "recipe-list" but we still need to go one level up, because we need to reach "recipe-detail"
+-cele doua scrieri sunt echivalente...
+<recipe-list (selectedRecipe)="onSelectedRecipe($event)"></recipe-list>
+cu:
+<recipe-list (selectedRecipe)="selectedRecipe=$event"></recipe-list>
+-nu era nevoie sa initializez...
+this.selectedRecipe = new Recipe('', '', '');
+...in constructor pentru ca am folosit "ngIf" pentru a nu arata componenta cu totul daca nu este selectata o reteta
+-am folosit "checkIfSelected()" pentru a vedea daca o reteta este selectata dar am pus "if"-urile invers
+-am avut un eveniment emis in "recipe-item", l-am re-emis in "recipe-list" si l-am folosit in final in "recipe"
+-abia in "recipe" am folosit "$event" pentru a vedea care reteta a fost selectata
+-ideea era ca am avut nevoie sa re-emitem evenimentul pentru ca trebuia sa urcam la parinte, la "recipe"
+
+Make sure you have FormsModule added!
+----------
+-make sure you have FormsModule added to your imports[] in the AppModule
+import { FormsModule } from '@angular/forms';
+-trebuie pusa sub "imports" si nu sub "declarations"
+
+Allowing the User to Add Ingredients to the Shopping List
+----------
+-we will use local references with "@ViewChild"
+-we will emit "nameInput" and "amountInput" to the parent, "shopping-list" component
+-trebuia sa fac un singur EventEmitter care sa trimita ca parametru un obiect de tipul "Ingredient"
+.eu facusem unul pentru "nameAdded" si unul pentru "ingredientAdded"
+
+
+7. Directives Deep Dive
+--------------------
+Module Introduction
+----------
+-we will learn about creating our own directives
+-we will learn the difference between "attributes directives" and "structural directives", see 7-01.jpg
+-"attributes directives" = they sit on elements, just like attributes in a HTML tag and also only affect the elements they sit on
+-"structural directives" = they also sit on elements, but in addition they are able to change the structure of the DOM around these said elements, "*ngIf", for example
+-"structural directives" are prefixed with "*"
+
+ngFor and ngIf Recap
+----------
+-"ngFor" and "ngIf" are structural directives
+-we cannot use two structural directives on the same component, so you cannot have both "*ngFor" and "*ngIf" at the same time
+-to use "*ngIf" we had to add another "<div>" which wrapped the "<ul>", the list of odd numbers
+-morese, we had to add another "<div>" which wrapped the list of even numbers
+
+ngClass and ngStyle Recap
+----------
+-"ngClass" and "ngStyle" are attribute directives
+-when using "[ngClass]", you need to also use "":
+<li class="list-group-item" *ngFor="let number of odds" [ngClass]="{odd: number % 2 !==0}">
+-this will assign the ".odd" .css class only if the number is odd => for even number that logical expression will never turn true
+-remember that the "[]" in "[ngClass]" means that we are binding to a property of the "ngClass" directive
+-we can also add an "ngStyle" directive:
+<li..[ngStyle]="{backgroundColor: number % 2 !==0 ? 'black' : 'cyan'}">
+-again, for even numbers the expression will always evaluate to false => on even numbers the background colour will be set to cyan
+
+Creating a Basic Attribute Directive
+----------
+-we will create a directive which will highlight text, "basic-highlighter.directive.ts"
+-we need the "@Directive" decorator from "@angular/core"
+-it's necessary to have a unique "selector" defined for it, usually in camelCase notation: "appBasicHighlighter":
+selector: 'appBasicHighlighter'
+-we have added "[]" to the selector...
+selector: '[appBasicHighlighter]'
+...so that Angular treats it as an attribute on a specific element
+.the "[]" aren't actually part of the directive's name
+-Angular allows us to inject the element we want to put the directive on, directly in the "basic-highlighter.directive.ts"
+-that is why, in the "constructor()" for our basic-highlighter, we need a reference to that element:
+export class BasicHighlighterDirective implements OnInit {
+	constructor(private elementRef: ElementRef) { }
+	..
+}
+-the type of "elementRef" must be "ElementRef"
+-notice that because we've added "private" in front of the "elementRef" paramater, TypeScript, behind the scene will create a property called "elementRef" for our "BasicHighlighterDirective"
+-it will also assign the value received as a parameter to the said property
+-it is better to use "ngOnInit()" to define the styles for our directive, rather than the constructor:
+ngOnInit() {
+	this.elementRef.nativeElement.style.backgroundColor = 'green';
+	this.elementRef.nativeElement.style.color = 'white';
+}
+-the constructor is best left to only handle and get the reference to the element we want to put the directive on
+-how do we use the directive:
+<p appBasicHighlighter>Style me with "basic-highlighter".</p>
+-notice that we did not use "[]" as with "ngClass" or "ngStyle" and that is because we have added "[]" in the selector
+-because we've added "[]" in the selector, it means that Angular will treat this directive as an attribute on a specific element
+.basically, "[]" in the selector doesn't actually mean it's part of the name of the directive, it just tells Angular to treat it as an attribute on a specific element, in our case, the "<p>"
+-if we didn't add the "[]", Angular will treat it as an element => we want it to treat it as an attribute
+-for directives, just like components, we need to update "app.module.ts"
+-we need to add the directive under "declarations" array
+-we basically get a reference to the element the directive was put on and then we overwrite it's style
+
+Using the Renderer to build a Better Attribute Directive
+----------
+-Angular is able to render the templates (the .html files) without a DOM => sometimes, the properties you want to put your directive on will not be available
+-also, it's bad practice to directly access the element, like we've done above with "this.elementRef.nativeElement.style.backgroundColor = 'green'"
+-the command:
+ng g d better-highlighter
+-instead of using an "ElementRef", we use "Renderer2" from "@angular/core":
+constructor(private renderer: Renderer2) { }
+-to be able to modify the element the directive sits on, using the "setStyle()" method of the "renderer", we still need to use an "ElementRef" in the constructor:
+constructor(private elementRef: ElementRef, private renderer: Renderer2) { }
+-again, in "ngOnInit()", we will be modifying the style of the element:
+ngOnInit() {
+	this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'orange');
+	this.renderer.setStyle(this.elementRef.nativeElement, 'color', 'white');
+}
+-notice how we don't access the "style" property of the "nativeElement", we only need a reference to it and the "renderer" will do the job for us
+-Angular not only works in the browser, but also with service workers => you might not be able to access the DOM => it's a better practice to use "Renderer2"
+
+More about the Renderer
+----------
+-basically, you should use the Renderer for any DOM manipulations
+-more methods of the Renderer are available here:
+https://angular.io/api/core/Renderer2
+
+Using HostListener to Listen to Host Events
+----------
+-we only want to highlight when we mouse over => the directive needs to react to the events emitted by the element it sits on => we need to use the "@HostListener" decorator from "@angular/core":
+@HostListener('mouseenter') mouseOver(eventData: Event) {
+	this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'orange');
+	this.renderer.setStyle(this.elementRef.nativeElement, 'color', 'white');
+}
+
+@HostListener('mouseleave') mouseLeave() {
+	this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'white');
+	this.renderer.setStyle(this.elementRef.nativeElement, 'color', 'orange');
+}
+-here, "mouseenter" and "mouseleave" are official events supported for the "<p>" element, in our case => "@HostListener" takes as argument an official event
+-you can also define your own evenets, wrap them in "''" and use them as a parameter for "@HostListener"
+-"mouseOver" and "mouseLeave" are just some functions we want to execute
+-it is optional to receive "eventData: Event" as a parameter
+
+Using HostBinding to Bind to Host Properties
+----------
+-if all you want to do is changing the background of an element, there is a better and easier way than using the "Renderer"
+-it's important to use the camelCase notation when referring to "background-color" because in this case we don't want to use the "-" and also we want to refer to the DOM property of background color, which does not know the "-" character
+-the name of the actual DOM element and our property do not need to match:
+@HostBinding('style.backgroundColor') backColor: String;
+-we first access the "style" property and then its subproperty, "backgroundColor"
+-we might need to initialize it before we mouse over it so we don't get an error:
+@HostBinding('style.backgroundColor') backColor: String = 'black';
+-just like with "@HostListener", you can bind to any property of the element you are sitting on
+-"@HostBinding" takes as argument the property you want to bind to, in our case the "style" property and then its subproperty, "backgroundColor"
+
+Binding to Directive Properties
+----------
+-we have hardcoded the background color as orange, but we can dynamically change it => custom property binding, like we've done before
+-we basically need to properties to which we can pass values into => we need to use the "@Input" decorator
+-before, we had...
+<p appBetterHighlighter>Style me with a "better-highlighter".</p>
+...and now we have:
+<p appBetterHighlighter [defaultColor]="'yellow'" [highlightColor]="'red'">Style me with a "better-highlighter".</p>
+-notice the two custom properties we have defined, "defaultColor" and "highlightColor"
+-we can bind of properties of our own directive by using them together with the directive itself
+.obviously, setting "defaultColor" and "highlightColor" to a random directive won't work
+-we still need to use, just like before, the "[]"
+-you can define aliases for "@Input" when using them to bind to a property of the directive, so if you were to put...
+@Input('appBetterHighlighter') highlightColor: String = 'orange';
+...you could then have used the "appBetterHighlighter" like this:
+<p [appBetterHighlighter]="'red'" [defaultColor]="'yellow'">Style me with a "better-highlighter".</p>
+-notice how the "[highlightColor]="'red'"" is gone and that we've directly put "red" as a property of the directive
+-you can either put...
+[defaultColor]="'yellow'"
+...or...
+defaultColor="yellow"
+...however, the first option is preferred to avoid confusion
+.it's a lot more clear the fact that "defaultColor" is a property because of the "[]"
+
+What Happens behind the Scenes on Structural Directives
+----------
+-why is the "*" required?
+-"<ng-template>" is what the name suggests, a template => it does not get rendered on its own, but rather allows us to place elements inside of if which will eventually be rendered at the place "<ng-template>" is inserted into the code
+-the "*" in an "*ngIf" gets transformed behind the scene from this...
+<div *ngIf="!onlyOdd">
+	<li class="list-group-item" *ngFor="let number of odds" [ngClass]="{odd: number % 2 !==0}">
+		{{number}}
+	</li>
+</div>
+...to this:
+<ng-template [ngIf]="!onlyOdd">
+	<div>
+		<li class="list-group-item" *ngFor="let number of odds" [ngClass]="{odd: number % 2 !==0}">
+			{{number}}
+		</li>
+	</div>
+</ng-template>
+-basically we went from "*ngIf" to property binding with the help of the "[]" => [ngIf]="!onlyOdd"
+
+Building a Structural Directive
+----------
+-"unless" is still a property, but because we've added the "set" keyword before it, it basically makes it act as a method
+.in other words, whenever the property changes outside of this directive, whenever the "condition" changes, it will cause the setter to execute => it makes "unless" act as a method
+-"condition" is a boolean because it is used in a logical expression
+-just how "ElementRef" gave us access to the element the directive was sitting on, "TemplateRef" gives us access to the "<ng-template>" it will sit on
+-"unless" has been renamed to "appUnless" because it needs to have the exact same name as the "selector":
+@Input() set appUnless(condition: boolean) {
+	if (!condition) {
+		this.viewContainerRef.createEmbeddedView(this.templateRef);
+	} else {
+		this.viewContainerRef.clear();
+	}
+}
+constructor(private templateRef: TemplateRef<any>,
+	private viewContainerRef: ViewContainerRef) { }
+-"templateRef" is the what?, what template should we render
+-"viewContainerRef" is the where?, where should we render this template
+-pentru cazul in care "condition" e "true", nu afisam nimic => folosim metoda "clear()"
+-pentru cazul in care "condition" e "false", inside of the "container" we will be creating a view which will show the template which has been passed
+-by "which has been passed" intelegem acel element, acel "template" pe care s-a folosit directive "appUnless":
+<div *appUnless="onlyOdd">..</div>
+-retinem ca din cauza "*", elementul se transforma intr-un "<ng-template>", deci...
+<div *appUnless="onlyOdd">
+	<li>
+		..
+	</li>
+</div>
+...este echivalent cu:
+<ng-template [appUnless]="onlyOdd">
+	<div>
+		<li>
+			..
+		</li>
+	</div>
+</ng-template>
+
+Understanding ngSwitch
+----------
+-it is very important to include the "*":
+<div [ngSwitch]="value">
+	<p *ngSwitchCase="5">Value is 5.</p>
+	<p *ngSwitchCase="10">Value is 10.</p>
+	<p *ngSwitchCase="50">Value is 50.</p>
+	<p *ngSwitchDefault>Value is "default".</p>
+</div>
+-"value" is a property of type "number" in "app-component"
+-the "ngSwitch" has been used here with property binding
+
+
+8. Course Project - Directives
+--------------------
+Building and Using a Dropdown Directive
+----------
+-we only want Angular to interact with the DOM => we will not use Bootstrap to build the dropdown
+-the "appDropdown" directive should work like this: whenever you click on the dropdown it should add a .css class and remove it once you click off it
+-the .css class is "open" and it is available in Bootstrap
+-am avut dreptate ca trebuia folosit "@HostListener"
+-nu am avut nevoie de...
+@Input() appDropdown(condition: boolean) {
+	if (!condition) {
+	} else {
+	}
+}
+...pentru ca nu era nevoie sa primim din exterior o valoare ca parametru
+-din cauza asta nu mergea apelul de directive "[appDropdown]="isOpened"", pentru ca daca vrei sa o folosesti astfel, ai nevoie de decoratorul "@Input" pentru a o face accesibila din exterior
+-nu am avut nevoie de...
+@HostListener('click') toggleOpen(eventData: Event) {
+	console.log('dropdown.directive.ts');
+	console.log(`@HostListener('click') click(eventData: Event):`);
+
+	this.mouseClicked.emit(
+		this.isOpen
+	);
+
+	this.isOpen = !this.isOpen;
+}
+...pentru ca nu trebuia sa emitem un eveniment pentru a asculta daca s-a apasat click sau nu:
+<div class="btn-group" [appDropdown]="isOpened" (mouseClicked)="changeValue()" [ngClass]="{open: isOpened}">
+-era suficient daca foloseam "@HostBinding" cu o variabila boolean pe care o schimbam la fiecare click:
+@HostBinding('class.open') isOpen: boolean = false;
+@HostListener('click') toggleOpen() {
+	console.log('dropdown.directive.ts');
+	console.log(`@HostListener('click'):`);
+
+	this.isOpen = !this.isOpen;
+}
+-practic, folosesti "[appDropdown]="isOpened"" doar daca ai nevoie sa configurezi directive respectiv
+
+Closing the Dropdown From Anywhere
+----------
+-vezi 103.html
+-daca nu voiam sa dam click tot pe dropdown ca sa se inchida, adica sa putem inchide dropdown de oriunde:
+import { Directive, ElementRef, HostBinding, HostListener } from '@angular/core';
+@Directive({
+	selector: '[appDropdown]'
+})
+export class DropdownDirective {
+	@HostBinding('class.open') isOpen = false;
+	@HostListener('document:click', ['$event']) toggleOpen(event: Event) {
+		this.isOpen = this.elRef.nativeElement.contains(event.target) ? !this.isOpen : false;
+	}
+	constructor(private elRef: ElementRef) { }
+}
+
+
+9. Using Services & Dependency Injection
+--------------------
+Module Introduction
+----------
+-generally, it's used when there can exist a central component which is used in many components
+-vezi 9-01.jpg
+
+Why would you Need Services?
+----------
+-we have an app which stores an array of user accounts
+-it also logs to the console
+-both of these features, "storage" and "logging" can be centralized
+-mai mult, cand vine vorba de comunicare intre componente serviciile sunt de ajutor
+-we have event binding to notify "app-component" whenever a change is happening in the "account" component
+
+Creating a Logging Service
+----------
+-we will create "logging.service.ts" in the "app" folder
+.notice the naming convention
+-a service does not need a decorator, it's just a normal TypeScript class
+-a service in Angular is not supposed to be used like a normal class...
+const service = new LoggingService();
+service.logStatusChange(accountStatus);
+...you are not supposed to instantiate it and use some methods of the object
+-instead, to get access to service you inject it
+
+Injecting the Logging Service into Components
+----------
+-we are talking about "dependency injection"
+-for example, our "account" component depends on the "LoggingService", because we want to use a method which is within the "LoggingService" => we want to inject the dependency in the "account" component => we need to inject an instance of the "LoggingService" class in the "account" component
+-we will inject the service in the constructor of the "account" component:
+constructor(private loggingSerivce: LoggingService) {..}
+-the type "LoggingService" must be explicitly written in the constructor
+-it works because as Angular comes accross the "<app-account>" component, it needs to instantiate it => it looks in the constructor => it finds there that it needs to create an instance of the "LoggingService" as well => it injects the dependency within the "account" component
+-we need to tell Angular how to create this service
+.so far we've only told it where to get it from
+-in order for Angular to create this service, it needs to be provided to the "account" component => it needs to be present in the "providers" array of the "@Component" decorator:
+@Component({
+	..
+	providers: [LoggingService]
+})
+-if you don't put it in the "providers" array => Angular outputs error "No provider for LoggingService!"
+
+Creating a Data Service
+----------
+-useful for storing and managing data
+-we remove the user accounts array and put it in the "accounts.service.ts"
+-it's better to use "ngOnInit()" method to instantiate the array which is now in the service, in the "app-component":
+ngOnInit() {
+	this.accounts = this.accountService.accounts;
+}
+-we still need to update the templates for "account" and "new-account" component because we no longer are using event binding
+-sometimes, you might need to explicitly add the property name when passing objects:
+this.accountsService.accounts.push({ name: accountName, status: accountStatus });
+-notice the "name" and "status"
+-de asemenea, nu e "push()", e "addAccount()", deci corect este:
+this.accountsService.addAccount(accountName,accountStatus);
+-observam ca doar in "app-component" am facut o instanta de "accounts", in celelalte doua componente, am folosit metodele "addAccount()" si "updateStatus()", nu am folosit "push()"
+-however, we do have a problem with new accounts not showing when creating one through the application
+
+Understanding the Hierarchical Injector
+----------
+-there are 3 levels of injection in the hierarchy: "AppModule", "AppComponent" and any other component (the lowest), see 9-06.jpg
+-to fix new accounts not showing, we need to tell Angular that we want the same instance of the service available to the components
+
+How many Instances of Service Should It Be?
+----------
+-right now, we have three different instances, one in "app-component", one in "account" and one in "new-account"
+-"account" and "new-account" are children of "app-component"
+-if the service is changed in either of the children, the changes do not propagate upwards, nor downwards because we are talking about 3 different instances
+-however, if the service is instantiated in "app-component" and all its children do not override this service, every change either in the children or in "app-component" itself will be reflected across all 3 components
+-basically, because we've used the constructor in "account" and in "new-account" to inject the service we have overridden the service instantiated in the "app-component" => 3 separate instances of the service
+-all we have to do is remove "AccountsService" from the "providers" array, but still leave it in the "constructor()" for both "account" and "new-account"
+
+Injecting Services into Services
+----------
+-if we were to add the "AccountsService" in the "providers" array of the "AppModule", we will make the service available application-wide and also, unless we override it in any of its children (as we've mistakenly done above), the same instance of the service is available application-wide
+-if we want to inject a service in another service, we need the "@Injectable" decorator
+-we need the decorator, because, as with "@Component" and "@Directive", we need to include some metadata about our components and about our directives so that Angular knows how to interpret them correctly
+-"@Injectable" is given to where you want to inject the service, so the receiver of the service => "@Injectable" is not added to "LoggingService", but to "AccountsService" where we have injected the "LoggingService"
+-however, in future versions of Angular, it is recommended to put "@Injectable" in both, the giver and the receiver
+
+Using Services for Cross-Component Communication
+----------
+-instead of using a chain of event emitting and event catching and property binding to communicate between let's say "account" and "new-account", which are children of "app-component", we can use services instead
+-say you wanted to emit an event from "AccountsService"
+-you still need to emit the event, but now, because you have injected the "AccountsService", all you have is use the service in the components in which you have injected the said service
+-basically, we just had to create an EventEmitter in the service, but we could use "emit()" from any component in which the service is injected
+-basically, we were able to create an EventEmitter in the service, we were able to "emit()" from "account" and we were able to catch whatever was emitted from "account" in the "new-account" component
+-to be able to catch, we've used the "subscribe()" method:
+this.accountsService.statusUpdated.subscribe(
+	(status: String) => console.log(`New status ${status}.`));
+
+Services in Angular 6+
+----------
+-for Angular 6+, if you use...
+@Injectable({providedIn: 'root'})
+export class MyService { ... }
+...to provied application-wide services you have the advantage of services being able to be lazily loaded and redundant code can be removed automatically, see 113.html
+
+Practicing Services
+----------
+1. Optimize this app by adding a UsersService which manages the active and inactive users.
+2. Also add a CounterService which counts the number of active->inactive actions and also inactive->active actions.
+
+[OPTIONAL] Assignment Solution
+----------
+-in proiect, era deja implementat cum sa folosesti serviciul, eu doar am implementat serviciul propriu-zis de "UserService"
+-really, you only want to implement an application-wide service if you were to inject a service in another service
+-that is not to say it's wrong to create an application-wide service
+-in our app, it's important to not overwrite the service because we want to modify the same "active" and "inactive" users arrays:
+constructor(private userService: UserService) { }
+.we just need to remember that we remove "UserService" from the "providers" array in "active-users" and "inactive-users" components
+-for the "CounterService", you either inject it within the "UserService" and increment in "incrementActiveToInactive()" and "incrementInactiveToActive()" respectively
+-or, you can inject the "CounterService" in both "active-users" and "inactive-users" components and use it in "onSetToActive()" and "onSetToInactive()" methods respectively
+
+
+10. Course Project - Services & Dependency Injection
+--------------------
+Introduction
+----------
+-with services we can centralise data
+-we need a service for the "Recipe" and one for the "Shopping List", see 10-01.jpg
+-we will be accessing the service for the "Shopping List" in the "Recipe", because we need to add the ingredients from a recipe into the shopping list
+
+Setting up the Services
+----------
+Managing Recipes in a Recipe Service
+----------
+Using a Service for Cross-Component Communication
+----------
+Adding the Shopping List Service
+----------
+Using Services for Pushing Data from A to B
+----------
+Adding Ingredients to Recipes
+----------
+Passing Ingredients from Recipes to the Shopping List (via a Service)
+----------
+
+
+11. Changing Pages with Routing
+--------------------
+Module Introduction
+Why do we need a Router?
+Understanding the Example Project
+Setting up and Loading Routes
+Navigating with Router Links
+Understanding Navigation Paths
+Styling Active Router Links
+Navigating Programmatically
+Using Relative Paths in Programmatic Navigation
+Passing Parameters to Routes
+Fetching Route Parameters
+Fetching Route Parameters Reactively
+An Important Note about Route Observables
+Passing Query Parameters and Fragments
+Retrieving Query Parameters and Fragments
+Practicing and some Common Gotchas
+Setting up Child (Nested) Routes
+Using Query Parameters - Practice
+Configuring the Handling of Query Parameters
+Redirecting and Wildcard Routes
+Important: Redirection Path Matching
+Outsourcing the Route Configuration
+An Introduction to Guards
+Protecting Routes with canActivate
+Protecting Child (Nested) Routes with canActivateChild
+Using a Fake Auth Service
+Controlling Navigation with canDeactivate
+Passing Static Data to a Route
+Resolving Dynamic Data with the resolve Guard
+Understanding Location Strategies
+Wrap Up
+
+
+12. Course Project - Routing
+--------------------
+Planning the General Structure
+Setting Up Routes
+Adding Navigation to the App
+Marking Active Routes
+Fixing Page Reload Issues
+Child Routes: Challenge
+Adding Child Routing Together
+Configuring Route Parameters
+Passing Dynamic Parameters to Links
+Styling Active Recipe Items
+Adding Editing Routes
+Retrieving Route Parameters
+Programmatic Navigation to the Edit Page
+One Note about Route Observables
+Project Cleanup
+
+
+13. Understanding Observables
+--------------------
+Module Introduction
+Analyzing Angular Observables
+Getting Closer to the Core of Observables
+Building a Custom Observable
+Errors & Completion
+Observables & You!
+Understanding Operators
+Subjects
+Wrap Up
+Useful Resources & Links
+
+
+14. Course Project - Observables
+--------------------
+Improving the Reactive Service with Observables (Subjects)
+Changed the Subscription Name
+
+
+15. Handling Forms in Angular Apps
+--------------------
+Module Introduction
+Why do we Need Angular's Help?
+Template-Driven (TD) vs Reactive Approach
+An Example Form
+TD: Creating the Form and Registering the Controls
+TD: Submitting and Using the Form
+TD: Understanding Form State
+TD: Accessing the Form with @ViewChild
+TD: Adding Validation to check User Input
+Built-in Validators & Using HTML5 Validation
+TD: Using the Form State
+TD: Outputting Validation Error Messages
+TD: Set Default Values with ngModel Property Binding
+TD: Using ngModel with Two-Way-Binding
+TD: Grouping Form Controls
+TD: Handling Radio Buttons
+TD: Setting and Patching Form Values
+TD: Using Form Data
+TD: Resetting Forms
+Practicing Template-Driven Forms
+Introduction to the Reactive Approach
+Reactive: Setup
+Reactive: Creating a Form in Code
+Reactive: Syncing HTML and Form
+Reactive: Submitting the Form
+Reactive: Adding Validation
+Reactive: Getting Access to Controls
+Reactive: Grouping Controls
+Fixing a Bug
+Reactive: Arrays of Form Controls (FormArray)
+Reactive: Creating Custom Validators
+Reactive: Using Error Codes
+Reactive: Creating a Custom Async Validator
+Reactive: Reacting to Status or Value Changes
+Reactive: Setting and Patching Values
+Practicing Reactive Forms
+[OPTIONAL] Assignment Solution
+
+
+16. Course Project - Forms
+--------------------
+Introduction
+TD: Adding the Shopping List Form
+Adding Validation to the Form
+Allowing the Selection of Items in the List
+Loading the Shopping List Items into the Form
+Updating existing Items
+Resetting the Form
+Allowing the the User to Clear (Cancel) the Form
+Allowing the Deletion of Shopping List Items
+Creating the Template for the (Reactive) Recipe Edit Form
+Creating the Form For Editing Recipes
+Syncing HTML with the Form
+Fixing a Bug
+Adding Ingredient Controls to a Form Array
+Adding new Ingredient Controls
+Validating User Input
+Submitting the Recipe Edit Form
+Adding a Delete and Clear (Cancel) Functionality
+Redirecting the User (after Deleting a Recipe)
+Adding an Image Preview
+Providing the Recipe Service Correctly
+Deleting Ingredients and Some Finishing Touches
+Deleting all Items in a FormArray
+
+
+17. Using Pipes to Transform Output
+--------------------
+Introduction & Why Pipes are Useful
+Using Pipes
+Parametrizing Pipes
+Where to learn more about Pipes
+Chaining Multiple Pipes
+Creating a Custom Pipe
+Parametrizing a Custom Pipe
+Example: Creating a Filter Pipe
+Pure and Impure Pipes (or: How to "fix" the Filter Pipe)
+Understanding the "async" Pipe
+Practicing Pipes
+
+
+18. Making Http Requests
+--------------------
+A New IDE
+----------
+-some modules were re-recorded
+
+Module Introduction
+----------
+-interacting with the backend
+
+How Does Angular Interact With Backends?
+----------
+-send and receive Http requests to and from the server, where server is the same thing as "RESTful API"
+-when you access a link from the API, you are not redirected to a web page, but rather, you receive data back from it, usually in JSON format
+
+The Anatomy of a Http Request
+----------
+-API endpoint = the URL to which you send a request, say "/api/notes"
+-Http verb = POST, GET, PUT, etc.
+-header = metadata, say:
+{ "Content-Type": "application/json" }
+-body
+.all of the above form an Http request
+
+Backend (Firebase) Setup
+----------
+-creating a Firebase project
+-create a "Realtime Database" in "Test Mode", because we don't have authentication yet
+-link to database:
+https://console.firebase.google.com/project/making-http-requests-a2150/database/making-http-requests-a2150-default-rtdb/data
+-the URL to send requests to:
+https://making-http-requests-a2150-default-rtdb.europe-west1.firebasedatabase.app/
+
+Sending a POST Request
+----------
+-"onCreatePost(postData: {title: string, content: string )) {..}"
+-to be able to send requests:
+import { HttpClient } from '@angular/common/http'
+.and add it in the "imports" array from "app.module.ts"
+-inject the "HttpClient" as a service in the constructor
+-you never communicate directly with the database using the Angular app
+-usually you communicate using the JSON format and Angular converts your objects automatically into a JSON format if you don't do it explicitly
+-the request is not being sent
+.this happens because the "this.http" needs to be wrapped into an "Observable"
+-if you don't wrap it, Angular and RxJS assumes no one is "interested" in the response of your Http request and basically doesn't even send it => you need to "subscribe"
+-side note: Firebase requires to append "posts.json" to the endpoint URL
+-also, you don't need to "unsubscribe()" because the original subscription will be complete after it gets sent and also because "this.http" is basically a subscription provided by Angular for which you don't need to manage subscriptions
+-usually, when you send a "POST" request, two requests are sent: one which contains the "OPTIONS" request method to see if the "POST" is allowed on the API and if it is allowed, it then sends the actual response
+
+GETting Data
+----------
+-adding the "onFetchPosts()" to get all the posts from the API
+
+Using RxJS Operators to Transform Response Data
+----------
+-using an observable operator to turn response data into array object that contains all the posts
+-we use observables to write cleaner code that can be easily be refactored later
+-we use "pipe()" as an observable operator
+-"pipe()" is used to funnel the observable date (in our case, the posts) through multiple operators before reaching the "subscribe()" method
+-example:
+this.http
+	.get(
+		`${this.baseURL + 'posts.json'}`
+	)
+	.pipe(
+		map(responseData => {
+		const postsArray = [];
+		for (const key in responseData) {
+			if (responseData.hasOwnProperty(key)) {
+				postsArray.push({ ...responseData[key], id: key });
+			}
+		}
+	  return postsArray;
+	})
+	)
+	.subscribe(..);
+-because we used "pipe()" and "map()" we were able to return the "postsArray" which will be forwarded next to the "subscribe()" method below the "pipe()" method
+-"map()" allows us to get the original data, unwrap it so that we construct the "postsArray" and the re-wrap it into an observable to which we can "subscribe" later
+-basically allows us to return an array of "posts" instead of a cryptic JavaScript object sent back from Firebase
+-note the "if (responseData.hasOwnProperty(key)) {..}" check
+
+Using Types with the HttpClient
+----------
+-"posts" is of type "any" => we need to define a way to tell TypeScript that "responseData" is an object which contains a "title" and a "content", like so:
+postData: { title: string; content: string }
+-we've created the "Post" interface and the "GET" request looks like this:
+this.http
+	.get<{ [key: string]: Post }>(
+	`${this.baseURL + 'posts.json'}`
+	)
+	.pipe(..)
+	.subscribe(..);
+
+Outputting Posts
+----------
+-outputting "loadedPosts" in a "<ul>" unordered list
+-este "ngIf" si nu "ngif", notice the capital "i"
+
+Showing a Loading Indicator
+----------
+-"<p *ngIf="isFetching">Loading...</p>", where "isFetching" is a "boolean"
+
+Using a Service for Http Requests
+----------
+-creating a service separate from "app.component.ts"
+-a service is used to do the "heavy lifting" of the app, components should be lean and have only one purpose, they basically just serve as templates
+-using "@Injectable({ providedIn: 'root' })" instead of injecting the service in the "providers" array from "app.module.ts"
+-need to place "private postService: PostsService" in the constructor to inject the service and now we will be using this form of "onCreatePost()":
+onCreatePost(postData: Post) {
+	this.postService.createAndStorePost(postData.title, postData.content);
+}
+-even though we are correctly fetching the posts from the API, we do not have the connection between the fetched data and our template ("app.component.ts")
+
+Services & Components Working Together
+----------
+-we fix the previous error by either creating a "subject" in the "fetchPosts()" of "posts.service" to which we subscribe to back in our "app.component" or by using "return this.http .." which basically returns the prepared "observable" that has been created in the "posts.service"
+.a "subject" is better suited to when multiple parties are interested in the same data, in our case, the posts
+-(!) requests are only sent when someone is interested in them
+-we no longer want to "subscribe" in the service, but rather in the component which actually uses the service
+-basically, the service should return a prepared "observable" and that's it, the rest is the job of the template (the component)
+-we can leave the "subscribe()" in the "postService.service" because we don't care about the response of the "POST" request
+
+Sending a DELETE Request
+----------
+-because we care about the response of the "DELETE" request we will "subscribe()" in the component
+
+Handling Errors
+----------
+-if we disable "test mode" in Firebase, we will encounter a "401" error which we want to handle
+-to an "observable" you can pass more than one function as argument and the second argument is a function that gets triggered when an error occurs:
+.subscribe(
+        posts => {..},
+		error => {..}
+      )
+.notice that the second argument of "subscribe" is an "error-catching" function
+-note that if you have an error we don't want to show "Loading..."
+-we initialized "error" with "null" so whenever a string is assigned to it, "error" becomes "truthy"
+-you need to make sure that there is a "message" field in the "error", which generally in Angular, there is
+.otherwise, you need to make sure that when an error happens on the server, make the server send an "HttpErrorResponse"
+
+Using Subjects for Error Handling
+----------
+-this method is used for when we don't subscribe in the component => we don't have a way to add the second argument to the "subscribe()" function, for example the "onCreatePost(postData: Post)" method
+-again, a "subject" is used if you have multiple places in the app that might be interested in a particular event, in our case the "401" error
+-first, define the "subject" in the service:
+error = new Subject<string>();
+-then use the "next" property of the "subject":
+this.http
+	.post<{ name: String }>(..)
+	.subscribe(
+		responseData => {..},
+		error => {
+			this.error.next(error.message);
+		}
+	);
+-finally, "subscribe" to the "error" "subject" in the component:
+this.postService.error.subscribe(
+	(errorMessage) => {
+		this.error = errorMessage;
+	}
+)
+-to handle the "subscription" in "OnDestroy" we define...
+private errorSubscription: Subscription;
+...in the component and "unsubscribe()":
+this.errorSubscription.unsubscribe();
+
+Using the catchError Operator
+----------
+-"catchError" from "rxjs":
+import { catchError } from 'rxjs/operators'
+-it is particularly useful when you want to log errors, say to your analytics server, etc.
+-can of course be used in the user interface as well, you can even use that "subject" inside the "catchError" function as well
+-"throwError" yields a new "observable" by wrapping an error inside an "observable"
+-example:
+fetchPosts() {
+        return this.http
+            .get<{ [key: string]: Post }>(`${this.baseURL + 'posts.json'}`)
+            .pipe(
+					..
+                    return postsArray;
+                }),
+                catchError(errorResponse => {
+                    // Send to analytics server
+                    return throwError(errorResponse);
+                })
+            );
+-notice the "return throwError(errorResponse)"
+
+Error Handling & UX
+----------
+-whenever you encounter an error, "isFetching" should be set back to "false"
+
+Setting Headers
+----------
+-you can set header on any "this.http" request as the second argument, say for example on the "GET" request:
+return this.http
+            .get<{ [key: string]: Post }>(
+                `${this.baseURL + 'posts.json'}`,
+                {
+                    headers: new HttpHeaders(
+                        {
+                            "Custom-Header": "Hello"
+                        }
+                    )
+                }
+            )
+
+Adding Query Params
+----------
+-using "HttpParams" from "@angular/common/http" or by concatenating an URL string
+-example:
+let searchParams = new HttpParams();
+searchParams = searchParams.append('print', 'pretty');
+searchParams = searchParams.append('name', 'adrian');
+
+return this.http
+	.get<{ [key: string]: Post }>(
+		`${this.baseURL + 'posts.json'}`,
+		{
+			headers: new HttpHeaders(
+				{
+					"Custom-Header": "Hello"
+				}
+			),
+			// params: new HttpParams().set('print', 'pretty')
+			params: searchParams
+		}
+	)
+-in this example, the URL will be the base URL and "?print=pretty?name=adrian"
+
+Observing Different Types of Responses
+----------
+-sometimes you need access to the entire response data and not only to the extracted data, eg. "loadedPosts", for example response headers or status codes, etc.
+-if you add a third argument...
+{
+	observe: 'response'
+}
+...to the "POST" request, you now need to access "responseData.body" instead of just "responseData"
+-you can also have "event" as a type of response
+-"tap()" allows you to execute code on the "response" but without altering it, without disturbing whatever is left in the chain, say a "subscribe()", etc.
+-"type = 0" means the value "0" in the enum "HttpEventType"
+.in this case, "type = 0" means "HttpEventType.Sent"
+
+Changing the Response Body Type
+----------
+-if you add a third argument...
+{
+	responseType: 'json'
+}
+...to the "POST" request, the response will be in JSON format
+-you can have "blob", "text", etc. as options
+
+Introducing Interceptors
+----------
+-instead of manually modifying every request, you can use "interceptors"
+.for example, say you want a header to be attached to every request on our Angular app => you have to do this only once
+-for example, the "AuthInterceptorService" which implements "HttpInterceptor" from "@angular/common/http"
+-"HttpInterceptor" will force you to implement...
+intercept(
+        req: HttpRequest<any>,
+        next: HttpHandler
+    ): Observable<HttpEvent<any>> {
+        console.log('Request on its way...');
+        return next.handle(req);
+    }
+...where "next" is a function which will allow you to forward the request to the next handler => "next.handle(req)", where "req" is the original request
+-basically, "AuthInterceptorService" is called just before the request leaves the application and also just before the response enters the application
+.note that because of "return next.handle(req);" you let the request continue, otherwise it is "intercepted" and stopped right there, in "AuthInterceptorService"
+[4.50] - providing the "interceptor" service
+-in "app.module"...
+providers: [
+	{
+		provide: HTTP_INTERCEPTORS,
+		useClass: AuthInterceptorService,
+		multi: true
+	}
+],
+...we now have a JavaScript object instead of just the name of the service
+-"provide: HTTP_INTERCEPTORS" = it's basically a token by which the service injection is identified by Angular
+.basically, it tells Angular that all the classes you provide under this identifier, "HTTP_INTERCEPTORS", (in our case "AuthInterceptorService") should be treated as HTTP "interceptors" and should run their respective "intercept()" method whenever a request leaves the application or a response enters the application
+-"useClass: AuthInterceptorService" = the class to be used as interceptor
+-"multi: true" = tells Angular that existing interceptors should not be replaced by this particular one and that it can coexist alongside the existing ones
+-basically, this is a different syntax of injecting a service which registers a service, "AuthInterceptorService" under a different identifier, "HTTP_INTERCEPTORS" and that there can be multiple services under that identifier, so other ones apart from "AuthInterceptorService" which we are injecting here
+-Angular will now take all the "interceptors" injected in the application and will run their respective "intercept()" method whenever a request leaves the application or a response enters the application
+
+Manipulating Request Objects
+Response Interceptors
+Multiple Interceptors
+Wrap Up
+Useful Resources & Links
+
+
+19. Course Project - Http
+--------------------
+Module Introduction
+Backend (Firebase) Setup
+Setting Up the DataStorage Service
+Storing Recipes
+Fetching Recipes
+Transforming Response Data
+Resolving Data Before Loading
+Fixing a Bug with the Resolver
+
+
+20. Authentication  Route Protection in Angular
+--------------------
+Module Introduction
+How Authentication Works
+----------
+-interaction between client and server
+-sessions do not work with Angular because we are building SPAs that deal with a backend which is a RESTful API
+.a RESTful API is stateless => no sessions possiblity
+-client and server are decoupled from each other
+-server validates user and gives access
+-(?)
+Adding the Auth Page
+Switching Between Auth Modes
+Handling Form Input
+Preparing the Backend
+Make sure you got Recipes in your backend!
+Preparing the Signup Request
+Sending the Signup Request
+Adding a Loading Spinner & Error Handling Logic
+Improving Error Handling
+Sending Login Requests
+Login Error Handling
+Creating & Storing the User Data
+Reflecting the Auth State in the UI
+Adding the Token to Outgoing Requests
+Attaching the Token with an Interceptor
+Adding Logout
+Adding Auto-Login
+Adding Auto-Logout
+Adding an Auth Guard
+Wrap Up
+Useful Resources & Links
+
+
+21. Dynamic Components
+--------------------
+Module Introduction
+Adding an Alert Modal Component
+Understanding the Different Approaches
+Using ngIf
+Preparing Programmatic Creation
+Creating a Component Programmatically
+Understanding entryComponents
+Data Binding & Event Binding
+Wrap Up
+Useful Resources & Links
+
+
+22. Angular Modules & Optimizing Angular Apps
+--------------------
+Module Introduction
+What are Modules?
+Analyzing the AppModule
+Getting Started with Feature Modules
+Splitting Modules Correctly
+Adding Routes to Feature Modules
+Component Declarations
+The ShoppingList Feature Module
+Understanding Shared Modules
+Understanding the Core Module
+Adding an Auth Feature Module
+Understanding Lazy Loading
+Implementing Lazy Loading
+More Lazy Loading
+Preloading Lazy-Loaded Code
+Modules & Services
+Loading Services Differently
+Ahead-of-Time Compilation
+Wrap Up
+Useful Resources & Links
+
+
+23. Deploying an Angular App
+--------------------
+Module Introduction
+Deployment Preparation & Steps
+Using Environment Variables
+Deployment Example: Firebase Hosting
+Server Routing vs Browser Routing
+
+
+24. Bonus Working with NgRx in our Project
+--------------------
+Module Introduction
+What is Application State?
+What is NgRx?
+Getting Started with Reducers
+Adding Logic to the Reducer
+Understanding & Adding Actions
+Setting Up the NgRx Store
+Selecting State
+Dispatching Actions
+Multiple Actions
+Preparing Update & Delete Actions
+Updating & Deleting Ingredients
+Expanding the State
+Managing More State via NgRx
+Removing Redundant Component State Management
+First Summary & Clean Up
+One Root State
+Setting Up Auth Reducer & Actions
+Dispatching Auth Actions
+Auth Finished (For Now...)
+And Important Note on Actions
+Exploring NgRx Effects
+Defining the First Effect
+Effects & Error Handling
+Login via NgRx Effects
+Managing UI State in NgRx
+Finishing the Login Effect
+Preparing Other Auth Actions
+Adding Signup
+Further Auth Effects
+Adding Auto-Login with NgRx
+Adding Auto-Logout
+Finishing the Auth Effects
+Using the Store Devtools
+The Router Store
+Getting Started with NgRx for Recipes
+Fetching Recipe Detail Data
+Fetching Recipes & Using the Resolver
+Fixing the Auth Redirect
+Update, Delete and Add Recipes
+Storing Recipes via Effects
+Cleanup Work
+Wrap Up
+Alternative NgRx Syntax
+Useful Resources & Links
+
+
+25. Bonus Angular Universal
+--------------------
+Module Introduction
+Angular Universal & ModuleMapLoader
+Adding Angular Universal
+Adding Angular Universal with NestJS
+Deploying Universal Apps
+Important: Remaining Lectures
+Module Introduction
+Getting Started with Angular Universal
+Working on the App Module
+Adding a Server-Side Build Workflow
+Adding a NodeJS Server
+Pre-Rendering the App on the Server
+Next Steps
+Angular Universal Gotchas
+
+
+26. Angular Animations
+--------------------
+Making Animations Work with Angular 4+
+Introduction
+Setting up the Starting Project
+Animations Triggers and State
+Switching between States
+Transitions
+Advanced Transitions
+Transition Phases
+The "void" State
+Using Keyframes for Animations
+Grouping Transitions
+Using Animation Callbacks
+
+
+27. Adding Offline Capabilities with Service Workers
+--------------------
+Module Introduction
+Adding Service Workers
+Caching Assets for Offline Use
+Caching Dynamic Assets & URLs
+Further Links & Resources
+
+
+28. A Basic Introduction to Unit Testing in Angular Apps
+--------------------
+About this Section
+Introduction
+Why Unit Tests?
+Analyzing the Testing Setup (as created by the CLI)
+Running Tests (with the CLI)
+Adding a Component and some fitting Tests
+Testing Dependencies: Components and Services
+Simulating Async Tasks
+Using "fakeAsync" and "tick"
+Isolated vs Non-Isolated Tests
+Further Resources & Where to Go Next
+
+
+29. Angular as a Platform  Closer Look at the CLI
+--------------------
+Module Introduction
+A Closer Look at "ng new"
+IDE & Project Setup
+Understanding the Config Files
+Important CLI Commands
+The "angular.json" File - A Closer Look
+Angular Schematics - An Introduction
+The "ng add" Command
+Using Custom "ng generate" Schematics
+Smooth Updating of Projects with "ng update"
+Simplified Deployment with "ng deploy"
+Understanding "Differential Loading"
+Managing Multiple Projects in One Folder
+Angular Libraries - An Introduction
+Wrap Up
+
+
+30. Angular Changes  New Features
+--------------------
+A First Look At Angular Elements
+
+
+31. Course Roundup
+--------------------
+Course Roundup
+Bonus: More Content!
+
+
+32. Bonus TypeScript Introduction (for Angular 2 Usage)
+--------------------
+Introduction
+Using Types
+Classes
+Interfaces
+Generics
+Wrap up & Modules
+Deep dive into TypeScript

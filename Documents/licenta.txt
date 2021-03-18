@@ -1,0 +1,50 @@
+Licenta
+-fara "tsconfig.json" nu a pornit
+
+
+[Ep2]
+-nu imi merge cum ii merge lui "/Home/Secret", pe la sfarsitul video-ului (?)
+[Ep2.1]
+-using "Papercut"
+-
+
+
+Everything You Ever Wanted to Know About Authentication
+(https://www.youtube.com/watch?v=j8Yxff6L_po)
+npm install express
+[3.20] - server.js
+npm install body-parser
+-"body-parser" is used when the user / browser makes "POST" requests
+-so if you have a form with "username" and "password", using "body-parser" you can get the form data as a "JSON":
+{
+	"username": "Adi",
+	"password": "123"
+}
+-"_id" is the primary key field in Mongo
+-"Mongoose" was used as ORM
+-to use Mongoose, you need to create a model for the "User":
+let User = mongoose.model("User", new mongoose.Schema(
+	{
+		username: { type: String, required: true, unique: true },
+		password: { type: String, required: true },
+	}
+));
+[8.40]
+[10.20] - HTTP sessions
+npm install client-sessions
+-"client-sessions" is used to encrypt the cookies
+[16.10] - storing passwords
+-once you hash a password, there is no way to convert it (decrypt it) back to plain text
+-"bcrypt", "scrypt", "argon2"
+npm install bcryptjs
+[19.55] - middleware
+[21.00] - force authentication
+[21.50] - CSRF
+npm install csurf
+[24.30] - security best practices
+-always use SSL
+-use cookie flags
+npm install helmet
+-"Passport", "Node-Login", "Aqua", "Okta"
+https://github.com/rdegges/ss-auth
+https://speakerdeck.com/rdegges

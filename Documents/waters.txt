@@ -1,0 +1,3055 @@
+
+Waters
+
+
+--------------------CURS 10--------------------
+[Waters-10.mp4]
+[1.40]
+[2.25]
+-pentru joia viitoare sa venim cu intrebari
+-peste 2 joi prezentam aplicatia
+[4.15]
+-sa confirmam ca vrem practica
+-sa finalizam proiectul
+-un branch existent cu aplicatia si aplicatia finalizata
+-demo cu clientii
+[8.40]
+-ni se vor prezenta mai multe teme joia viitoare
+-pentru peste 2 joi trebuie implementate temele care vor fi mai mult "enhancements"
+-se poate folosi "Mongoose" in loc de "MikroORM"
+[11.30] - prezinta tema
+-merge "Delete selection" si "Set inactive" pe selectie
+-e un operator "forkJoin" din "rxjs" care poate fi folosit atunci cand faci stergere de selectie ("Delete selection")
+-trebuie sa vezi ce se intampla cu request-ul atunci cand server-ul e picat
+.adica nu vrei sa se actualizeze obiectul doar in aplicatie, vrei ca schimbarea sa se propage spre server
+-de exemplu, la "Set inactive" se modifica o variabila locala => schimbarea era imediat reflectata in aplicatie, dar nu neaparat si pe server
+.poti testa asta daca opresti server-ul si faci un "Set inactive" pe un "item", daca server-ul e oprit s-ar putea ca totusi "item" sa apara ca inactiv, dar doar in aplicatie, nu si pe server
+[pana la 14.30] - e intepat ecranul
+[15.40]
+-poti avea un event "Event Emitter" care sa faca un refresh pe toata pagina atunci cand stergi un "item"
+[16.30]
+-aplicatia ne poate pacali daca la "Set inactive" se modifica o variabila locala => nu este garantat faptul ca schimbarea s-a propagat pe server
+[17.00]
+-aceasta problema poate fi evitata cu "Object.assign()"
+-facem o clona a obiectului, punem "active = true" pe clona obiectului si apoi sa apelam functia de actualizare a datelor cu clona si nu cu "this.item" => nu ne mai poate pacali aplicatia
+[18.45] - partea de "Delete"
+-"tableRequiresRefresh" este un "Event Emitter":
+tableRequiresRefresh: EventEmitter<any> = new EventEmitter();
+-se poate pune in lista deja existenta cu "merge()" pentru a reimprospata datele de pe server
+[pana la 20.30] - prezinta tema
+[21.10]
+-vrem sa putem genera un QRCode cu informatiile legate de un "item"
+-apoi, vrem sa folosim acel QRCode generat sa ne duca la o pagina care sa dea mai multe detalii despre acel "item"
+[21.50]
+[22.30]
+-avem nevoie de doua module pe care le instalam cu...
+npm i angularx-qrcode --save
+npm i @zxing/ngx-scanner --save
+...si le importam cu...
+import { QRCodeModule } from 'angularx-qrcode';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+...si le adaugam in "app.module.ts"
+[25.40]
+-am creat o noua componenta "ShowItem", care va reprezenta pagina care sa dea mai multe detalii despre un "item" scanat cu QRCode:
+..\Inventory\src\app\menu-items>ng g c show-item
+-nu uitam sa adaugam rutare catre aceasta noua pagina in "app-routing.ts":
+{ path: 'item/:id', component: ShowItemComponent }
+-cand se scaneaza un QRCode => navigare la pagina "item/5f4f6f3e81d1903724343699", de exemplu
+[28.05] - "ShowItem"
+-avem nevoie de "InventoryListService" in constructor pentru a putea gasi acel "item" dupa QRCode, in "ngOnInit()":
+this.inventoryListService.getDataById(this.itemId).subscribe(
+	(data) => {
+		this.item = new InventoryItem(data);
+		this.itemIsFound = this.item ? true : false;
+	}
+)
+-desigur avem nevoie de "item" si "itemId" ca proprietati ale componentei
+[31.00]
+-deoarece vrem ca "id"-ul sa il primim prin URL, avem nevoie de routare si importam:
+import { ActivatedRoute } from '@angular/router';
+-dupa ce l-am injectat in constructor, "ActivatedRoute" se foloseste asa...
+this.activatedRoute.params.subscribe(
+	(params) => {
+		this.itemId = params.id;
+	}
+)
+...si astfel initializam "this.itemId" cu "id"-ul care vine pe URL
+[33.10]
+-practic pe "id" se face gasirea acelui "item" in functie de ce QRCode se scaneaza
+[35.50]
+[36.25] - modificam template-ul "ShowItem"
+[pana la 40.00] - termina de modificat template-ul "ShowItem"
+[41.20]
+-am putea adauga posibilitatea de a merge direct la pagina de "Edit", dupa ce s-a intrat in "ShowItem", folosind un buton (?)
+-am adaugat un boolean "this.itemIsFound"...
+this.itemIsFound = this.item ? true : false
+...pentru a il folosi cu "*ngIf", exact ca la "EditItem", pentru ca nu vrem sa se genereze formularul inainte ca server-ul sa aduca datele despre "item" din baza de date:
+<div *ngIf="itemIsFound">..</div>
+-de asemenea, putem folosi "this.itemIsFound" pentru a afisa un mesaj de eroare daca server-ul nu gaseste acel "item" in baza de date:
+<div *ngIf="!itemIsFound">
+	<p>
+		Item not found!
+	</p>
+</div>
+[44.45]
+-putem crea o noua componenta care sa afiseze QRCode pentru un element, un "item" anume
+.pana acum am pus direct QRCode in pagina de "Edit Item"
+[45.40] - aduagam QRCode in pagina de "Edit Item"
+-mai intai trebuie sa modificam ".css"-ul astfel incat sa impartim pagina in doua: una pentru formular si una in care sa afisam QRCode
+[47.35] - trebuie sa modificam si ".html" pentru "Add Item" pentru ca formularul sa fie intr-un "<div>" separat de "<div>" pentru QRCode
+-ideea e ca vom testa daca suntem pe pagina de "Add Item" si nu vom afisa acel QRCode
+-acel QRCode va fi afisat doar daca suntem pe pagina de "Edit Item"
+.ne aducem aminte ca noi folosim aceeasi "AddItemComponent" pentru "Add" dar si pentru "Edit"
+[49.30] - adauga "<qrcode>" in ".html" pentru "Add Item"
+<div class="column">
+	<div class="QRcentered" *ngIf="itemId">
+		<qrcode [qrdata]="itemId" [size]="256" [level]="'M'">
+		</qrcode>
+	</div>
+</div>
+-"[qrdata]="itemId"" ia un "String", in cazul nostru "itemId", si il transforma intr-un QRCode
+-"[size]="256"" nu se refera neaparat la dimensiunea efectiva a patratului de QRCode, ci la numarul de puncte care compune acel QRCode
+-"[level]="'M'"" este un nivel de corectie pentru imaginea scanata
+[51.10]
+-ideea e sa transformam acel "id" intr-un QRCode, dar am putea genera un link catre "item"-ul respectiv direct, astfel incat sa nu mai fie nevoie sa ne uitam in "URL" dupa parametrul ":id" (?)
+[53.10] - vrem ca acel QRCode sa fie centrat pe pagina si vrem sa nu se afiseze decat daca suntem in "Edit"
+-vom crea o noua clasa ".css" in "AddItem":
+.QRcentered {
+	position: relative;
+	top: 50%;
+	left: 50%;
+	margin-top: -128px;
+	margin-left: -128px;
+}
+-clasa o vom aduaga acelui "<div>" care contine "<qrcode>", vezi mai sus
+[56.10]
+-am pus...
+<div class="QRcentered" *ngIf="itemId">
+...sa nu se afiseze acel QRCode decat daca suntem in "Edit"
+[57.30] - vom implementa citirea unui QRCode
+-avem nevoie de o camera web care sa ne permita sa scanam un QRCode
+-putem face poza cu telefonul la acel QRCode si apoi sa il scanam cu camera web
+-dupa ce citim un QRCode, ar trebuie sa navigam la pagina "item/:id", folosind acel "id" primit prin URL, care a fost primit prin QRCode de fapt => acel QRCode este insasi "itemId" al obiectului pe care vrem sa il afisam
+[59.45] - ".css" pentru "ScanComponent"
+-clasa "camera" din ".css" pentru "ScanComponent" ar trebui sa fie "responsive", acum e hardcode-ata la 600*600 (?)
+[pana la 1.02.10] - termina de modificat ".css" pentru "ScanComponent"
+[59.45] - ".html" pentru "ScanComponent"
+[1.03.30]
+<div class="camera">
+	<zxing-scanner
+	[torch]="torchEnabled"
+	[tryHarder]="tryHarder"
+	[(device)]="currentDevice"
+	[formats]="formats"
+	(permissionResponse)="onPermissionResponse($event)"
+	(camerasFound)="onCamerasFound($event)"
+	(scanSuccess)="onScanSuccess($event)"
+	>
+	</zxing-scanner>
+</div>
+[1.04.20]
+-noi vrem sa fim in stare sa identificam camera web
+-vrem sa putem citi un QRCode
+-vrem ca acel QRCode citit sa poata fi transformat intr-un "string"
+-vrem ca acel "string" sa fie folosit ca "id" pentru un item
+-vrem sa folosim acel "id" pentru a gasi acel "item" din baza de date
+[1.05.50] - modificam ".ts" pentru "ScanComponent"
+[1.07.20] - "tryHarder"
+-"tryHarder" foloseste resurse suplimentare pentru a putea citi un QRCode => aplicatia noastra este doar de demo => "tryHarder" va fi setat pe "false"
+-"zxing-scanner" poate citi mai multe formate de coduri, de exemplu coduri de bare ale unui produs
+-pentru "formats" vom folosi un array => "[]", insa vom folosi un "array" cu o singura componenta:
+formats = [BarcodeFormat.QR_CODE];
+-noi vom folosi "zxing-scanner" strict pentru citire de QRCode
+[1.10.30] - evenimentele pentru scanare
+-in primul rand, trebuie sa vedem daca utilizatorul ne permite sa ii accesam camera web => "(permissionResponse)"
+-"(camerasFound)" este evenimentul care se declanseaza cand se detecteaza o camera web asupra careia avem permisiunea sa o folosim
+[1.13.00]
+-"(scanSuccess)" este evenimentul care va primi ca parametru acel QRCode transformat intr-un "string":
+onScanSuccess(data: string) {
+	this.router.navigate[`/item/${data}`];
+}
+[1.14.20] - modifica "onScanSuccess()"
+[1.15.40]
+-avem nevoie de un "array" in care sa tinem minte lista de "device"-uri, camere web, pe care le putem folosi:
+availableDevice: MediaDeviceInfo[];
+-acest "array", "availableDevice" va fi modificat in "onCamerasFound()"
+[1.18.00]
+-vrem sa vedem daca primim permisiune sau nu de la utilizator sa folosim camera web => "onPermissionResponse()"
+-"(permissionResponse)" primeste ca parametru un "boolean", permisiunea de la utilizator
+-"(camerasFound)" primeste ca parametru lista de camere web pe care le putem folosi
+-"(scanSuccess)" primeste ca parametru acel "string" care reprezinta de fapt un "itemId"
+[1.21.10] - ne arata ca lui ii merge
+-se observa in consola "Data from QR" care se modifica in timp real, in timp ce camera web scaneaza QRCode
+[pana la 1.22.00] - termina de modificat ".html" si ".ts" pentru "ScanComponent"
+[1.22.10] - imi rezolva mie eroarea
+-pusesem ":" in loc de "=" la "formats"
+-CTRL + F5 = "Clear Cookies", pentru a reseta permisiunile daca e cazul
+-daca nu gasesti camera, sa afiseze un mesaj de eroare (?)
+.altfel, primesti eroare dar doar in consola
+[pana la 1.24.35] - imi rezolva mie problema
+[1.28.00]
+-trebuie sa navigam catre pagina "item/:id" odata ce am scanat un "id" valabil:
+this.router.navigate[`/item/${data}`];
+-"data" reprezinta acel "id"
+[1.30.00] - face un test adaugand un "item" nou
+[1.31.10]
+-ar trebui sa mearga navigarea catre acest "item" nou
+[1.31.50] - problema cu camera
+-camera web nu poate fi folosita de aplicatie, daca exista un alt proces care o foloseste
+.nu poti folosi o camera de doua aplicatii simultan
+-e important sa ceara permisiunea pentru a folosi camera
+[1.34.20]
+-sa creezi o alta componenta in care sa implementezi citirea de QRCode si sa vezi daca ai aceeasi eroare/problema
+-nu merge cu o camera web legata prin USB la telefon
+[pana la 1.36.00] - rezolva problema cu camera
+[1.36.35] - mai modifica ".ts"
+-in consola, eu am exact aceleasi avertismente ca si el
+[1.39.45] - adauga acel "foreach" in "onCamerasFound()"
+[1.42.15] - [TEME]
+-(?)
+-posibilitatea de a printa QRCode, o componenta care sa acceseze imprimanta sau sa il salvezi ca o poza sau .pdf
+-putem stiliza putin mai bine "ShowItem" => acum avem doar o serie de "<p>"
+[1.43.20]
+-daca pui un "id" care nu exista pe pagina de "edit/:id" apare peste "navbar" un QRCode (?) => ar trebui sa facem un test in baza de date, sa nu afisam acel QRCode decat daca exista acel "id" in baza de date
+[1.45.15]
+-in urmatoarele 2 joi se intra doar daca ai intrebari si doar sa prezinti proiectul
+
+[TEME]
+-am uitat sa pun "()"...
+this.router.navigate[`/item/${id}`];
+...si trebuia:
+this.router.navigate([`/item/${id}`]);
+npm install ng-print
+-am combinat doua expresii logice sa nu mai apara QRCode in pagina de "Edit" atunci cand vine un "id" invalid
+-trebuia sa pun...
+if (error.status === 404) {..}
+...in loc de...
+if (error.status === '404') {..}
+."404" era un "number", nu un "string"
+-am pus un "setTimeout()" de 1 secunda in "ngOnInit()" ca sa vad daca in constructor se schimba valoarea lui "idNotFound"
+.daca nu astept sa vad schimbarea, atunci se apeleaza "displayItemInForm()" care face un request "GET" si va esua
+.practic evit trimiterea de inca un request "GET" care stiu sigur ca va esua
+-de asemenea, eu inchideam "subscribe()" prea repede si atunci partea cu "(error) => {..}" nu avea legatura cu "subscribe()" => nu se actualiza "idNotFound" => tot ajungea sa faca doua request-uri "GET" degeaba
+-am pus pana la urma...
+refreshTable$ = new BehaviorSubject(false);
+...pe care il setez la "true" in "subscribe()" dupa ce am sters un "item" sau l-am setat pe "inactive"
+-am adaugat un buton care sa porneasca camera, sa nu porneasca la incarcarea paginii de "Scan"
+-am adaugat putin "error checking" pe camera, daca nu o gaseste sau daca nu primeste permisiune
+-daca nu pui "https://" intr-un "<a>"...
+<a href="https://www.github.com/a3drian">
+...browser-ul crede ca tu ii dai o adresa relativa => te va redirecta la "localhost:4200/www.github.com/a3drian"
+-filtrare:
+-am salvat un link in Bookmarks...
+https://stackoverflow.com/questions/59502624/is-missing-the-following-properties-from-type-observablepizzastate
+...de ce apare eroarea aia cu:
+Type 'Observable<IInventoryItem[]>' is missing the following properties from type 'IInventoryItem[]'
+-primesc eroare cand introduc un "id" ca search term pentru ca rezultatul request-ului "GET" ar trebui sa fie un "Observable<IInventoryItem[]>" si este de fapt un singur item "IInventoryItem" cu acel "id"
+-am scos "main-nav" din proiect
+-am scos rutele pentru "DISCOVERY_CLIENT" si "A-JSON"
+-am scos "Error" din "getInventoryItemsByName()" si din "service" si din "route"
+-problema a fost ca eu trebuia sa trimit un obiect gol "{}" atunci cand lipsea "?activeOnly" sau era setat pe "false"
+-eu trimiteam un obiect care avea ca proprietate "active" un obiect gol, adica un obiect cu o proprietate alt obiect => obiect in obiect:
+obj = {
+	active: {},
+	name: 'AM01'
+};
+...in loc de...
+obj = {
+	name: 'AM01'
+};
+-ideea era ca acel camp care nu are o valoare cu care sa fie initializata sa nu existe deloc, vezi cum "active" lipseste complet din al doilea exemplu
+-am adaugat "searchTerm" in "getData()"...
+.getData(
+	this.paginator.pageIndex + 1,
+	this.paginator.pageSize,
+	this.sort.active
+		? `${this.sort.active}_${this.sort.direction ? this.sort.direction : 'asc'}`
+		: '',
+	this.activeOnly,
+	this.searchTerm
+);
+...pentru cazul in care am cautat "AM01" si apoi am dat pe "Active data only" sa apara doar acele intrari care sunt "active"
+-mai intai se duce la elementul cu id-ul "qrcode", in care se regaseste un "<div>", iar in "<div>" se regaseste un "<canvas>" de 256 pe 256 care reprezinta chiar QRCode
+-linia urmatoare de cod ne permite sa creeam o imagine 2d in care sa afisam QRCode
+.practic, e ca si cum ai da un "File new" in Photoshop, iti face un canvas in care poti desena/crea o imagine:
+const ctx = canvas.getContext('2d');
+-transformarea din imagine intr-un .pdf am facut-o cu pachetul "jsPDF"
+
+
+--------------------CURS 9--------------------
+[Waters-9.mp4]
+[2.00]
+-nu a pornit cu "npm run proxy", a pornit cu "ng serve"
+[pana la 5.30] - rezolva problema cu "proxy"
+[7.30] - prezinta tema, cu "Add" si "Edit"
+-e important sa mearga validarea in formular
+[13.05]
+-el nu a facut cu "FormGroup", a avut doar mai multe "<div>"-uri in care a pus cate un camp din formular
+.practic a facut cu "template driven form" si de aia nu a avut problema cu initializarea formularului inainte sa se intoarca un "item" din baza de date
+[16.10]
+-navigarea inapoi spre pagina de inventar dupa ce ai facut "Add"/"Edit" ar trebui sa se faca doar daca s-a produs modificarea in baza de date cu succes
+.pana acum faceam navigarea indiferent de esec/succes
+[pana la 17.00] - prezinta tema
+[17.40]
+-cu verbul "GET" putem lua intreaga lista de "items" sau doar un singur "item", in functie de "id"
+[19.00]
+-verbul "PUT" se foloseste si el cu un parametru de tip "id"...
+put('/:id')
+...in loc de "put('/')"
+.exact ca si "GET"
+-practic eu deja am facut un "PUT" folosind un parametru "id" atunci cand am facut partea de "Set inactive" pe un "item" => puneam pe "false" proprietatea de "active"
+-daca as fi facut fara parametru ar fi trebuit sa fac cum era in prezentarea de la tema, sa inlocuiesc intreg obiectul din baza de date, cu obiectul care vine din formular => practic faceam un "POST" cu inlocuire
+[19.20]
+-practic, in loc sa dai ca parametrul intregul obiect pe care vrei sa il inlocuiesti plus obiectul cu care il inlocuiesti, dai doar "id"-ul
+[20.30]
+-a modificat in "inventory-item.service.ts" din backend, in "addInventoryItem()", din...
+const item = em.create(InventoryItem, inventoryItem);
+...in:
+const item = new InventoryItem(inventoryItem);
+.eu aveam deja varianta finala, aia de deasupra
+[21.05] - incearca sa modifice din "bbbb" in "aaaa"
+.adica face un request "POST" pe o resursa deja existenta, face un update
+-la "POST" e important sa fie inclus in corpul request-ului toate proprietatile din "InventoryItem", adica "id", "user", "location", etc. => altfel, primesti eroare cu "invalid params"
+[23.05] - actualizeza "updateInventoryItem()" din "inventory-item.service.ts" din backend
+[23.45]
+-daca modificam "updateInventoryItem()" din "inventory-item.service", trebuie sa modificam si ruta pentru el din "inventory-item.route", adica ruta cu "POST" astfel incat sa primeasca un parametru "id", vezi "req.params.id":
+inventoryItem = await inventoryItemService.updateInventoryItem(
+	req.em,
+	req.body,
+	req.params.id
+);
+-functia "findOneOrFail()" gaseste acel document din baza de date in functie de "id"-ul pe care il primeste ca parametru in antetul lui "updateInventoryItem()"
+[24.20]
+-uitase sa puna "req.params.id" in ruta
+[pana la 26.30] - rezolva problema cu "invalid params"
+[26.50] - de ce e mai bine .put('/:id') si nu .put('/')
+-pentru ca respecta conventiile unui RESTful API
+-cand se inlocuieste o resursa se merge la ea folosind parametrul "id" si se inlocuieste cu corpul request-ului => se observa "req.body" in "updateInventoryItem()" de mai sus
+-o sa folosesc "npm run start:tsc" ca sa pornesc server-ul pentru ca pe "start" am pus "node src/index.js" ca sa il pot folosi cu Heroku
+-primeam eroarea cu "invalid params", din "PUT (dummy)" in Postman, pentru ca nu adaugasem ruta cu "/:id":
+router.put('/:id', putInventoryItem);
+.era doar...
+router.put('/', putInventoryItem);
+[27.50]
+-in "updateInventoryItem()" din "inventory-item.service" avem doua "await" pentru ca mai intai trebuie sa cautam in baza de date item-ul cu "id"-ul respectiv (1 await) si apoi trebuie sa persistam modificarile (1 await)
+[28.55] - "POST"
+-pentru "POST" se creeaza un "item" nou => nu ai nevoie de un "id" in prealabil
+[29.30] - partea de frontend
+-a trebuit sa includ in "editItem(item: any)" sa se faca request-ul la "api/inventory-items/5f4f6f3e81d1903724343699", de exemplu => inainte aveam la "this.BASE_URL"
+-a mutat partea cu formularul intr-o metoda dedicata ei, "prepareForm()"
+-a renuntat complet la "InventoryMockService" => a sters toate referintele la "InventoryMockService" din constructor
+-in "ngOnInit()" trebuie sa testem daca suntem in "Add" sau suntem in "Edit" => daca avem un "id" ca parametru in URL => suntem in "Edit", altfel suntem in "Add"
+[32.15]
+-daca suntem in "Edit", facem un request "GET/:id", asteptam sa vina datele de la server, ajungem la ele prin "subscribe()", populam "this.item" si abia apoi populam formularul
+-formularul trebuie initializat dupa ce vine raspunsul de la server
+[33.30] - adauga "getItemById()"
+[34.45] - modifica "InventoryItem"
+-pune din "id: number" in "id: string"
+[pana la 36.30] - se blocheaza inregistrarea
+-pune un "*ngIf" pe formular in template-ul "html" ca sa nu se initializeze si afiseze pana nu vin datele de pe server
+-face un obiect nou pentru "createdAt" pentru ca altfel nu avem disponibila functia "toISOString()"
+[39.10] - "onSubmit()"
+-o sa apelam...
+this.router.navigate(['/inventory']);
+...abia atunci cand se termina request-ul:
+this.inventoryListService
+	.addItem(this.item)
+	.subscribe(
+		() => {
+			this.router.navigate(['/inventory']);
+		}
+	);
+.am renuntat la "subscribe()" din "addItem" din "InventoryListService" ca sa putem da "subscribe()" in "onSubmit()" => atunci stim ca s-a terminat request-ul => atunci putem naviga la pagina de "Inventory"
+[41.55] - "updateData()"
+https://codeshare.io/5P97We
+https://codeshare.io/5RKgdB
+https://codeshare.io/aVbXWP
+[pana la 57.30] - am terminat cu tema ("Add" si "Edit") si cu CodeShare
+[54.45] - partajare de interfata "InventoryItem"
+-vom crea "Interfaces" ca un pachet "npm" pe care il vom importa in "Inventory" dar si in "Server"
+-adaugam in "package.json" in "Inventory" dar si in "Server", sub "dependencies":
+"inventory-interfaces": "file:../Interfaces"
+-pachetul se creeaza cu "npm init", vezi "npm-01.png"
+-in pachetul "Interfaces" cream "IInventoryItem" pe care o vom partaja in "Inventory" dar si in "Server" => vom forta "InventoryItem" din "Inventory" dar si din "Server" sa implementeze aceasta noua interfata unica
+-trebuie sa actualizam modelul de "InventoryItem" din backend si clasa "InventoryItem" din frontend
+-nu uitam ca de fiecare data cand actualizam "package.json" trebuie sa rulam "npm install" ca sa se reactualizeze dependintele
+-trebuie sa importam...
+import { IInventoryItem } from 'inventory-interfaces/IInventoryItem';
+...pe oriunde folosim aceasta noua interfata partajata
+[pana la 1.07.15] - termina cu "InventoryItem"
+-a mai dat "npm i" o data si a mers
+-trebuie sa fie scris "export interface" si nu "export class"
+[pana la 1.11.05] - rezolva eroarea cu "GitHub" din consola
+-vrem sa facem paginare, sortare si filtru pe "Active Data Only"
+[1.11.50] - "inventory-item.service"
+-dorim ca un request de genul...
+http://localhost:8080/api/inventory-items?activeOnly=false&pageNumber=1&pageSize=5&sort=description_asc
+...sa functioneze
+-trebuie ca serviciul nostru sa fie capabil sa numere corect intrarile din baza de date, in functie de filtrul de "activeOnly", acel header "X-Count"
+-"pageSize=5" se va comporta ca o limita, adica vom aduce intrarile din baza de date in grupuri de cate 5
+[1.13.20]
+-eu aveam deja "countInventoryItems()" implementat corect
+-functia "count()"...
+const count = await em.count(
+	InventoryItem,
+	activeOnly ? { active: true } : {}
+);
+...permite un "where clause", de aia putem sa o folosim pentru filtrarea datelor
+-am actualizat "getInventoryItems()":
+if (!(em instanceof EntityManager)) {
+		return Error('invalid request');
+	}
+
+	let sorting: QueryOrderMap = {};
+	if (sort) {
+
+		const sortParams = sort.split('_');
+		const column = sortParams[0];
+		const order = sortParams[1];
+
+		if (column && order) {
+			sorting[column] = order === 'desc' ? QueryOrder.DESC : QueryOrder.ASC;
+		} else {
+			return Error('invalid params');
+		}
+	}
+
+	try {
+		console.log('activeOnly:', activeOnly);
+
+		const items = await em.find(
+			InventoryItem,
+			activeOnly ? { active: true } : {},
+			{
+				orderBy: sorting,
+				limit: limit,
+				offset: (page - 1) * limit,	// daca dorim pagina 1 cu 5 elemente => offset = 0, daca dormi pagina 2 => offset = 5, samd
+			}
+		);
+		await new Promise(
+			(resolve) => {
+				setTimeout(resolve, 500)
+			}
+		);
+
+		return items;
+	} catch (ex) {
+		return ex;
+	}
+(?)
+-am importat:
+import { EntityManager, QueryOrderMap, QueryOrder, wrap } from 'mikro-orm';
+-cu "offset" practic sare peste intrari atunci cand schimbam pagina => daca suntem pe pagina 2 va sari peste intrarile de pe pagina 1, samd
+[1.16.40]
+-"sort=description_asc" ne spune ca se face o sortare dupa "description" in mod crescator
+-"sort=description_asc" este URL-ul trimis de catre "Router" si noi il interpretam:
+if (sort) {
+
+	const sortParams = sort.split('_');
+	const column = sortParams[0];
+	const order = sortParams[1];
+
+	if (column && order) {
+		sorting[column] = order === 'desc' ? QueryOrder.DESC : QueryOrder.ASC;
+	} else {
+		return Error('invalid params');
+	}
+-in column se va salva "description" si in "order" se va salva "asc"
+-in urma "if"-ului...
+orderBy: sorting,
+...e ca si cum am scrie:
+orderBy: {
+	description = QueryOrder.ASC
+}
+.adica...
+{ description: 'ASC' }
+...atunci cand vine in URL parametrul "sort=description_asc"
+-se foloseste "sorting[column]" in loc de "sorting.column", e acelasi lucru
+-practic, "sorting[column] = order" devine "sorting.description = QueryOrder.ASC"
+-eroarea "500 Internal Server Error" a aparut pentru ca trebuie pus in loc de...
+inventoryItemService.getInventoryItems(req.em, page, limit, active),
+...o instructiune care include constanta "sort":
+const sort = req.query.sort ? req.query.sort.toString() : '';
+inventoryItemService.getInventoryItems(req.em, page, limit, sort, active),
+-eu aveam deja instructiunea...
+inventoryItemService.countInventoryItems(req.em, active),
+...scrisa corect, adica sa include "active" ca parametru
+[1.23.05]
+-ar trebui sa aduca acum "items" din baza de date in grupuri de "n" elemente
+-request-ul in Postman a mers, doar ca avea un typo - "InventoryItesm"
+-de asemenea, el facea request pe "4200" in loc de "8080"
+[pana la 1.30.50] - asteapta sa vada daca merge si rezolva problema cu "Error when trying to proxy"
+[1.31.35]
+-pana acum, in serviciul "InventoryListService" prin "getData()" aduceam un simplu array de "IInventoryItem[]" => acum trebuie sa aducem un tuplu din "[IInventoryItem[], number]", pentru ca ne intereseaza numarul total de componente intoarse de pe server
+-in "getData()", "params" va fi un "map" cu toti parametrii de query trimisi prin URL, vezi "params-getData.png"
+-prin...
+return this.http
+	.get<IInventoryItem[]>(this.BASE_URL,
+		{
+			params: params,
+			observe: 'response'
+		}
+	)
+	.pipe(
+		tap(
+			(response) => {
+				console.log('Inventory items fetched:', response.body);
+			}
+		),
+		map(
+			(response) => {
+				return [
+					response.body,
+					parseInt(response.headers.get('X-Count'))
+				];
+			}
+		)
+	);
+..."observe: 'response'" se face practic o suprascriere asupra raspunsului normal primit de la server
+-asta inseamna ca vom putea accesa acel header "X-Count" si il putem include in tuplul definit mai sus, acel "[IInventoryItem[], number]"
+-practic, in "map()" se face asocierea intre corpul request-ului si "IInventoryItem[]" si valoarea din header "X-Count" si "number"
+[1.36.50]
+[1.37.20] - "params"
+let params = new HttpParams()
+			.set('activeOnly', activeOnly ? 'true' : 'false')
+			.set('pageNumber', pageNumber.toString())
+			.set('pageSize', pageSize.toString());
+-"params" ne permite sa construim un query personalizat, in genul...
+http://localhost:8080/api/inventory-items?activeOnly=false&pageNumber=1&pageSize=5&sort=description_asc
+-la fiecare apel de "set()" se returneaza practic o noua instanta la care tot adaugam proprietati, "activeOnly", "pageNumber", etc.
+[1.38.50]
+[1.42.50]
+-trebuie sa actualizam in frontend numarul total de elemente => pana acum am hardcode-at 100 de elemente => folosim "property binding" cu proprietatea "itemsCount"
+[pana la 1.46.30] - asteapta sa vada daca merge
+-el vrea sa faca un "Toggle Button" si are nevoie de doua importuri in "app.module":
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatToolbarModule } from '@angular/material/toolbar'
+-ideea e ca atunci cand apesi pe acel "Toggle Button" URL-ul ar trebui sa se schimbe astfel...
+http://localhost:8080/api/inventory-items?activeOnly=true
+...atunci cand este "enabled" si...
+http://localhost:8080/api/inventory-items?activeOnly=false
+...atunci cand este "disabled"
+-nu am mai folosit un "boolean" simplu pentru "activeOnlyFilter", pentru ca ar fi trebuit sa ascultam cand acesta isi schimba valoarea pentru a reflecta continutul din "Inventory"
+-folosim in schimb un "BehaviorSubject":
+activeOnlyFilter$ = new BehaviorSubject(false);
+-acum, il putem folosi in interiorul unui "merge()":
+merge(this.paginator.page, this.sort.sortChange, this.activeOnlyFilter$){..}
+-practic, asta ne va permite sa ascultam la oricare schimbare dintre cele 3 si sa actualizam pagina de inventar atunci cand unul din ele se schimba
+[1.51.20]
+-am definit "get" si "set" pentru proprietatea "activeOnlyFilter$"...
+get activeOnly(): boolean {
+	return this.activeOnlyFilter$.value;
+}
+set activeOnly(value: boolean) {
+	this.activeOnlyFilter$.next(value);
+}
+...deci, atunci cand vrem sa luam valoarea campului din spatele proprietatii vom folosi "activeOnly()" si nu "activeOnlyFilter$.value"
+-se observa ca actualizarea lui "activeOnlyFilter$" se face prin functia "next()"
+-practic, "BehaviorSubject" permite ca toti abonatii la acest "activeOnlyFilter" sa fie notificati de schimbare
+-ne aducem aminte ca prin "[()]" facem two-way binding, de exemplu la "Toggle Button":
+<mat-slide-toggle [(ngModel)]="activeOnly">
+	{{activeOnly ? 'All data' : 'Active data only'}}
+</mat-slide-toggle>
+-la initializarea lui "activeOnly", acesta primeste o valoare => se modifica o schimbare asupra lui => nu mai e nevoie sa apelezi explicit "fetchData()" pentru ca s-a schimbat "activeOnly" si atunci cand s-a schimbat se va actualiza automat pagina de "Inventory"
+[pana la 1.56.20] - asteapta sa vada daca merge
+-scoatem "delay" din serviciu, dar il punem pe backend, pe "Server", in functia "getInventoryItems()", unde avem un "setTimeout()"
+.l-am pus de 1 secunda
+-in "Chrome Dev Tools", daca mergi la "Network", poti simula o viteza mai mica la internet, din tab-ul "Online" => practic, iti permite "Throttling"
+[1.58.00]
+-am adaugat "switchMap()" in "ngOnInit()"
+-"switchMap()" nu permite request-uri aiurea catre server, atunci cand utilizatorul apasa incontinuu pe "Toggle Button", de exemplu
+-practic, "switchMap()" functioneaza pentru ca emite valori de la ultimul "Observable" care a fost modificat ("projected"), vezi:
+https://rxjs-dev.firebaseapp.com/api/operators/switchMap
+merge(this.paginator.page, this.sort.sortChange, this.activeOnlyFilter$)
+	.pipe(
+		switchMap(
+			() => {
+				this.isLoading = true;
+				return this.inventoryListService
+					.getData(
+						this.paginator.pageIndex + 1,
+						this.paginator.pageSize,
+						this.sort.active
+							? `${this.sort.active}_${this.sort.direction ? this.sort.direction : 'asc'}`
+							: '',
+						this.activeOnly
+					);
+			}
+		)
+	)
+	.subscribe(
+		(data) => {
+			// accesam un tuplu acum => trebuie sa ajungem la index-ul 0 si index-ul 1
+			this.inventoryItems = data[0];
+			this.itemsCount = data[1];
+			this.isLoading = false;
+		},
+		(error) => {
+			console.log('Table could not be filled with data', error);
+			this.isLoading = false;
+		}
+	);
+[2.01.50]
+-se observa ca nu se invoca "this.inventoryListService.getData(..)" si se initializeaza "this.inventoryItems", ci se returneaza direct, iar "this.inventoryItems" se initializeaza mai jos in "subscribe()"
+-practic, atunci cand mai multe servicii sunt urmarite, doar cel mai recent e luat in considerare
+-in "Network", acele request-uri care au fost anulate apar cu "(canceled)"
+[2.04.10]
+-dupa ce facem o sortare ar trebui sa ne intoarcem la prima pagina din tabel:
+merge(this.paginator.page, this.sort.sortChange, this.activeOnlyFilter$)
+	.subscribe(
+		() => {
+			this.paginator.pageIndex = 0;
+		}
+	);
+[2.06.00]
+-nu mai merge selectarea "items" din tabel, dar mie imi merge
+-a modificat "selectionModel" sa fie de tip "<IInventoryItem>" si nu de tip "<Element>" cum era inainte
+-el vrea ca atunci cand sortezi si ai deja o selectie facuta sa se anuleze selectia
+[2.08.30] - [TEME]
+-vrea sa apara "active" in loc de "Deleted" ca nume de coloana, dar eu am deja "Active?"
+-sa avem un buton care sa puna pe "active" acele elemente din selectie
+-la fiecare element din selectie trebuie un request "PUT"
+-sa avem un buton care sa stearga acele elemente din selectie
+-sa mai fie un buton in dreapta pentru fiecare element de "Delete", dar eu am deja
+
+[TEME]
+-am renuntat la "getActiveData()"
+-am renuntat la "OldInventoryItem()"
+-am renuntat la "MatTableDataSource" complet
+-am renuntat la campul "deleted" din "InventoryItem"
+-am renuntat la "reloads data", ar trebui sa se actualizeze automat
+-am scris explicit "pageSize" ca proprietate a tabelului si atunci nu se mai actualiza automat cand se schimba URL-ul => am sters "pageSize"
+-mai trebuie tipizat sa nu mai avem "any" [DONE]
+-trebuie adaugat "InventoryItem" cu "new" prin "add-item", etc. [DONE]:
+.pana la urma, acolo unde zicea ca nu exista proprietatea "id" pentru "this.item" am pus "id: '',"
+
+-inainte aveam...
+const active = req.query.activeOnly ? true : false;
+...si dupa ce am pus...
+const active = req.query.activeOnly === 'true';
+...au mers request-urile care contineau pe "activeOnly" ca "query param"
+.problema era ca in instructiunea originala, doar se testa prezenta acestui "activeOnly" ca "query param", nu se testa exact ce valoare are, daca e "true" sau "false" sau daca lipseste cu totul
+-ca a doua instructiune sa se rezolve cu "true", trebuie ca "activeOnly" sa existe si sa fie egal cu "true" => orice alta combinatie rezulta "false"
+-nu mergea paginatorul pentru ca aveam...
+merge(this.paginator.page, this.sort.sortChange, this.activeOnly$)
+...in loc de:
+merge(this.sort.sortChange, this.activeOnly$)
+-cred ca trebuie sa apelezi "subscribe()" in componenta in care vrei sa se reflecte schimbarile => degeaba dau "subscribe()" in "InventoryListService", ar trebui sa dau in componenta "Inventory" si atunci se va actualiza si tabelul automat
+-dadea "404 NOT FOUND" cand am modificat "setInactiveItem()" => router-ul nu avea aceasta ruta disponibila => uitasem sa includ "id" in URL => request-ul trebuia sa fie de forma "api/inventory-items/5f48e1f158de8c414c22b77b" => era doar "api/inventory-items"
+-nu se actualizeaza dupa ce sterg un "item" (?)
+
+-generam "sidenav":
+ng generate @angular/material:material-nav --name=main-nav
+-apoi adaugam in "app.component.html":
+<app-main-nav></app-main-nav>
+-daca arata "sidenav" mai sus decat "toolbar", in "styles.css" trebuie sa punem o regula pentru "body" ca "margin" sa fie "0"
+-de asemenea, avem nevoie de regula:
+html,
+body {
+  height: 100%;
+}
+-"<router-outlet>" trebuia continut in componenta "app-main-nav":
+<app-main-nav>
+	<router-outlet></router-outlet>
+</app-main-nav>
+-cred ca numele "warehouse" care a aparut in baza de date "inventory" este luat ori din numele "warehouse.service.ts" ori din numele "warehouse.entity.ts"
+-daca nu merge cu fisierele din "Heroku" cu comanda "npm run build:tsc", ruleaza-o din folder-ul "Waters"
+-a trebuit sa rulez comanda...
+npm i ../Interfaces --save
+...respectiv...
+npm i ./Interfaces --save
+...pentru a se salva pachetul local si ca shortcut-ul "inventory-items" din "node_modules" sa foloseasca o cale corecta
+-eventual trebuie pus...
+"inventory-interfaces": "file:Interfaces",
+...in loc de...
+"inventory-interfaces": "file:../Interfaces",
+...pentru ca in "Heroku" nu se mai afla cu un director in urma, se afla in directorul radacina
+-mai bine ar fi sa nu mai inlocuiesti "package.json" din "Heroku" decat daca e necesar
+
+
+--------------------CURS 8--------------------
+[Waters-8.mp4]
+-am redenumit in "inventory-mock.service"
+-am scos "inventoryData" vechi, ala fara "new"
+[1.10]
+-pana acum avem un web server de Node care ne punea la dispozitie un API
+-mai avem o aplicatie, o interfata care poate afisa si administra o lista de resurse
+-vrem sa renuntam la "inventory-mock.service" si sa folosim date din baza de date Mongo
+[2.45]
+-am pus "Inventory" si "Server" in acelasi folder
+-clientul il pornim cu "ng serve" momentan
+-trebuie sa pornim "start_mongo.bat" inainte sa pornim server-ul
+-server-ul il pornim cu "npm start"
+[4.20]
+-in server aveam ruta "api/json" si o putem testa rapid cu un "GET":
+http://localhost:8080/api/json?key1=aditza
+.trebuie sa existe documentul cu "key1" egal cu "aditza" in baza de date
+-de ce nu merge direct: (?)
+http://localhost:8080/api/json/aditza
+[6.50]
+-ideea e sa putem accesa URL-uri de genul "http://localhost:8080/api/json?key1=aditza" direct din aplicatia Angular
+-diferenta va fi in URL...
+http://localhost:8080/api/inventory-items?activeOnly=true
+-folosim "inventory-items" in loc de ruta "json"
+-cu "?activeOnly" vom filtra datele care au flag-ul "active" pe "true"
+.acesta va fi un filtru pe care il vom implementa in serviciul din server
+[7.40]
+-in serviciul din server trebuie sa implementam si paginatorul manual, pentru ca nu ne mai putem folosi de "DataSource" din Angular
+[8.35]
+-daca avem foarte multe elemente in inventar, nu e indicat sa le aducem pe toate odata
+-vom adauga "&pageNumber=1" si "&pageSize=10" pentru a afisa prima pagina din inventar si a afisa doar 10 elemente pe pagina respectiva:
+http://localhost:8080/api/inventory-items?activeOnly=true&pageNumber=1&pageSize=10
+-vom mai avea nevoie si de sortare (?)
+[10.10] - modificam "env.ts"
+-adaugam o noua ruta:
+INVENTORY_ITEMS_ROUTE: 'api/inventory-items'
+https://codeshare.io/GA4Vox
+[11.50] - modificam "app.ts"
+-trebuie sa adaugam o noua ruta "inventory-items.route.ts"
+[13.20] - ce functionalitati avem nevoie?
+-in serviciul de "inventory-items" trebuie sa aducem o lista intreaga de "items", trebuie sa le putem afisa pe pagini, sa afisam un numar maxim de "items" pe pagina si trebuie sa le putem sorta si eventual filtra dupa flag-ul "active"
+-de asemenea, avem nevoie de "Add", "Edit" si "Delete" => avem nevoie de mai multe endpoints => in "Router"-ul din "inventory-items.route.ts" definim aceste endpoints:
+function setInventoryItemRoute(router: Router): Router {
+	router.get('/', getInventoryItems);
+	router.get('/:id', getInventoryItem);
+	router.post('/', postInventoryItem);
+	router.put('/', putInventoryItem);
+	router.delete('/:id', removeInventoryItem);
+
+	return router;
+}
+-primul "get" aduce lista de inventar
+-al doilea "get" aduce un anume "item" din lista => se observa ca este o ruta cu parametrul, cu parametrul "id"
+-se observa ca avem un callback pentru fiecare verb
+https://codeshare.io/5Ow4vW
+[pana la 16.10] - rezolva problema cu codeshare
+[16.45] - diferenta fata de "a-json.route"
+-in "getInventoryItem" avem o functie care se uita in corpul request-ului pentru a extrage parametrul "id":
+inventoryItem = await inventoryItemService.getInventoryItem(
+	req.em,
+	req.params.id
+);
+-inainte aveam "key1", acum avem "id"
+[17.40]
+-partea mai complicata este cand aducem lista intreaga de inventar in "getInventoryItems()"
+-acolo, vom folosi o variabila "count" pentru paginator
+-paginatorul trebuie sa stie in prealabil numarul total de "items" din lista pentru a putea functiona corect => folosim "count"
+[19.10]
+-in "RESTful thinking", daca e vorba de continut necesar functionarii aplicatiei, se poate transmite prin request body, prin corpul request-ului
+-pentru noi, "count" este important pentru functionarea aplicatiei => il putem pune in corpul request-ului
+-noi, insa, l-am pus in header:
+return res.header('X-Count', count.toString()).json(inventoryItems);
+-deci daca intri in Postman, in "Response Header" ar trebui sa gasesti un camp "X-Count"
+-la "$pageSize" si "$pageNumber" se ajunge cu "req.query" => "$pageSize" si "$pageNumber" sunt "query params" = query parameters
+-exemplu pentru "$pageNumber":
+let page = req.query.pageNumber
+	? parseInt(req.query.pageNumber.toString())
+	: 1;
+[20.40]
+-serviciul de "inventory-items.route.ts" expune promisiuni
+-in primul rand vrem sa aducem lista intreaga de inventar, iar in al doilea rand trebuie sa stim exact cate "items" sunt in inventar pentru ca paginatorul sa functioneze corect => in "getInventoryItems()":
+[inventoryItems, count] = await Promise.all([
+	inventoryItemService.getAllInventoryItems(req.em, page, limit),
+	inventoryItemService.countInventoryItems(req.em),
+]);
+-am pornit cele doua actiuni in paralel si ne folosim de "all()" pentru a astepta terminarea executiei amandurora, pentru ca avem nevoie de ambele pentru ca afisarea listei de inventar sa functioneze corespunzator
+.se observa ca am dat un "unpack" in cele doua variabile, "inventoryItems" si "count"
+[21.40]
+-raspunsul pe care il trimitem este format tocmai din aceste 2 elemente, "inventoryItems" si "count":
+return res.header('X-Count', count.toString()).json(inventoryItems);
+-trimitem un element nou pe header, "count" si apoi trimitem in corpul request-ului lista intreaga de inventar cu "json(inventoryItems)"
+[22.55]
+-pentru a comunica cu baza de date avem nevoie de acest serviciu si de o enitate care sa stie cum sa salveze documentul in colectia din baza de date Mongo
+-ideea e sa putem folosi aceeasi entitate de "InventoryItem" in aplicatie dar si pe server, pentru a evita copy-paste
+-entitatea de "InventoryItem" reprezinta practic un contract intre aplicatie si server => ar fi bine sa folosim o singura instanta a ei
+[25.00]
+-avem nevoie de decoratorul "@Entity" pentru a transforma clasa "InventoryItem" intr-o entitate:
+@Entity()
+export class InventoryItem implements MongoEntity<InventoryItem> {..}
+-cheia primara nu va mai fi un "number", ci un "ObjectId" din Mongo:
+@PrimaryKey()
+_id!: ObjectId;
+.se observa decoratorul "@PrimaryKey()"
+[28.00] - adaugam serviciul propriu-zis "inventory-item.service.ts"
+-am pus...
+getInventoryItems,
+...in loc de...
+getInventoryItems as getAllInventoryItems,
+...in partea de "export" din serviciul propriu-zis
+-partea de numarare a tuturor "items" din lista se face automat de MikroORM, in "countInventoryItems()":
+const count = await em.count(InventoryItem, {});
+-in "getInventoryItems()" am pus parametrul "activeOnly" pe "false" by default => daca vrei sa aduci "items" cu flag-ul "active" setat pe "true" atunci nici nu mai e nevoie de includerea lui "activeOnly=true" in URL-ul request-ului
+.practic, cine il pune in URL il pune pe "activeOnly" pe "true", altfel e tratat ca si cum ar fi pe "false"
+[30.50]
+-in "getInventoryItems()" avem si partea de filtrare:
+const items = await em.find(
+	InventoryItem,
+	activeOnly ? {} : { active: true },
+	{ limit: limit, offset: (page - 1) * limit }
+);
+.se observa "activeOnly ? {} : { active: true }"
+-functia "find()" permite prin parametrul "options" saltul peste "items" aduse din lista de inventar => practic permite paginarea prin "{ limit: limit, offset: (page - 1) * limit }", unde "{ limit: limit, offset: (page - 1) * limit }" reprezinta acel parametrul optional "options"
+-uitase sa puna "id: id"...
+const item = await em.findOneOrFail(InventoryItem, { id: id });
+...in "removeInventoryItem()"
+[32.05]
+-"wrap()" din "updateInventoryItem()", prin functia "assign()", suprascrie proprietatile din "item" cu acelea primite prin obiectul "inventoryItem" primit ca parametru:
+async function updateInventoryItem(
+	em: EntityManager,
+	inventoryItem: Partial<InventoryItem>
+): Promise<Error | InventoryItem> {
+	try {
+		const item = await em.findOneOrFail(InventoryItem, {
+			id: inventoryItem.id,
+		});
+		wrap(item).assign(inventoryItem);
+		await em.persistAndFlush(item);
+		return item;
+	} catch (ex) {
+		return ex;
+	}
+}
+-practic, "updateInventoryItem()" gaseste un JSON obisnuit in baza de date care are o serie de proprietati, proprietati care vor fi inlocuite de proprietatile lui "inventoryItem" primit ca parametru
+[33.10]
+-in "getInventoryItems()" din ruta "inventory-item.route", am pus "inventoryItemService.getInventoryItems()" in loc de "inventoryItemService.getAllInventoryItems()"
+[34.00] - incep problemele cu server-ul
+-nu era actualizata ruta in "app.ts"
+-nu era bagat...
+export default [ AJson, InventoryItem ]
+...in "index.ts" din "entities" si astfel primeam eroarea cu "Metadata for entity InventoryItem not found" sau cu ""name": "ValidationError""
+-primeam eroare cu "status: 404" pentru ca aveam in "env.ts"...
+INVENTORY_ITEMS_ROUTE: 'api/inventory-items'
+...in loc de:
+INVENTORY_ITEMS_ROUTE: '/api/inventory-items'
+.lipsea "/" din fata "api"
+-eroarea aparea in "addInventoryItem()" din serviciul propriu-zis
+[53.45] - face un "console.log()" pentru corpul request-ului
+-in "postInventoryItem()" din ruta
+-mai pune si un "console.error(ex)"
+-isi dau seama ca eroarea se intampla in serviciul propriu-zis, in "addInventoryItem()"
+[pana la 58.35] - rezolva problema
+[58.40] - introducem date in baza de date
+-cu "CTRL + D" = poti sa modifici in mai multe locuri deodata
+.a fost foarte folositor cand am modificat "inventoryData", am modificat toate intrarile deodata
+[pana la 1.03.00] - introduce date
+-daca dai un "GET" la "http://localhost:8080/api/inventory-items" ar trebui sa vezi in "Headers", campul "X-Count"
+[1.04.20]
+-se poate adauga parametrul "activeOnly" sub "Params", in Postman, vezi "postman-1.png"
+[pana la 1.09.30] - incearca sa rezolve filtrarea si nu ii merge
+[1.10.10]
+-"X-Count" ar trebui sa dea numarul total de documente in colectie care se returneaza
+-cand faci filtrare, ar trebui sa apara doar acelea cu "active" pe "true", adica un numar mai mic decat numarul total de documente in colectie
+.cu alte cuvinte, ai 10 in total si daca nu faci filtrare => "X-Count" = 10
+.ai 10 in total si faci filtrare => "X-Count" = cate elemente ai cu "active" pe "true"
+-merge filtrarea cu "activeOnly", daca te uiti in "Body" ar trebui sa vezi ca iti apar doar acelea cu "active" pe "true", dar "X-Count" in "Header" va returna tot numarul total de elemente => "X-Count" trebuie sa reflecte cate sunt acele "items" care au "active" pe "true"
+[1.12.00] - Angular
+-avem nevoie de "inventory-list.service"
+-cu "getData()" ar trebui sa fim in stare sa aducem datele din baza de date
+[1.13.30] - cream "inventory-list.service"
+-constructorul are nevoie de clientul "http" din Angular:
+import { HttpClientModule } from '@angular/common/http';
+-sub "imports" adaugam HttpClientModule
+-practic, prin "getData()" se face un apel catre server:
+getData() {
+	return this.http.get<IInventoryItem[]>('/api/inventory-items');
+}
+[1.16.30]
+-acest "http.get" este un "Observable"
+."Observable" este parte din design pattern-ul "Reactive Pattern"
+-un "Observable" emite valori incontinuu
+-prin...
+this.http.get<IInventoryItem[]>('/api/inventory-items')
+...se face un apel catre server la adresa din "()" si ii spunem sa intoarca un array de obiecte de tip "IInventoryItem"
+-trebuie sa scoatem serviciul mock din componenta "Inventory"
+.se observa ca atunci cand am importat "InventoryListService", a disparut eroarea cu "Experimental support for decorators.."
+[1.18.50]
+-pentru a prelua date dintr-un "Observable", dintr-un obiect care emite valori incontinuu (stream), trebuie sa folosim "subscribe()"
+-practic, prin "subscribe()" ascultam catre obiectul de tip "Observable"
+[1.21.45]
+-i-am dat o adresa relativa => folosim un "proxy.json" pentru a redirectiona catre "8080":
+{
+	"/api": {
+		"target": "http://localhost:8080",
+		"secure": false
+	}
+}
+-"proxy.json" trebuie sa stea langa "package.json"
+-trebuie sa actualizam in "package.json" pentru ca Angular sa foloseasca acest proxy:
+-poti pune un script sub un nume personalizat, de exemplu...
+"proxy": "ng serve --proxy-config ./proxy.json",
+...si il poti rula astfel:
+npm run proxy
+-nu mai dai "ng serve", dai "npm run proxy" sau direct:
+ng serve --proxy-config ./proxy.json
+[1.26.20]
+-se face apelul catre server si se intorc date, vezi "console-XHR.png", insa nu sunt afisate in tabelul de pe pagina de "Inventory"
+-daca am scos "activeOnly" din serviciul propriu-zis...
+const items = await em.find(
+	InventoryItem,
+	// activeOnly ? {} : { active: true },
+	{},
+	{ limit: limit, offset: (page - 1) * limit }
+);
+...trebuie scos si mai sus din "getInventoryItems()" 
+[1.28.30]
+-trebuie scoasa si acea limita de 5 din ruta:
+let limit = req.query.pageSize ? parseInt(req.query.pageSize.toString()) : 5;
+-de-aia apareau 4 "items" (5-1), desi in baza de date aveam 10
+[1.30.00]
+-inainte populam un "MatTableDataSource" pentru a afisa datele
+-acum, trebuie sa populam "this.inventoryItems" cu lista de inventar care vine din serviciu:
+this.inventoryListService.getData()
+	.subscribe((data) => {
+		this.inventoryItems = data;
+});
+-paginatorul si sortarea nu vor mai functiona
+[1.32.30] - adaugam "Loading spinner"
+-trebuie sa actualizam "app.module.ts"
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+-in template pentru "Inventory":
+<div class="spinner-container" *ngIf="isLoading">
+	<mat-spinner></mat-spinner>
+</div>
+-"isLoading" va fi o proprietate boolean care ne spune cand s-a terminat incarcarea datelor
+[1.35.45] - verificam ca merge "spinner"
+-o sa adaugam artifical un "delay"
+-"spinner" nu mergea pentru ca l-am pus inauntrul "<table>" => trebuia afara
+[1.37.30] - schita cu "Observable"
+-izvorul este reprezentat de "http.get"
+-la izvor am tras un robinet prin "subscribe()"
+-teava am tras-o cu "pipe()"
+-practic, teava ne permite sa facem tot felul de operatiuni pe izvorul de date, inclusiv acel "delay" artifical:
+getData() {
+	return this.http.get<IInventoryItem[]>('/api/inventory-items')
+		.pipe(
+			tap((response) => {
+				console.log('Inventory items fetched:', response);
+			}),
+			delay(2000)
+		);
+}
+-cu "tap()" putem sa aflam cand s-a invocat acest izvor
+[1.41.45]
+-cu "tap()" practic am pus un robinet in care "putem sa tragem cu ochiul la date", practic am batut in teava sa vedem ce e acolo, daca e gol, daca curg datele, etc.
+-cand am folosit "finalize", a trebuit importat din:
+import { finalize } from 'rxjs/operators';
+[1.44.40]
+-trebuie sa pun "spinner" in blocul de "finalize", altfel se va roti la nesfarsit in cazul unei erori, de exemplu, atunci cand punem o adresa relativa incorecta: "/api/inventory-itemsz"
+-cu "tap()" nu am fi vazut eroarea => avem neaparat nevoie de "finalize()"
+[1.46.30]
+-avem posibilitatea de a trage teava "subscribe", "pipe", "tap", etc. in server, dar putem face acest lucru si in aplicatie, vezi componenta "Inventory"
+[1.48.30]
+-implementarea de paginare si sortare se face mergand tot pe acest principiu al "Observable", cu "subscribe", "pipe", "tap", etc.
+-"paginator" care era de tip "MatPaginator" este si el la randul lui un "Observable" => putem sa ii aplicam un "pipe()":
+.nu a mers din prima, pentru ca nu i-am dat "subscribe()"
+[1.49.30] - se mentioneaza "rxjs"
+-"Getting Started" din pagina oficiala "rxjs"
+[1.51.00]
+-"<mat-paginator>" are "[pageSize]", "[pageIndex]" si pe el se poate folosi si "[length]"
+[1.53.45]
+-pentru "sort", folosim "sortChange"
+-acum, dupa ce am adaugat "this.paginator.page.pipe(..)" si "this.sort.sortChange.pipe(..)", aplicatia ar trebui sa reactioneze atunci cand schimbam pagina sau cand sortam tabelul:
+// Old paginator
+this.paginator.page
+	.pipe(
+		tap(() => {
+			this.isLoading = true;
+			this.inventoryListService.getData()
+				.pipe(
+					finalize(() => {
+						this.isLoading = false;
+					})
+				)
+				.subscribe((data) => {
+					this.inventoryItems = data;
+				}, (error) => {
+					console.log('Table could not be filled with data:', error);
+				});
+		})
+	)
+	.subscribe();
+	
+// Old sort
+this.sort.sortChange
+	.pipe(
+		tap(() => {
+			this.isLoading = true;
+			this.inventoryListService.getData()
+				.pipe(
+					finalize(() => {
+						this.isLoading = false;
+					})
+				)
+				.subscribe((data) => {
+					this.inventoryItems = data;
+				}, (error) => {
+					console.log('Table could not be filled with data:', error);
+				});
+		})
+	)
+	.subscribe();
+-din nou, cand lucram cu "Observable" este important sa folosim "subscribe()"
+[1.56.05] - "merge"
+-putem combina intr-un singur pipe pe "this.paginator.page.pipe(..)" si "this.sort.sortChange.pipe(..)" folosind "merge"
+-"merge" trebuie importat din:
+import { merge } from 'rxjs';
+[1.57.00] - schita cu "merge"
+-practic am legat un "pipe()" la paginator si la sortare, dupa care ne-am abonat cu "subscribe()"
+-daca nu ne-am fi abonat cu "subscribe()" nu s-ar fi reflectat modificarile
+[1.58.10]
+-ne vom construi propriul "MatTableDataSource", personalizat, pentru ca avem datele pe server-ul nostru propriu
+-asta ne va ajuta sa mai scapam din cod, deoarece compenenta "Inventory" nu ar trebui sa administreze atat de multe lucruri din relatia intre serviciul care aduce date si tabelul in care sunt afisate datele
+-ideea e ca odata ce s-a pus in legatura serviciul care aduce date si tabelul, acesta ar trebui sa poate sa administreze singur paginarea si sortarea
+[1.59.55] - [TEME]
+-backend pentru "Edit" si "Add"
+-folosim acel "HttpClient" din constructorul din "inventory-list.service"
+-trebuie cautat, pe langa "get" si "post" si "delete" si "put" ca metode ale "this.http"
+[2.01.00]
+-facem data viitoare partajarea de aceeasi interfata "IInventoryItem"
+
+"Observables" si "rxjs":
+"Reactive pattern":
+
+-filtrare:
+--------------------
+-filtrarea merge in sensul ca indiferent daca am parametrul "activeOnly" in URL, returneaza doar cele 4 intrari cu "active" pe "true"
+-daca pun...
+activeOnly ? {} : { active: false },
+...va returna doar intrarile cu "active" pe "false", indiferent daca am parametrul "activeOnly" in URL
+-am printat in "route.ts", in "getInventoryItems()"...
+console.log('req.baseUrl:', req.baseUrl);
+console.log('req.originalUrl:', req.originalUrl);
+...ca sa vad daca URL-ul contine sau nu "activeOnly" ca parametru
+-problema era ca "activeOnly" era mereu setat pe "true" => am pus...
+let active = req.query.activeOnly ? true : false;
+...in "route.ts", in "getInventoryItems()" si l-am trimis pe "active" mai departe ca parametru in "service.ts":
+inventoryItemService.getInventoryItems(req.em, page, limit, active),
+-daca nu exista in URL => se afiseaza toate
+-daca exista in URL, indiferent ca e "activeOnly=true" sau "activeOnly=false" => se afiseaza doar intrarile cu "active" pe "true"
+-"X-Count":
+--------------------
+-pentru ca "X-Count" sa reflecte numarul de intrari, trebuie modificat "countInventoryItems()" din serviciu, aici:
+const count = await em.count(InventoryItem, {});
+-am adaugat in "countInventoryItems()", la fel ca in "getInventoryItems()", un parametru "activeOnly":
+const count = await em.count(InventoryItem, { active: activeOnly });
+-parametrul "active" este acelasi ca cel folosit pentru "getInventoryItems()":
+inventoryItemService.getInventoryItems(req.em, page, limit, active),
+inventoryItemService.countInventoryItems(req.em, active),
+-se pot adauga obiecte in "Response header":
+return res.header({ 'X-Count': count.toString(), 'Y-Count': 50 }).json(inventoryItems);
+.aici avem un obiect cu doua properietati, "X-Count" si "Y-Count"
+.inainte aveam:
+return res.header('X-Count', count.toString()).json(inventoryItems);
+
+-am pus in functii separate pe "displayBlankForm()", "displayItemInForm()" in "ngOnInit()" si in "onSubmit()" pe "addNewItem()", "editExistingItem()"
+-a trebuit sa scot "data" din "inventoryItems" si a mers direct functia care selecteaza toate intrarile din tabel, "masterSelectionToggle()"
+-pentru a ajunge la datele dintr-un "Observable", trebuie sa apelezi metoda "subscribe()", cum am facut in componenta "Inventory" in "ngOnInit()"
+-am mai adaugat un camp "active" in "IInventoryItem"
+-am modificat...
+if (this.itemId == 0) {..}
+...in:
+if (this.itemId == '0') {..}
+-nu mergea request-ul pentru "POST" pentru ca nu am dat "subscribe()" (!)
+-daca pun "item" din parametru, imi da eroare 500, daca pun "toPost" imi intra si mi-l scrie in baza de date (?)
+-"toPost":
+const toPost =
+{
+	name: 'AM01',
+	user: 'Teodor-Adrian Manghiuc',
+	location: 'Level 5',
+	inventoryNumber: 20200069,
+	description: 'HyperX Cloud Alpha',
+	createdAt: '2018-06-09',
+	modifiedAt: '2018-06-09',
+	deleted: false,
+	active: true
+};
+-"item" era de tip "IInventoryItem" si cred ca nu mergea cu entitatea de MikroORM din server
+-butonul de "Edit" este cu "!"...
+[disabled]="!canEdit(element)"
+...adica e "disabled" atunci cand nu poti edita, cand "canEdit()" returneaza "false"
+-am adaugat un "font-size" la "header"-ele din tabel
+-in "updateInventoryItem()" din "inventory-item.service.ts" crapa la "if" pentru ca intr-adevar nu primea in obiectul "inventoryItem", properietatea "id"
+-ideea era ca obiectul pe care il puneam in request-ul de "POST"...
+{
+    "id": "5f4b96cf3705be31c062f680",
+    "name": "AM01",
+    "user": "A-D-I-T-Z-A",
+    "description": "HyperX Cloud Alpha",
+    "location": "Level 5",
+    "inventoryNumber": 20200069,
+    "createdAt": "2018-06-09",
+    "modifiedAt": "2018-06-09",
+    "active": true
+}
+...trebuia neaparat sa aiba proprietatea "id"
+-din nou, daca da "404" atunci cand faci un request, e foarte posibil ca ruta respectiva sa nu fie definita
+.de exemplu, eu incercam sa fac "PUT" la adresa "/api/inventory-items/5f48e1f158de8c414c22b77b", dar adresa la care trebuia sa fac era de fapt "/api/inventory-items/" => normal ca mi-a dat "404"
+-as mai putea avea un buton care sa fac o filtrare pe "activeOnly" (?)
+-as mai putea incerca "Delete selection" (?)
+-se schimba textul butonului in "Add" sau "Edit" pe pagina de formular
+-am adaugat o proprietate "showForm" de tip "boolean" pentru a nu arata formularul daca nu are cu ce sa il initializeze
+-problema era ca eu initializam formularul in afara metodei "subscribe()" si "this.item" era ca si cum ar fi iesit din scope
+-am pus un "*ngIf" pe formular...
+<form *ngIf="showForm" ..>
+...ca sa scap de eroarea "formGroup expects a FormGroup instance. Please pass one in."
+-removed entire "inventory-item" folder => no longer needed because we use a database now
+-in formularul gol am pus...
+createdAt: [
+				today.toISOString().split('T')[0],
+				Validators.required
+			]
+...si atunci data se intializeaza la data de astazi mereu, nu ramane "mm.dd.yyyy"
+
+[DEPLOY]
+-URL pentru Compass:
+mongodb+srv://adrian:ZbURtGAc1OBAIbYN@cluster0.qyqtz.mongodb.net/
+-fisierul de configurare...
+mongodb+srv://adrian:ZbURtGAc1OBAIbYN@cluster0.qyqtz.mongodb.net/waters?retryWrites=true&w=majority
+...si:
+CLUSTER_URI=mongodb+srv://adrian:ZbURtGAc1OBAIbYN@cluster0.qyqtz.mongodb.net/waters?retryWrites=true&w=majority
+CLUSTER_PORT=8080
+-a trebuit sa folosesc driver-ul "MongoDriver" in app.ts:
+const orm = await MikroORM.init<MongoDriver>({..})
+-ca sa fac disponibile variabilele din "process.env", am pus in "app.ts"...
+-am instalat modulul "cors" cu...
+npm install cors --save
+...pentru a permite request-uri de la alte origini
+app.use(cors());
+-am instalat pachetul de "dotenv" cu:
+npm install dotenv --save
+-cu...
+require('dotenv').config();
+...se face practic import de fisierul de configurare
+-aveam o problema pentru ca in ".env" nu corespundea numele "MONGO_DB" cu numele din "env.ts"
+-si cealalta problema era ca modulul "dotenv" trebuia folosit in "env.ts" => eu il pusesem in "app.ts"
+-am rezolvat problemele de "lint" cu "active", "limit" si "page" => le-am facut "const"
+-daca nu pui "Procfile", se uita in scriptul de "start" din "package.json", vezi:
+https://devcenter.heroku.com/articles/nodejs-support#default-web-process-type
+-comanda folosita pentru a transpila proiectul si a obtine fisiere ".js" si ".map"
+"build": "npm run type:check && tsc" = se creeaza un folder nou "bin" si acolo sunt toate ".js" si ".map"
+-practic tot cu "npm run proxy" trebuie sa pornesc aplicatia pentru ca tot ce am facut pana acum a fost sa pun datele intr-o baza de date in cluster, sa nu mai fie locale
+-dupa ce vin din "Edit", trebuie sa dau refresh sa se reflecte schimbarile (?)
+-am pus...
+params.id
+...in loc de...
+params['id']
+...ca sa scap de eroarea de "lint"
+-am schimbat...
+if (this.itemId === '0') {..}
+...in "===" => inainte aveam "=="
+-se pare ca nu puneam in git pe ".env" si atunci nu stia de unde sa ia URI-ul => trebuia modificat din Heroku Dashboard
+-practic ".env" era pentru noi sa il folosim cand rulam aplicatia local, dar altfel trebuie pus "ENV_MONGO_URI" in Heroku Dashboard
+-port-ul nu il definim noi, il defineste Heroku:
+PORT: process.env.PORT || 8080,
+-am uitat sa transpilez proiectul si nu am pus ultimele fisiere ".js" pe repo si mai mult, lipsea pachetul "static" din "package.json"
+-am pus si...
+const express = require('express');
+...just in case
+-se pare ca nu e nevoie de pachetul "static"
+[5. Angular Deployment - Finishing the Two App Setup.mp4]
+-dupe ce rulam...
+ng build --prod
+...apare folder-ul "dist"
+-in "dist" gasim fisierele pe care vrem sa le servim in mod "static"
+-in "src/environments" sunt doua fisiere, unul de "production" si unul de "development"
+
+
+--------------------CURS 7--------------------
+[Waters-7.mp4]
+[1.00] - HTML forms din .pdf
+-cele mai comune elemente "<input>", "<label>", "<select>", "<textarea>", "<button>", "<fieldset>", "<datalist>"
+-cu "<label>" definesti o eticheta pentru un alt element din formular
+-legatura intre "label" si celalalt element se face cu atributul "for"
+.de exemplu, poti lega un "label" de id-ul unui "radio button" si astfel atunci cand apesi pe label se selecteaza automat acel "radio button" care ii corespunde
+[2.45] - "<select>"
+-folosit pentru un drop-down list
+-"textarea" iti permite mai multe linii fata de "input" de tipul "text"
+-"fieldset" grupeaza mai multe elemente ale formularului intr-o sectiune
+-se poate pune un titlu pentru o astfel de sectiune prin "<legend>"
+[4.00] - "<datalist>"
+-o lista de optiuni care apar pe masura ce tastezi, ca in search-ul de la Google
+[5.30] - "styles.css"
+[6.50] - modificam "AddItem"
+-vom folosi "<form>" unde vom pune toate optiunile din formular, "Item name", "Description", "Location", etc.
+[pana la 9.55] - modifica template-ul pentru "AddItem"
+-putem face un formular folosind un tabel, sa avem toate "label"-urile intr-o coloana si toate "input"-urile in coloana din dreapta
+-deoarece am pus fiecare "label" si fiecare "input" in cate un "<div>", putem sa folosim "display grid"
+[11.00] - adauga display grid in .css
+.form-div {
+	display: grid;
+	grid-template-columns: 150px 200px;
+	grid-template-areas: "theText theInput";
+	margin-bottom: 15px;
+}
+
+.form-div-text {
+	grid-area: theText;
+}
+
+.form-div-input {
+	grid-area: theInput;
+}
+-pentru "label" vom folosi clasa "form-div-text"
+-se poate observa ca pentru atributul de "grid-area" ii corespunde un "area" numit "theText", definit in interiorul clasei principale, "form-div", sub atributul "grid-template-areas"
+-de asemenea, pentru "input" ii corespunde un "area" numit "theInput"
+[12.55]
+-nu uitam sa adaugam clasele "form-div-text" si "form-div-input" in template, pe "<label>" si pe "<input>"
+[15.35]
+-folosind "grid-area", nu conteaza in ce ordine sunt puse componentele in "<div>", trebuie doar sa corespunda clasa definita pentru "
+.cu alte cuvinte, clasa pentru "label" trebuie pusa pe "<label>" si clasa pentru "input" trebuie pusa pe "<input>"
+-daca le punem invers, atunci in formular se va inversa ordinea lor => "input" va aparea inainte de "label"
+[16.30] - "Reactive forms" din .pdf
+-aceste formulare se bazeaza pe modele
+-cele mai folosite formulare Angular sunt "FormGroup", "FormControl", "FormArray"
+-"FormControl" = iti permite sa verifici starea si valoarea unui input
+.daca este tot formularul valid, interactiunile si evenimentele trimise de user prin formular, etc.
+-"FormArray" = pentru formulare dinamice, atunci cand nu stii exact cate si ce tipuri de input ai nevoie
+[19.00] - modificam "app.module.ts"
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+-adaugam sub "imports": FormsModule, ReactiveFormsModule
+-de asemenea in componenta "AddItem", trebuie sa adaugam formularele Angular, "FormBuilder" si "FormGroup":
+import { FormBuilder, FormGroup } from '@angular/forms';
+[20.50] - modificam "AddItem"
+-avem nevoie de un obiect "FormGroup":
+addItemForm: FormGroup;
+-trebuie injectat in constructor o instanta de "FormBuilder"
+[21.30]
+-de asemenea, trebuie initializata aceasta instanta in "ngOnInit()":
+ngOnInit(): void {
+    this.addItemForm = this.formBuilder.group({
+        name: [''],
+        description: [''],
+        user: [''],
+        location: [''],
+        inventoryNumber: [''],
+        createdAt: [''],
+    })
+}
+-tot ce intra in aceasta instanta de "FormBuilder" este de tipul "FormControl"
+.practic, aici definim "input"-urile de care avem nevoie in formular
+[23.30]
+-acum doar trebuie sa legam .ts de .html, adica sa legam "FormControl" de cate un "input" din template
+<form [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
+-se observa ca am folosit property binding, "[formGroup]" care se leaga de obiectul "addItemForm" din .ts
+-ne vom folosi de evenimentul "(ngSubmit)" pentru a transmite datele din formular
+[24.45]
+-am legat "<form>" de "formGroup", adica am legat .html de .ts
+-fiecare input trebuie sa se lege de cate un form control => folosim directiva "formControlName":
+<input type="text" class="form-div-input" formControlName="name" />
+-se observa ca "name" exista in obiectul "addItemForm" din componenta "AddItem"
+-putem afisa in pagina, valoarea acestui "FormGroup" pentru a verifica daca datele sunt transmise din formular catre acest "FormGroup":
+<p>Form value:{{ addItemForm.value | json }}</p>
+[28.00]
+-putem face validarea datelor in "FormControl"
+-avem nevoie de modulul "Validators" in "AddItem":
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+-putem cere ca numele sa fie required si descrierea sa fie optionala:
+this.addItemForm = this.formBuilder.group({
+	name: ['', Validators.required],
+	description: ['', Validators.maxLength(100)],
+	..
+});
+[30.05]
+-putem pune butonul de "Submit" pe disabled daca formularul nu este valid, folosind property binding pe "[disabled]":
+<button type="submit" [disabled]="!addItemForm.valid">Submit</button>
+-putem afisa daca formularul este valid, adica daca s-au introdus toate datele "required" din ele:
+<p>Form status:{{ addItemForm.status }}</p>
+https://codeshare.io/2B0nPb
+[pana la 34.25] - pune link de "codeshare"
+-a uitat sa puna sub "imports" "FormsModule" si "ReactiveFormsModule"
+-era un typo in numele "addItemForm"
+[pana la 39.20] - rezolva "ERROR in Template parse erros"
+-avem datele in formular, acum trebuie sa i le trimitem serviciului care administreaza datele, adica "InventoryMockService" => cream o metoda care sa adauge o noua intrare, un nou "item" in "inventoryItems"
+-ne intereseaza sa stim care e ultimul id pentru a il incrementa atunci cand adaugam un nou "item" => cream metoda "getLastId()"
+-deoarece mereu incrementam acest id, "getLastId()" ne asigura ca avem id-uri unice pentru fiecare "item"
+[42.30]
+-modificam interfata => o transformam in clasa
+-am transformat-o in clasa pentru ca avem nevoie de constructor
+-constructorul il folosim pentru ca vrem sa putem crea un obiect nou de tip "InventoryItem" plecand de la un obiect partial:
+public constructor(init?: Partial<IInventoryItem>) {
+	Object.assign(this, init);
+}
+-cu "assign()", obiectului curent "this" i se atribuie valoarea primita ca parametru din obiectul "init"
+[44.00]
+-importam serviciul de "InventoryMockService" si "IInventoryItem" in componenta "AddItem" pentru a putea adauga un nou "item" in array-ul "inventoryItems":
+import { IInventoryItem, InventoryItem } from '../../app-logic/inventory-item';
+import { InventoryMockService } from '../../app-logic/inventory-mock-service.service';
+-dupa ce adaugam datele, vrem sa redirectionam user-ul pe pagina de "Inventory" => avem nevoie de modulul de rutare din Angular in componenta "AddItem":
+import { Router, ActivatedRoute } from '@angular/router';
+[45.50]
+-trebuie sa injectam in constructor o instanta de serviciul "InventoryMockService", o instanta pentru "Router" si una pentru "ActivatedRoute"
+-de asemenea, avem nevoie de un obiect de tip "InventoryItem"
+-acest obiect de tip "InventoryItem" va fi obiectul partial cu care vom construi un nou "item" si pe care il vom adauga in "inventoryItems"
+[46.50] - "onSubmit()"
+-practic, in formular, cand utilizatorul introduce date, se creeaza un obiect partial de tip IInventoryItem
+-acest obiect partial este retinut in proprietatea "value" a "addItemForm", care este un obiect de tip "FormBuilder"
+-vom trimite acest obiect partial constructorului de "IInventoryItem" si vom initializa astfel "this.item":
+this.item = new InventoryItem(this.addItemForm.value);
+-ne folosim de acest obiect partial pentru ca utilizatorul nu introduce toate datele de care avem nevoie, de exemplu, nu introduce flag-ul pentru "deleted" sau data ultimei modificari ("modifiedAt"), etc.
+."modifiedAt" nu trebuie adaugat de catre utilizator
+onSubmit(): void {
+	this.item = new InventoryItem(this.addItemForm.value);
+	this.item.modifiedAt = new Date();
+	this.item.deleted = false;
+	this.item.id = this.inventoryService.getLastId() + 1;
+	this.inventoryService.addItem(this.item);
+	this.router.navigate(['/inventory']);
+}
+-la final, se face o redirectionare catre pagina de "Inventory"
+-path-ul "/inventory" trebuie sa fie prezent in "app-routing.ts", in array-ul "Routes"
+[49.50]
+[pana la 53.45] - rezolva problema "InventoryItems is not defined"
+[54.45]
+-transformam formularul din formular de tip HTML, in formular de tip Angular material
+-mai intai, importam "MatInputModule" in "app.module.ts"
+import { MatInputModule } from '@angular/material/input';
+-pentru a defini campuri in formular, folosim "<mat-form-field>"
+.practic, ele sunt ca acele "<div>"-uri care inglobau (imperecheau) cate un "label" si cate un "input"
+-pentru "label" avem acum "<mat-label>"
+-pentru "input", folosim tag-ul HTML "<input>" dar ii adaugam o directiva "matInput":
+<input matInput type="text" class="form-div-input" formControlName="name"/>
+[59.10]
+-daca punem cod in "styles.css" se aplica stilizarea la nivelul aplicatiei
+-daca se suprascrie fisierul .css pentru o componenta in parte, acest fisier va suprascrie "styles.css"
+-trebuie sa importam in "styles.css" tema de Angular material:
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+[1.01.00]
+-putem folosi directiva "appearance" pentru a stiliza "<mat-form-field>":
+<mat-form-field appearance="outline">
+[1.01.40]
+-avem un tag special cu care putem trata erorile de validare, numit "<mat-error>":
+<mat-error *ngIf="hasError('name', 'required')">
+	name required!
+</mat-error>
+-ne folosim de "*ngIf" pentru a nu afisa eroarea decat daca aceasta exista
+-daca avem o eroare la validarea numelui, sub "input"-ul din formular va aparea "name required!"
+-"hasError()":
+public hasError = (controlName: string, errorName: string) => {
+	return this.addItemForm.controls[controlName].hasError(errorName);
+};
+-primul parametru este numele "FormControl"-ului, iar al doilea este tipul de eroare a validarii, de ex. "required" pentru un "input" care este obligatoriu
+-se observa ca ne folosim de proprietatea "controls" pentru a verifica daca "input"-ul de la numele primit ca parametru are sau nu o eroare
+."hasError()" returneaza un "boolean"
+-"required" este un nume de eroare care este definit default in acea properietate "controls", dar se pot seta si erori personalizate
+.practic, de aia am apelat "name" cu "required", pentru ca "required" este deja definit
+[1.04.45]
+[pana la 1.05.20] - rezolva "Cannot find module "worker_threads""
+-vom adauga acum "<mat-form-field>" pentru toate campurile ramase, "Description", "Location", etc.
+[1.07.50]
+-pentru fiecare "input", se poate adauga "placeholder":
+<input .. placeholder="Manufacturer name, model name..." />
+.acele texte care sunt afisate in interiorul formularului pana cand utilizatorul introduce efectiv date
+-sunt niste indicatii pentru utilizator pentru a completa formularul
+-pentru "Description" avem nevoie de "<textarea>", dar merge folosit "placeholder" si pe "textarea"
+[1.14.05] - adauga butonul de "Submit"
+[pana la 1.15.05] - termina de adaugat restul de campuri
+-ar trebui in "addItemForm" sa punem "required" in loc de "maxLength"...
+description: ['', Validators.maxLength(100)],
+-putem sa stergem "hasError()" de pe "Description"
+-putem sa folosim o alta eroare in loc de "hasError()"
+[pana la 1.19.30] - rezolva problema cu eroarea din "Description"
+[1.20.10]
+-pentru partea de "Edit" ne folosim de acceasi componenta "AddItem", de aceea am facut partea de "Edit" dupa partea de adaugare de nou "item"
+-trebuie astfel sa aducem informatii despre obiect catre componenta "AddItem" => avem nevoie de o noua ruta => modificam "app-routing.ts":
+const routes: Routes = [
+  ..
+  { path: 'edit/:id', component: AddItemComponent },
+  ..
+];
+-practic, aceasta noua ruta ne va permite sa trimitem un parametru de tip "id" pe URL
+-se observa aceeasi "AddItemComponent" ca la URL-ul pentru ruta de "add-item"
+[1.21.35]
+-putem adauga in tabel o noua coloana "actions":
+inventoryColumns: String[] = [
+	..
+	'actions'
+];
+-trebuie sa adaugam coloana in tabel, in template:
+<ng-container matColumnDef="actions">
+	<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+	<td mat-cell *matCellDef="let element">
+		<a routerLink="/edit/{{ element.id }}">
+			edit item
+		</a>
+	</td>
+</ng-container>
+-se observa ca in "routerLink" trimitem id-ul elementului => elementul cu un id anume, de exemplu "10010", poate fi accesat direct la URL-ul:
+localhost:4200/edit/10010
+[1.23.15]
+-practic, noi daca dam click pe "edit item", ne va trimite catre noua ruta "edit/:id"
+-vrem sa pre-populam campurile din formular, sa apara datele legate de "item" la navigarea catre pagina de "Edit", dupa ce am apasat pe "edit item"
+[1.24.15]
+-pentru asta, avem nevoie de id-ul "item"-ului respectiv => in "AddItem" avem nevoie de un obiect "itemId" de tip "number"
+-ne vom folosi de instanta de "ActivatedRoute" pe care am injectat-o in constructor, pentru a putea prelua id-ul "item"-ului din URL => in constructor pentru "AddItem" avem:
+this.activatedRoute.params.subscribe((params) => {
+	this.itemId = params['id'] ? params.id : 0;
+});
+-in "params" sunt toti parametrii primiti prin intermediul URL-ului
+.pe noi ne intereseaza doar parametrul "id"
+[1.26.15]
+-ajungem la "id" prin abonarea la eveniment cu functia "subscribe()"
+-ne intrebam daca am primit un "id" prin URL, iar daca nu am primit punem 0 pentru ca partea de adaugare, "Add" si partea de modificare a datelor, "Edit" se folosesc de aceeasi componenta "AddItem"
+[1.27.30]
+-odata ce am preluat acest "id", putem sa ne uitam in array-ul de "inventoryItems" dupa acest "id" => cream functia "getItemById()":
+getItemById(id: number): IInventoryItem {
+	return this.inventoryData.filter((x) => {
+		x.id == id;
+	})[0];
+}
+-am pus "[0]" pentru ca "filter()" returneaza un array care, in cazul nostru, va avea un singur element...
+(1) [InventoryItem]
+...iar pe noi ne intereseaza acel singur element care este la indicele 0 in array:
+InventoryItem {name: 'Test Name', description: '', user: 'Test User', location: 'Test Location', inventoryNumber: '2'}
+-primul element, adica acel element de indice 0, este de altfel si singurul pentru ca avem "id"-uri unice
+[1.29.10]
+-in "ngOnInit()" din "AddItem", trebuie sa initializam obiectul "item", astfel:
+this.item =
+	this.itemId == 0
+		? new InventoryItem()
+		: this.inventoryService.getItemById(this.itemId);
+-daca intri, de exemplu, pe URL-ul "edit/10010" va pre-popula formularul cu datele legate de acest item cu id-ul "10010"
+-altfel, vom crea un obiect nou
+-practic, aici se intreaba daca suntem in partea de adaugare, "Add" sau in partea de modificare a datelor, "Edit"
+-practic, daca "itemId" este 0, nu am primit nimic pe URL
+[1.30.30]
+-inainte nu aveam nimic in grupul din "addItemForm" => nu afisam nimic in formular...
+name: ['', Validators.required],
+...dar acum, putem pre-popula formularul folosindu-ne de aceste obiect "item" de tip "IInventoryItem":
+name: [this.item.name, Validators.required],
+[1.31.55]
+-pentru "input"-ul "createdAt", avem un caz special:
+createdAt: [
+	this.item.createdAt.toISOString().split('T')[0],
+	Validators.required,
+],
+-browser-ul aplica propria stilizare pe "input"-ul de tip "Date"
+-pentru a se afisa corect, trebuie sa convertim data la un format mai simplu cu "toISOString()"
+-am pus "[0]" pentru ca ne intereseaza data, luna si anul care sunt la pozitia 0 in array-ul returnat de "toISOString()"
+[1.34.00]
+-trebuie sa actualizam datele, acum dupa ce le-am modificat, dupa ce am dat "Edit"
+-nu putem crea un obiect nou, trebuie sa il actualizam pe cel deja existent => trebuie sa ne intrebam in "onSubmit()" daca adaugam un nou "item" sau daca modificam unul deja existent:
+if (this.itemId == 0) {
+	// cream un obiect partial cu datele din "addItemForm"
+	this.item = new InventoryItem(this.addItemForm.value);
+	..
+} else {
+	// cream un obiect nou cu datele din "addItemForm"
+	this.item.name = this.addItemForm.value.name;
+	..
+}
+-atunci cand cream un obiect nou, cu datele din "addItemForm", cream o data noua din cea deja existenta, cu minute, secunde, etc.:
+this.item.createdAt = new Date(this.addItemForm.value.createdAt);
+-acum, cand dam "Submit", ar trebui sa se actualizeze in pagina de "Inventory"
+[1.40.00] - [TEME]
+-se pot incerca "template driven forms" in loc de "reactive forms"
+https://angular.io/guide/forms
+-sa transformam din "reactive forms" in "template driven form"
+
+
+-am un bug cu ultimul id (?)
+-in "getLastId(): number", a trebuit sa fac un array gol in care sa introduc toate id-urile si apoi sa il caut pe maximul dintre ele cu...
+const lastId = Math.max(...ids);
+-in functia mea de "getItemById(id: number)", desi am pus "number", "id" era de fapt un String
+-"getItemById(id: number)" se foloseste cand apesi "Edit" si functioneaza chiar daca primesti ca parametru un String
+.asta probabil pentru ca am folosit "==" si atunci va incerca sa converteasca la tipul din stanga, care este un "number" => va testa daca 10010 este egal cu 10010 si nu va testa daca 10010 este egal cu "10010" => daca pui "===" nu mai merge
+-problema in "add-item" este ca obiectul este "undefined"
+-era "undefined" pentru ca trebuia un "if" acolo care sa testeze daca exista acel "id" in "inventoryItems" sau nu
+.daca nu exista, atunci trebuie sa pre-populam formularul cu ''
+.daca exista, putem sa preluam datele din "item" care a fost returnat de functia "getItemById()"
+-problema cu "toISOString is not a function" apare pentru ca atunci cand se adauga un obiect nou in "inventoryItems" nu se initializeaza proprietatea "createdAt" ca un obiect de tip "Date" ci este un simplu "String"
+-cand am pus...
+const init = new InventoryItem({
+	name: partial.name,
+	user: partial.user,
+	description: partial.description,
+	location: partial.location,
+	inventoryNumber: partial.inventoryNumber,
+	createdAt: new Date(partial.createdAt),
+});
+...intra intr-un "stack overflow"
+-a trebuit sa suprascriu "createdAt" in "add-item.component.ts":
+if (this.itemId == 0) {
+	this.item = new InventoryItem(this.addItemForm.value);
+	this.item.createdAt = new Date(this.addItemForm.value.createdAt);
+	..
+-am adaugat un redirect catre pagina de "Inventory" dupa ce am modificat un "item"
+-deoarece folosim Angular material pentru formularul din "AddItem", nu mai avem nevoie de "theText" si "theInput", adica nu mai avem nevoie de .css
+-daca folosesc constructorul "Full", am probleme in "ngOnInit()", pentru ca acolo daca intru pe pagina de "Add", trebuie sa initializez pe "this.item" cu un obiect gol de tipul InventoryItem
+
+
+
+--------------------CURS 6--------------------
+[Waters-6.mp4]
+[3.35]
+-a pus niste breakpoint-uri pentru dimensiuni mai mici ale ferestrei
+-are o problema cu animatiile pentru ca pe dimensiune mica a ferestrei animatiile sunt randate la ca si cum ar fi dimensiune mare a ferestrei
+-in Chrome ai "Toggle device toolbar" cu care poti testa diferite dimensiuni ale ferestrei
+[pana la 9.35] - rezolva problema cu .css
+[10.00] - problema mea cu "Warehouse"
+-un obiect "Warehouse" trebuie instantiat cu "new"
+-totusi a fost mai bine ca am afisat fiecare camp in parte pentru ca am putut pune "<ng-template>" care se afiseaza doar daca acel camp este populat cu date
+.eu de exemplu aveam "line2" optional si cand ala nu era definit => nu se afisa:
+<ng-template>
+	{{ warehouse.address.line2 }}
+</ng-template>
+-ar mai fi o idee sa apelezi explicit "warehouse.address.toString()"
+-functia de "toString()" trebuie facuta in interiorul clasei "Address"
+-daca nu faci cu "new", "toString()" nu e disponibila pentru ca nu ai instantiat un obiect al clasei, ci ai instantiat un obiect care pretinde a fi de tipul clasei "Address"
+[14.50] - incepe cursul
+[16.20]
+-prin "mocking" generam "fake data" cu care ne putem testa aplicatia => o sa cream un serviciu mock "InventoryMockService"
+-inainte, definim o interfata "InventoryItem" cu care sa definim structura acelor "fake data", adica ce proprietati sa aiba:
+app-logic>ng g i InventoryItem
+[18.15] - "InventoryItem"
+-am adaugat "description" separat ca asa aveam in "mock data" (fake data)
+[20.10]
+-o sa cream un tabel in care vom afisa toate intrarile din serviciul "InventoryMockService"
+[21.35] - cream serviciul
+app-logic>ng g s InventoryMockService
+.deci toate fisierele mele din "app-logic" sunt in folder-e, ale lor sunt in afara
+[23.35] - diferenta intre "Array<InventoryItem>" si "InventoryItem[]"
+-"Array" e o interfata
+-daca pui "[]", the type is inferred and it's also easier to type, vezi "inferring types"
+[26.00] - adauga mock data
+-cand returnam "inventoryData" practic am completat serviciul de "mock data"
+-serviciul se va folosi in componenta "Inventory"
+-se va injecta in constructor dupa ce s-a importat
+[29.15]
+-de asemenea avem nevoie de un array in care sa tinem datele pe care le preluam cu "getData()" din serviciu:
+this.inventoryItems = this.inventoryMockService.getData();
+[30.40] - trebuie sa adaugam un tabel in partea de template din "Inventory"
+-modulul de "material" se adauga cu:
+ng add @angular/material
+-daca aplicatia rula deja cu "ng serve", trebuie redeschisa dupa adaugarea "material"
+-cand adaugi "material", alegi o tema si optiunile...
+Set up global Angular Material typography styles? Yes
+Set up browser animations for Angular Material? Yes
+-cu "material" putem interactiona cu utilizatorul prin "input forms", butoane, etc.
+-dupa adaugarea "material", ne intereseaza ce s-a modificat in "app.module.ts"
+[pana la 34.00] - se instaleaza "material"
+-configureaza "material" si aduce "MatTableModule"...
+import { MatTableModule } from '@angular/material/table';
+...si il adauga in "app.module.ts", sub "imports"
+[35.20]
+-trebuie sa ne gandim ce coloane din tabel sa afisam si vom face un array ce va contine numele coloanelor din tabel, numit "inventoryColumns" in componenta "Inventory":
+inventoryColumns: String[] = [
+	'id',
+	'name',
+	..
+];
+[37.55]
+-pentru initializarea "inventoryItems" ne-am folosit de "ngOnInit()"
+-in "ngOnit()", datele sunt initializate dupa ce se fac toate legaturile cu dependintele si legaturile cu toate modulele cu care lucreaza componenta si de care are nevoie
+[39.05] - cream tabelul in componenta "Inventory"
+-pe tabel vom folosi directiva "mat-table" din "material":
+<table mat-table ..>
+."mat-" e doar sa iti dai seama ca face parte din "material" => in "material" avem o directiva care se poate folosi explicit pentru tabele, adica "mat-table"
+-cu "mat-table" se face stilizarea tabelului
+-daca nu punem "mat-table" nici macar nu merge tabelul
+-cu "[dataSource]="inventoryItems"", practic facem legatura cu "inventoryItems" din partea de logica => un fel de "*ngFor=let inventoryItem of inventoryItems"
+-de "class="mat-elevation-z8"" ne folosim doar pentru a aduce o stilizare minimala a tabelului printr-o clasa .css din "material"
+.se observa ca "mat-elevation-z8" face parte tot din "material"
+[41.30] - adauga coloanele cu "<tr>"
+<tr mat-header-row *matHeaderRowDef="inventoryColumns"></tr>
+-folosim directiva "mat-header-row" pentru a defini coloanele tabelului => creeaza capul de tabel, gen "table header"
+-se observa ca "matHeaderRowDef" are "*" => este un "structural directive"
+-structura randurilor din tabel se face cu...
+<tr mat-row *matRowDef="let row; columns: inventoryColumns;"></tr>
+-"matRowDef" se foloseste pentru a lista elementele din "inventoryItems", adica pentru a dispune elementele pe randuri
+-prin "let row; columns: inventoryColumns;" se face legatura rand-coloana pentru a se asigura ca elementele din inventar sunt puse toate la locul lor, adica "id" la coloana "id" si la randul care corespunde cu intrarea din "inventoryItems"
+.adica se asigura ca "id" apartine exact elementului din "inventoryItems" => face corespondenta intre ele
+[44.30] - facem structura unei coloane
+-de exemplu, pentru coloana "ID":
+<ng-container matColumnDef="id">
+	<th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+	<td mat-cell *matCellDef="let element"> {{element.id}} </td>
+</ng-container>
+[46.20]
+-vom grupa fiecare coloana intr-un container cu "<ng-container>"
+-"<ng-container>" nu interactioneaza cu modul de afisare in template, doar grupeaza elementele laolalta in tabelul nostru
+-"matColumnDef" face corespondenta cu "id"-ul elementului din "inventoryItems"
+-"mat-header-cell" se foloseste explicit pentru capul de tabel
+-"mat-sort-header" (?)
+-afisarea pur si simplu a elementului se face cu "<td mat-cell ..>", al carui definitie se afla in "*matCellDef="let element""
+-in final se face data binding cu string interpolation => "{{ }}"
+[pana la 51.45] - introduce toate coloanele
+-practic, fiecare din acele "<ng-container>" face legatura cu cate o proprietate a unui obiect de clasa "InventoryItem" => un "<ng-container>" pentru "id", unul pentru "location", etc.
+-in "<th>" se afiseaza capul tabelului, "id", "location", etc.
+-in "<td>" se afiseaza cate un element din "inventoryItems" folosind "matCellDef"
+.practic, luam toate intrarile pentru proprietatea "id" si le afisam pe cate o coloana din tabel
+[53.10] - databinding
+-"one-way" = de la clasa la template, intr-un singur sens
+.daca doar afisezi niste date => "one-way"
+-"two-way" = comunicare intre clasa si template in ambele sensuri
+.de exemplu pentru input de la user => "two-way"
+[55.20]
+-era o problema ca nu recunostea "[dataSource]" din cauza ca nu avea "MatTableModule" sub "imports" in "app.module.ts"
+[pana la 1.03.00] - eroarea mea cu "undefined"
+-am dat un copy-paste de pe sharecode pana la urma
+-am pus un...
+table {
+  width: 100%;
+}
+...in .css pentru "Inventory" ca altfel tabelul ocupa doar jumatate de pagina
+[1.04.15]
+-am pus...
+{{ element.createdAt | date }}</td>
+...la coloanele care au tip de date "Date" ("createdAt" si "modifiedAt") in "element" pentru a le formata mai simplu, de exemplu: "Jan 1, 2020"
+[1.07.15] - adaugam paginare
+-avem nevoie de modulul de paginare in "app.module.ts":
+import { MatPaginatorModule } from '@angular/material/paginator';
+-trebuie sa adaugam "MatPaginatorModule" sub "imports"
+[1.09.40]
+-paginatorul se pune prima oara in "Inventory" => importam
+import { MatPaginator } from '@angular/material/paginator';
+[1.11.45]
+-in template, paginatorul trebuie sa fie in afara "<table>"
+<mat-paginator [pageSizeOptions]="[10, 3, 5, 6]" showFirstLastButtons></mat-paginator>
+-"[pageSizeOptions]="[10, 3, 5, 6]"" ne permite sa selectam cate elemente din tabel sa afisam
+-"showFirstLastButtons" afiseaza butoanele pentru prima pagina si ultima pagina
+.altfel, ar afisa doar de la o pagina la alta "<" si ">"
+-aici, "showFirstLastButtons" este un atribut
+[1.14.10]
+-paginatorul nu functioneaza pentru ca nu am facut legatura intre paginator si tabel => vom folosi "@ViewChild"
+-mai intai declaram obiectul "paginator"...
+@ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+...si apoi facem legatura cu tabelul, in "ngOnInit()":
+this.inventoryItems.paginator = this.paginator;
+-legatura merge doar daca trimitem in tabel date sub forma "MatTableDataSource" => in "Inventory", in loc de...
+this.inventoryItems = this.inventoryMockService.getData();
+...trebuie sa punem...
+this.inventoryItems = new MatTableDataSource<InventoryItem>(this.inventoryMockService.getData());
+...pentru ca in "[dataSource]" trebuie sa trimitem date de forma "MatTableDataSource", care este importat din:
+import { MatTableDataSource } from '@angular/material/table';
+-de asemenea am pus...
+inventoryItems: any;
+...in loc de...
+inventoryItems: any[];
+."inventoryItems" nu trebuia pus ca array "[]"
+-am folosit acest wrapper de "MatTableDataSource" pentru a putea afisa doar cate 3, 5, 10, etc. elemente din tabel
+[1.14.40]
+-cu "@ViewChild" putem sa inspectam un element din DOM, din template-ul nostru => vom inspecta paginatorul
+-se observa ca legatura cu paginatorul se face tot prin obiectul "inventoryItems" => neaparat "inventoryItems" trebuie sa fie de tip "MatTableDataSource"
+-in "@ViewChild", "MatPaginator" este elementul din DOM pe care vrem sa il cautam si cu care sa facem legatura
+.se observa ca ii dam de fapt tipul elementului, la noi "MatPaginator" si nu un element anume
+-functioneaza pentru ca avem un singur "<mat-paginator>" in template si "@ViewChild" il cauta si cand il gaseste pe primul, il returneaza
+-"{ static: true }" se pune pentru ca vrem sa accesam "@ViewChild" in "ngOnInit()", vezi "@ViewChild() in Angular 8+" in "angular.txt"
+[1.17.25] - face partea cu "MatTableDataSource"
+[1.19.20] - sortarea in tabel
+-tabelele pot fi sortate usor cu modulul "MatSort"
+import { MatSortModule } from '@angular/material/sort';
+-trebuie pus "MatSortModule" sub "imports"
+-de asemenea avem nevoie de directiva "matSort" in "<table>"
+-daca vrem sa sortam per coloana in parte, trebuie sa punem "mat-sort-header" in capul de tabel, adica in "<th>" din fiecare "<ng-container>"
+[1.23.00]
+-trebuie sa facem legatura cu "@ViewChild" intre date si sortare
+@ViewChild(MatSort, { static: true }) sort: MatSort;
+-"MatSort" trebuie importat din:
+import { MatSort } from '@angular/material/sort';
+-legatura o facem tot in "ngOnit()" si tot prin obiectul "inventoryItems":
+this.inventoryItems.sort = this.sort;
+[pana la 1.25.45] - importa tot ce trebuie ca nu mergea sortarea
+[1.26.45]
+-adaugam "checkbox"-uri pentru selectarea elementelor pe care le avem in tabel
+-avem nevoie de modulul de "Checkbox", pe care il importam din...
+import { MatCheckboxModule } from '@angular/material/checkbox';
+...si il punem si sub "imports"
+[1.29.00]
+-trebuie sa adaugam in tabel o noua coloana, "select", care va fi tot sub un "<ng-container>"
+<ng-container matColumnDef="select">
+	<th mat-header-cell *matHeaderCellDef>
+	</th>
+	<td mat-cell *matCellDef="let row">
+	</td>
+</ng-container>
+-se observa ca am folosit tot "matColumnDef" ca la celelalte, "id", "location", etc.
+-trebuie sa avem "select" si in array-ul "inventoryColumns"
+-practic, e exact acelasi lucru cu toate celelalte coloane, doar ca acum vom folosi un "checkbox" pentru a putea selecta cate un element din "inventoryItems"
+.diferenta e ca nu scriem efectiv "ID" sau "location", ci in schimb avem un element "checkbox"
+[1.31.35]
+-din nou, folosim "matCellDef" pentru a lista fiecare rand in parte
+-pentru fiecare dintre cele doua "checkbox", aia care selecteaza toate elementele si aia care selecteaza cate unul, avem nevoie de o logica in "inventory.component.ts"
+-deoarece nu vrem sa modificam efectiv tabelul atunci cand facem o selectie, vom retine elementele care sunt selectate intr-o lista separata, de tip "SelectionModel" din:
+import { SelectionModel } from '@angular/cdk/collections';
+-avem nevoie de o variabila "selection" in logica componentei "Inventory"
+-pusesem...
+selection = new SelectionModel<Element>();
+...in loc de...
+selection = new SelectionModel<Element>(true, []);
+-e important sa punem "[]" pentru ca astfel, "selection" incepe cu o selectie nula, adica fara niciun element selectat
+-"true" ne permite sa selectam mai multe elemente
+-ideea e ca atunci cand apasam pe "checkbox", elementele din "inventoryItems" trebuie sa intre in lista respectiva, in "selection"
+[1.35.35]
+-pe "checkbox" o sa ne legam cu evenimentul "(change)" astfel incat atunci cand apasam pe "checkbox", vom folosi "selection" pentru a selecta si a pune in lista de selectie randul pe care s-a facut apasarea "checkbox"-ului, vezi selection-01.png:
+<mat-checkbox (change)="selection.toggle(row)" ..>
+[1.36.45]
+-"[checked]" este o proprietate a "checkbox"
+-ne permite sa facem two-way databinding
+-"isSelected(row)" ne spune despre randul respectiv daca este selectat sau nu si facem cu valoarea booleana care se returneaza two-way databinding cu proprietatea "checked":
+<mat-checkbox .. [checked]="selection.isSelected(row)">
+-folosind event binding pe "(change)" si two-way databinding cu "[checked]", la fiecare apasare de "checkbox", va mari lista de selectie cu randul respectiv si in acelasi timp va marca randul respectiv ca fiind selectat
+[1.39.05]
+-prin "masterSelectionToggle()" vrem sa vedem daca s-a apasat "checkbox" care face selectia totala a elementelor
+-pentru selectia totala, putem sa comparam numarul de elemente selectate si numarul total de elemente din "inventoryItems":
+isAllItemsSelected() {
+	const selectedItems = this.selection.selected.length;
+	const nrOfColumns = this.inventoryItems.data.length;
+	return selectedItems === nrOfColumns;
+}
+[1.42.10]
+-mai trebuie sa verificam daca sunt toate elementele selectate => daca sunt => "this.selection.clear();"
+-asta pentru a acoperi cazul in care am selectat toate elementele dar in mod individual => cand apasam pe primul "checkbox" nu are rost sa mai incercam inca o data selectia totala => golim lista de selectie
+-daca nu sunt toate selectate in mod individual, atunci trebuie sa adaugam la lista de selectie din lista intreaga de elemente, din "inventoryItems":
+masterSelectionToggle() {
+	console.log('masterSelectionToggle():');
+	this.isAllItemsSelected ?
+		this.selection.clear() :
+		this.inventoryItems.data.forEach(row => {
+			this.selection.select(row);
+		});;
+}
+-practic, trebuie sa trecem prin toata lista de elemente si sa le adaugam toate elementele in lista de selectie => selectie totala
+[1.45.10] - selectia totala cu operatorul ternar
+[1.47.10]
+-in primul "checkbox", la "[checked]" trebuie sa verificam daca avem toate elementele selectate si daca avem vreun element deja in lista de selectie => doar atunci marcam acel "checkbox" cu true la proprietatea "[checked]":
+<mat-checkbox .. [checked]="selection.hasValue() && isAllItemsSelected()">
+[1.48.15]
+-avem nevoie de "indeterminate" pentru starea intermediara intre selectia totala si selectia goala:
+<mat-checkbox .. [indeterminate]="selection.hasValue() && !isAllItemsSelected()">
+-la fel, ne intrebam daca avem elemente in lista de selectie, dar de data asta ne intrebam daca nu sunt toate elementele selectate
+-nu trebuie scris...
+this.inventoryItems.array.data.forEach(row => {..}
+...ci:
+this.inventoryItems.data.forEach(row => {
+[pana la 1.54.30] - rezolva problema cu "array.data" si "forEach of undefined"
+[1.55.30]
+-la "(change)" pentru primul "checkbox", trebuie sa verificam daca evenimentul este "null" sau nu, de ex. atunci cand abia s-a incarcat pagina
+-daca nu este "null" => apelam "masterSelectionToggle()", altfel il lasam pe "null" si asteptam ca utilizatorul sa apese primul "checkbox"
+-in final, coloana cu "checkbox" arata asa:
+<ng-container matColumnDef="select">
+	<th mat-header-cell *matHeaderCellDef>
+		<mat-checkbox (change)="$event ? masterSelectionToggle() : null"
+			[checked]="selection.hasValue() && isAllItemsSelected()"
+			[indeterminate]="selection.hasValue() && !isAllItemsSelected()">
+		</mat-checkbox>
+	</th>
+	<td mat-cell *matCellDef="let row">
+		<mat-checkbox (change)="selection.toggle(row)" [checked]="selection.isSelected(row)">
+		</mat-checkbox>
+	</td>
+</ng-container>
+-se observa ca in "<th>" pentru primul "checkbox", nu avem "let row" pentru ca acolo selectarea nu se mai face pe randuri, individual
+-trebuie pus:
+selection = new SelectionModel<Element>(true, []);
+[pana la 2.02.40] - rezolva problema cu "(true, [])"
+-a uitat sa puna tipul "any" pentru "inventoryItems", il lasase "MatTableDataSource<InventoryItem>"
+[pana la 2.06.50] - rezolva problema cu "MatTableDataSource"
+[2.08.20] - [TEME]
+-sa mai adaugam o coloana cu "modify item" / "delete item"
+-sa putem selecta un element si sa facem modificarea lui
+-putem face doar un link de "modify" pentru ca facem cursul urmator modificarea elementului, dar putem face si modificarea propriu-zis
+-sa putem sa selectam mai multe elemente si sa facem stergerea lor
+-trebuie sa vedem ce elemente avem selectate in "selection" si sa le stergem din "inventoryItems"
+-sa folosim elemente tot din "material"
+-poate sa modificam stilizarea tabelului
+-further reading:
+https://material.angular.io/components/categories
+[2.10.50] - despre proiecte
+[2.12.50] - branch pentru teme?
+-daca facem un proiect pentru prezentare, merge in acelasi branch
+-in aplicatiile reale, ai repo separate, unul pentru backend si unul pentru frontend
+-am putea face inca un repo pentru Angular si NodeJS in acelasi loc, vedem dupa cursul 7
+-sau putem face un repo pe GitHub si sa invitam "cursuniwaters" ca colaborator
+-mai bine pune cursul cel nou intr-un folder nou
+
+-am avut un bug pentru ca pusesem...
+this.isAllItemsSelected ?
+...in loc de...
+this.isAllItemsSelected() ?
+...adica nu apelam metoda propriu-zis
+-"data.forEach(.."...
+this.inventoryItems.data.forEach(row => {..}
+...nu e acelasi lucru cu...
+this.inventoryItems.array.forEach(row => {..}
+...prima varianta merge, a doua nu
+
+[TEME]
+-initial aveam...
+<!-- Delete checkbox -->
+<ng-container matColumnDef="delete">
+	<th mat-header-cell *matHeaderCellDef>
+	</th>
+	<td mat-cell *matCellDef="let row">
+		<button>
+			delete
+		</button>
+	</td>
+</ng-container>
+...dar nu ne trebuie un buton pentru fiecare intrare din "inventoryItems", pentru ca de aia avem "selection" => mai intai selectam intrarile si apoi le stergem cu un singur buton
+-de asemenea, "mat-cell *matCellDef="let row"" trebuia pus pentru elementul "<td>" si nu pentru "<button>" => de aia nici nu aparea butonul
+-se observa ca daca facem "splice()" simplu, se schimba indicii dupa fiecare "splice()" => se strica array-ul si nu se sterge ce trebuie
+.daca insa selectezi indicii in ordine inversa, descrescatoare merge => sortam index invers
+-two-way databinding combina event "()" si property binding "[]" => "[(ngModule)]" => se observa ca am folosit si "()" si "[]"
+-poti pune "#table" sau poti pune direct...
+@ViewChild(MatTable, { static: true }) table;
+...pentru ca avem un singur tabel si pe primul pe care il gaseste, de acela se leaga
+-a fost suficient sa adaug "@ViewChild" pe tabel pentru a se actualiza dupa ce datele s-au sters din el
+-pana la urma, "{ static: true }" inseamna ca rezultatele unei interogari se determinau inainte de pasul de "change detection"
+.daca era pe "false", rezultatele unei interogari se determinau dupa "change detection"
+-ca sa deschizi Angular pe alt port:
+ng serve --port 4201
+
+
+--------------------CURS 5--------------------
+[Waters-5.mp4]
+[2.20]
+-nu se pune folder-ul cu "node_modules" pe git => use .gitignore
+-daca vrei sa testezi un proiect independent de infrastructura, faci cel mai basic proiect de TypeScript si rulezi comenzile, gen "ts-node-dev src/index --watch" sa vezi daca functioneaza
+.ideea e sa testezi TypeScript chior
+-este de evitat sa punem proiectul pe drive-ul cu Windows, pentru ca Windows incearca sa indexeze fisierele
+[pana la 11.55] - rezolva problema cu proiectul pe drive-ul cu Windows
+-era o paranteza in plus la "then()" si una in plus la "catch()"
+[pana la 13.05] - rezolva problema cu "catch()" din "index.ts"
+[14.05] - Angular
+-Angular = framework pentru aplicatii web
+-AngularJS = pe JavaScript
+-Angular 2 = compilabil cu TypeScript
+-Angular este folosit pentru SPA = single page applications
+[16.25]
+-poate fi folosit pentru aplicatii mobile, dar cu Electron se pot face aplicatii desktop fully-fledged
+[17.35] - instaleaza Angular CLI
+npm i -g @angular/cli
+-cu "ng v" se poate verifica versiunea de Angular
+[21.40] - configureaza VSC
+-extensia "Angular Language Service", "Prettier - Code formatter"
+[24.05] - creeaza un nou proiect
+-un proiect nou se creeaza cu comanda:
+ng new Inventory
+-folosind Angular vom crea interfata web pentru aplicatia noastra de inventariat
+-Angular routing = daca avem mai multe pagini sau URL-uri in aplicatie => selectam optiunea "y" cand cream un nou proiect
+[25.45] - cu ce vrem sa se faca stilizarea paginilor in Angular
+-de regula alegem CSS, mergem pe varianta clasica
+-in SCSS de exemplu putem crea palete de culori, clase, etc.
+SCSS, Sass, Less = variantele compilabile ale CSS
+.in felul in care TypeScript este compilabil cu JavaScript, adica se transforma in cod JavaScript, asa si SCSS, Sass, Less se transforma in cod CSS
+[pana la 27.50]
+-in Terminal trebuie sa rulam "cmd" si nu "powershell
+-daca nu merge in Terminal, incercam direct in Command Prompt
+[pana la 29.30] - rezolva problema ca nu a rulat Command Prompt ca Administrator
+[30.10]
+-pe Linux, management-ul proiectelor Angular se realizeaza mai repede, in sensul ca ruleaza comenzile mai rapid, de ex. "ng new Inventory" etc.
+-Linux are un mai bun management al fisierelor
+-de asemenea, Linux e case sensitive cand vine vorba de numele fisierelor, dar Windows nu => pe Linux folosim in cod acelasi nume al fisierului pe care l-am definit
+[31.10]
+-pentru a porni aplicatia Angular:
+ng serve --open
+-in "src" sunt fisierele aplicatiei noastre
+-aplicatia poate fi accesata la adresa "localhost:4200"
+-"--open" deschide in browser adresa "localhost:4200"
+[33.15] - modifica "app.component.html"
+-pentru ca a dat "y" pentru a folosi Angular Routing, trebuie sa lasam in template-uri (in .html) linia:
+<router-outlet></router-outlet>
+[34.05] - structura Angular
+-Angular este structurat pe module
+-"app module" = modulul de baza al aplicatiei, un fel de modul radacina
+-in fiecare modul putem avea mai multe componente
+-de exemplu putem avea modulul de "Routing" cu care putem accesa diferitele pagini ale aplicatiei
+-mai putem avea "Component", "Service"
+-in "Component" putem modela fiecare functionalitate a aplicatiei, de ex. sa avem o componenta pentru "header"-ul paginii
+-prin "Service" putem avea cod comun care sa fie folosit de mai multe componente, putem stoca date si putem transmite aceste date intre componente, de ex. cross component communication
+[35.45] - structura unui modul din .pdf
+-in template avem codul .html care defineste structura componentei
+-putem avea directive, pe care le putem folosi pentru modificarea elementelor HTML, de ex. "ngIf" care este un directiv logic
+-serviciile se injecteaza in componente
+[37.20] - prima componenta in .pdf
+-".spec.ts" = unit teste care se pot efectua pe componenta respectiva
+[39.10]
+-"app-component" este componenta-radacina
+-comanda pentru generarea unei componente este:
+ng g c HomePage = ng generate component nume_componenta
+[41.10] - despre "@Component"
+-"selector" = cum se va numi si apela componenta
+-"templateUrl" = structura componentei definita prin cod .html
+-"styleUrls" = stilizarea componentei definita prin cod .css
+[42.05] - "app.module.ts"
+-s-a importat automat componenta pentru a putea fi folosita in aplicatie
+[43.35] - "index.html"
+-"<app-root>" = legatura intre "index.html" si "main.ts"
+.este vorba de "<app-root>" din "index.html"
+-din "main.ts" se lanseaza practic aplicatia
+-"selector" din "@Component" da numele tag-ului pentru componenta "home-page" => "<app-home-page>"
+[46.20]
+-evident ca numele din "selector" trebuie sa coincida cu numele din tag
+[47.35]
+-daca vrem sa vedem cand se initializeaza o componenta, ne uitam in metoda "ngOnInit()"
+.putem pune acolo un "console.log()"
+-este util pentru pasul de debug
+[48.40]
+-odata ce aplicatia trece in production mode si este bundle-uita, aceste "console.log()" sunt automat sterse => nu se face leak de informatii in productie
+[49.10] - Routing in Angular
+-noi in aplicatie vrem sa avem mai multe pagini, "Contact", "Scan item", etc.
+-daca nu am dat "y" la Angular Routing la initializare, folosim comanda...
+ng generate module app-routing --flat --module=app
+...pentru a configura proiectul sa foloseasca Angular Routing
+-se genereaza practic un modul care ne permite aceasta functionalitate
+[52.10] - creeaza "menu-items"
+-vom genera componentele "inventory", "scan", "contact" si "add-item" toate sub folder-ul "menu-items"
+[54.15]
+[55.55] - vom crea rutarea pentru paginile din aplicatie
+-vom folosi un array "Routes" in "app.routing-module.ts":
+const routes: Routes = [
+	{ path: '', component: HomePageComponent },
+	{ path: 'add-item', component: AddItemComponent },
+	{ path: 'contact', component: ContactComponent },
+	{ path: 'inventory', component: InventoryComponent },
+	{ path: 'scan', component: ScanComponent }
+];
+-asta ne va permite sa accesam "localhost:4200/inventory", etc.
+-trebuie sa avem grija la String-ul "path" sa il introducem corect => nu vor aparea erori la compilare, ci la runtime
+-"HomePageComponent" si celelalte au fost deja importate cu "import .."
+-deoarece trebuie sa importam in "app.module.ts" toate componentele pe care vrem sa le folosim in aplicatie si noi deja le-am importat in "app.routing-module.ts", vom exporta o constanta "RoutingComponent"...
+export const RoutingComponent = [
+	HomePageComponent,
+	AddItemComponent,
+	ContactComponent,
+	InventoryComponent,
+	ScanComponent
+];
+...pe care sa o importam in "app.module.ts"
+import { AppRoutingModule, RoutingComponent } from './app-routing.module';
+-astfel, nu mai avem nevoie sa punem fiecare componenta pe care am generat-o sub array-ul "declarations" din "@NgModule"
+.vom pune in schimb direct "RoutingComponent" sub "declarations"
+[1.00.45] - vom adauga rutele ca un meniu, un navigation bar
+-pentru navigation bar, modificam "app.component.html" unde punem un "<nav>":
+<nav>
+	<a routerLink="/add-item">Add Item</a>
+	..
+</nav>
+-dupa ce am adaugat "<nav>" ar trebui sa putem accesa alte pagini si URL-ul sa se schimbe in functie de care pagina o accesam
+[1.05.30] - modifica "app.component.css"
+[1.08.10] - despre "routerLink"
+-se observa ca in "<nav>" nu mai avem "href", avem "routerLink"
+-prin Angular putem avea anumite atribute, in cazul nostru "routerLink" este un "attribute directive"
+-aici, folosim acest "attribute directive" pentru a face routing in aplicatia noastra
+[1.10.10]
+-mai adauga "a:hover" in "app.component.css"
+-putem folosi "opacity: 0.5;"
+[1.13.05] - glumita cu "marquee", textul ala care se plimba stanga-dreapta
+[1.14.10] - serviciile
+-serviciile se pot folosi in locul "@Input" si "@Output"
+-de asemenea, conexiunea cu baza de date se poate realiza cu un serviciu
+.aici, un serviciu este bine-venit pentru ca putem avea situatia in care mai multe componente au nevoie de legatura cu baza de date
+-se merge pe ideea ca se face conexiunea cu baza de date, se aduc toate datele despre inventar, dar o componenta poate are nevoie doar de numele unui produs, de exemplu
+[1.15.40] - despre servicii
+-de exemplu pentru partea de "Contact", unde vrem sa afisam informatii despre depozitul in care pastram inventarul
+-creeam folder-ul "app-logic" unde vom genera serviciul
+-putem crea un folder in care sa punem componente care sunt specializate doar pe citirea si scrierea in baza de date
+[1.17.50] - generam serviciul
+-folosim comanda:
+ng g service ContactProvider
+-serviciul propriu-zis il gasim in "contact-provider.service.ts"
+-serviciile se injecteaza in componente => se observa "@Injectable" din "contact-provider.service.ts":
+@Injectable({
+	providedIn: 'root'
+})
+export class ContactProviderService { .. }
+-"providedIn" ne spune ce fel de serviciu avem, daca va fi aceeasi instanta injectata in toate componentele sau daca vor fi instante diferite pentru fiecare componenta in parte
+[1.21.10] - cream un nou tip de date
+-vom folosi acest nou tip de date pentru a returna informatiile despre depozit => vom crea interfata "ContactData":
+export interface ContactData {
+	info: String,
+	phone: String,
+	openDays: String,
+	schedule: String,
+	address: String
+}
+-acest tip de date va fi returnat din interiorul serviciului "ContactProviderService":
+private data = <ContactData>{
+	info: 'Storage Units near Midtown in Atlanta, GA 30312',
+	phone: '555-155-2555',
+	openDays: 'Monday-Friday',
+	schedule: '09.00-17.00',
+	address: 'Atlanta, GA 30312'
+}
+[pana la 1.23.15] - creeaza interfata "ContactData"
+-tot ce facem in "ContactProviderService" este sa returnam acea variabila "data" de mai sus printr-o metoda "GetData()":
+GetData(): ContactData {
+	return this.data;
+}
+[1.26.10]
+-folosim acest serviciu "ContactProviderService" in componenta noastra de "Contact" => injectam serviciul in constructorul "Contact":
+constructor(private provider: ContactProviderService) { }
+-se observa ca in "contact.component.ts", lipseste serviciul din array-ul "providers" (nu exista acolo) => se pastreaza instanta de serviciu injectat pe care a primit-o in constructor
+-datele care vin dinspre provider-ul (serviciul) "ContactProviderService" vrem sa le afisam => cream variabila "dataReceived" de tip "ContactData"
+[1.28.10]
+-am declarat "dataReceived" ca "private" => nu vom putea face teste pe ea
+-cand componenta "Contact" este initializata, vrem ca datele primite prin intermediul serviciului sa fie incarcate in aceasta "dataReceived"
+-de aceea, vom folosi "ngOnInit()":
+ngOnInit(): void {
+	this.dataReceived = this.provider.GetData();
+}
+-se observa ca "GetData()" este o metoda a serviciul si nu a "contact.component.ts"
+[1.30.15] - modifica "contact.component.html"
+-foloseste data binding cu string interpolation:
+<div>
+	<b>Deposit information</b>:<i>{{ dataReceived.info }}</i><br>
+	<b>Deposit phone</b>:<i>{{ dataReceived.phone }}</i><br>
+	..
+</div>
+-se observa ca am facut data binding cu variabila "dataReceived"
+-in cazul de fata, string interpolation, vorbim de one-way binding
+[pana la 1.33.40] - modifica "contact.component.html"
+-trebuie sa adaugam "dummy data" in "contact-provider.service.ts"
+[pana la 1.36.40] - adauga "dummy data"
+[1.38.40] - intrebari
+-"app.component.html" se incarca la pornirea aplicatie
+-prin "<router-outlet>" se afiseaza componenta pe care noi am ales-o din "<nav>", din navigation bar
+-prin "<router-outlet>" se face legatura efectiva intre URL si componenta, de ex. "HomePageComponent", in fisierul "app-routing.module.ts"
+-se poate observa in consola ca atunci cand se apasa unul din link-urile din navigation bar, continutul "index.html" se schimba => daca am selectat "Contact", in "index.html" apare "<app-contact..>..</app-contact"> etc.
+-ideea e ca nu se reincarca pagina, doar se schimba in mod dinamic o parte din "index.html"
+[1.42.15] - [TEME]
+-sa stilizam pagina aplicatiei
+-sa adaugam alte elemente de meniu
+-sa facem un serviciu cu datele despre depozite
+[1.43.55] - alte intrebari
+-avem partea de client prin intermediul serviciilor
+-partea de client face request-uri catre partea de server
+-partea de server trimite inapoi un raspuns pe care noi il luam cu un serviciu si le afisam in pagina folosind Angular
+-cele doua parti le vom uni la un moment dat
+[1.46.55] - extensii din VSC
+-"Material Icon Theme"
+[fa si tu un Echo Test Call inainte sa te conectezi]
+[era volumul la casti dat foarte jos, trebuie lasat pe maxim]
+
+[TEME]
+-sa facem un serviciu cu datele despre depozite
+-pentru ca am pus...
+<ng-template>
+	{{ warehouse.address.line2 }}<br>
+</ng-template>
+...nu mai apare blocul de mai sus daca "line2" nu este definita in adresa
+-cum sa suprascriem toString() (?)
+-diferenta intre constructor si "ngOnInit" si in care sa initializam serviciul (?)
+-cum putem defini un stil global, doar pe cateva atribute si daca vrem individual in fiecare componenta sa le suprascriem (?)
+-in "WarehouseService", array-ul de "warehouses" era deja initializat acolo
+-in schimb, in "InventoryItemService", array-urile nu erau initializate, trebuia sa apelam "GetLaptops()" si "GetPhones()" pentru a prelua datele din serviciile "LaptopService" si respectiv "PhoneService" => in "InventoryItemService" a trebuit sa initializez cele doua array-uri in "constructor()"
+-daca te uiti in consola, "ngOnInit()" din "InventoryItemService" nu e nici macar apelat => nu puteam initializa cele 2 array-uri acolo
+-se mai observa ca nu am nevoie de serviciul "InventoryItemService" in componenta "Inventory"
+.eu credeam ca trebuie sa fie inclus serviciul in componenta care gazduieste componenta mai mica, de ex. "Inventory" gazduieste "InventoryItemDetail" => de aia si mergea fara sa instantiez serviciul in "contact.component.ts"
+.eu uitasem sa scot "ContactDataProvider" din "contact.component.ts" si dupa ce l-am sters tot a mers "warehouse-detail"
+-eu nici nu aveam nevoie de el si nici macar nu il foloseam in "contact.component.ts"
+-aveam nevoie de el, in schimb, in "<app-warehouse-detail>" unde il si instantiam si initializam array-ul de "warehouses"
+-se observa ca si in "inventory-item-detail.component.ts" ca folosesc "ngOnInit" ca sa initializez array-ul de "laptops" si cel de "phones"
+-deci unde ai nevoie de serviciu, adica in ce componenta, acolo il si instantiezi
+
+
+--------------------CURS 4--------------------
+[Waters-4.mp4]
+[4.50]
+[6.00] - de ce e nevoie de TypeScript?
+-JavaScript si alte limbaje evolueaza greu
+-se aduc incet incet aceste facilitati din TypeScript care sa ne faca viata mai usoara
+[7.05]
+-let, const
+-async, away = syntactic sugar
+-facilitarea programarii functionale "functional programming":
+.pentru array si object s-au introdus map(), reduce(), etc.
+-a ramas in continuare sintagma "don't break the web" => toti scriitorii de librarii foarte greu fac soft care sa nu fie backward compatibile => se incearca adaugare in paralel cu functionalitatile deja existente => ES 8 inca suporta chestii din primul spec, ES 1
+[14.10] - debug hard way
+-am dat pe "Show all automatic debug configurations" -> Node.js
+-daca nu apare "Node.js" cautam cu keyword "debug"
+-o sa alegem "ts:node:dev" pe care il vom porni in modul debug
+-practic rulam scriptul "ts:node:dev" in modul debug
+-daca totul merge, ar trebui sa se opreasca in VSC si in browser sa ramane hanging, sa se tot incerce incarcarea paginii
+-se poate folosi "DEBUG CONSOLE" de langa "TERMINAL" in care putem scrie numele unei variabile si sa ii vedem continutul in timp real
+-poti chiar sa ii modifici valoarea variabilei on-the-fly
+[18.30] - integrarea VSC cu Git
+-"node_modules" e ignorat
+-poti da "Pull", "Push", "Commit All", etc. direct din VSC
+[22.10] - unit test
+-modulul "jasmine" pentru unit test
+npm install -g jasmine
+-TypeScript pentru jasmine:
+npm i -D @types/jasmine
+[24.40]
+-jasmine ne ajuta sa scriem unit teste astfel: descrii o functionalitate si ce ar trebui sa se intample si se evalueaza la sfarsit o conditie:
+describe("test suite", () => {
+	it("test 1", () => expect(1).toBe(1, "this test should not fail"));
+	it("test 2", () => expect(1).toBe(2, "this test failed miserably"));
+});
+-"describe", "expect" si "toBe"
+-prin bootstrapping se refera ca folosesti comanda "init", de exemplu "jasmine init"
+-jasmine se poate initializa cu "init"
+-in urma initializarii se creeaza folder-ul "spec" langa "src"
+-in "spec/support" trebuie sa se afle jasmine.json
+-locul in care jasmine se uita pentru a testa fisiere este in folder-ul definit de "spec_dir" din jasmine.json
+-fisierele cu ".spec" trebuie sa fie in folder-ul "spec" (sau in folder-ul definit de "spec_dir"
+-cred ca am avut eroare ca nu rula jasmine pentru ca nu era instalat sub "devDependencies" si era instalat doar global
+[29.30] - cum facem sa unit testam fisiere de TypeScript
+-in primul rand, redenumim din .js in .ts
+-de asemenea, trebuie sa modificam fisierul de configurare jasmine.json
+.daca vrem sa testam fisiere .ts, trebuie sa actualizam si "jasmine.json" ca sa utilizeze fisiere .ts in loc de fisiere .js
+-plus, trebuie sa instalam varianta TypeScript de jasmine
+-comanda pentru a testa un unit test, este "jasmine" simplu in folder-ul cu aplicatia respectiva, adica directorul radacina:
+jasmine
+.nu mergea sa testez cu jasmine pentru ca nu eram in folder-ul "CleanExpress", nu eram in directorul radacina
+-exista pasul intermediar in conversia din .ts in .js, adica atunci cand se transpileaza codul, acel "ts:node:dev" => in scriptul din package.json pentru "test:unit" trebuie sa includem acel "ts-node-dev":
+"test:unit": "ts-node-dev node_modules/jasmine/bin/jasmine --config=spec/support/jasmine.json",
+-acest nou script va trebui inclus in scriptul "test" printr acel alias "test:unit":
+"test": "npm run test:unit",
+[32.15] - vom incepe sa folosim "npm run test"
+[33.35] - ce putem testa la "a-json.model.ts"
+-vom introduce o instructiune if() pentru cazul in care nu primim un parametru in constructor
+-de aceea, punem "?" in constructor pentru ca s-ar putea sa nu primim un parametru => obiectul model din constructor este optional acum
+-daca parametrul e optional, nu ai cum sa il initializezi si nu poti sa il initializezi cu ceva default
+-conventia spune sa folosim pentru fisierul de unit test acelasi nume ca fisierul pe care vrem sa il testam
+[36.40] - construim unit test pentru "a-json.model.ts"
+-ca sa testam doar "a-json.model.ts" trebuie ca celelalte fisiere de unit test sa nu interfereze => comentam codul din ele sau le stergem
+[40.20] - ce am testat?
+-pentru clasa "a-json.model", vom initializa un obiect de aceasta clasa, fara parametri
+it("init with undefined", () => {
+	const model = new AJsonModel();
+	expect(model).toBeDefined();
+	expect(model.key1).toBe("value 1");
+});
+-codul de mai sus ne spune practic ca se asteapta sa se initializeze corect un obiect din aceasta clasa si ca valoarea pentru proprietatea "key1" a acestui obiect sa fie "value 1", pentru ca asa am definit constructorul pentru clasa
+.daca nu primeste un obiect "model" ca parametru, vrem ca proprietatea "key1" sa se initializeze cu valoarea "value 1"
+[41.20]
+-ne propunem sa facem unit teste care sa testeze clasele noastre in toate modurile posibile pentru a ne asigura ca functioneaza corect
+[42.00] - TTD = test driven development
+-mai intai scrii testele si apoi clasele
+-practic, inainte sa te apuci de treaba stii unde vrei sa ajungi => abia apoi te apuci de treaba
+[42.40]
+-modulul "istanbul", un script care ne arata progresul nostru in a acoperi codul cu unit teste
+-am pus '"istanbul": "^1.1.0-alpha.1",' in package.json ca avem nevoie strict de versiunea asta, apoi am dat "npm install"
+-folosim "npm run test:coverage" ca sa vedem progresul, dupa ce am pus alias-ul "coverage" in package.json:
+"test:coverage": "ts-node-dev node_modules/istanbul/lib/cli.js cover -e .ts -x \"*.d.ts\" -x \"*.spec.ts\" node_modules/jasmine/bin/jasmine.js --config=spec/support/jasmine.json",
+-practic, se face o mapare intre codul de testat si test
+[47.25] - explica despre "Coverage summary"
+-e practic o statistica despre cat la suta din clasa noastra a fost testata
+-prin "Branches" se refera la if() si else{}
+-face si un raport .html la adresa "D:\Projects\Facultate\II\II_Sem_2_10_REPOS\Waters\Code\4\Curs\CleanExpress\coverage\lcov-report" si in fisierul "a-json.model.ts.html"
+[48.50] - explica fisierul .html
+-unde e cu rosu inseamna ca nu a intrat => doar 50% Branches, in cazul nostru
+-trebuie sa decomentam codul din testul pentru "a-json.model.ts"
+-istanbul ne spune de cate ori a intrat pe o instructiune
+[49.55] - restul de teste din "a-json.model.ts"
+-se initializeaza obiectul cu un singur key, "key1":
+it("init with key1", () => {
+	const value1 = "abc";
+	const model = new AJsonModel({ key1: value1 });
+	expect(model).toBeDefined();
+	expect(model.key1).toBe(value1);
+});
+-din nou, se asteapta o initializare corecta a obiectului si in care sa se regaseasca proprietatea "key1" egala cu valoarea "abc"
+-daca initializam cu un key care nu exista:
+it("init with non existing key", () => {
+	const nonExistingKeyName = "nonExistingKey";
+	const inputModel = <any>{};
+	inputModel[nonExistingKeyName] = "random";
+	const model = new AJsonModel(inputModel);
+	expect(model).toBeDefined();
+	expect((<any>model)[nonExistingKeyName]).not.toBeDefined();
+});
+-practic, se construieste un obiect cu o proprietate care nu ne intereseaza, acea "nonExistingKey"
+-ne asteptam ca acel obiect sa fie aruncat si sa se nu se initializeze un obiect cu acea key-e inexistenta => .not.toBeDefined();
+[pana la 52.00]
+-nu mergea un test pentru ca se astepta exact "value 1", dar el avea scris "value 1 ", cu un spatiu
+-se poate verifica mai intai "npm test" simplu inainte sa se treaca la "npm test:coverage"
+-de asemenea, uitase sa actualizeze constructorul din "a-json.model.ts" cu parametrul optional, adica sa aibe "?"
+-daca nu se actualizeaza constructorul, parametrul "model" din constructor, daca nu exista, i se atribuie un obiect gol "{}" => va intra mereu pe prima ramura din if(), nu va intra pe else{}
+-daca un parametru este optional, nu ai cum sa il initializezi cu o valoare default
+[pana la 56.40] - rezolva problemele de mai sus
+[pana la 1.06.00] - rezolva problema cu "spec/support", structura directoarelor si problema aia cu "import statement outside module"
+[1.06.05] - testare in izolare si mocking
+-cand avem dependinte intre clase si model, cum ar fi la noi "a-json.model", ideal ar fi sa se creeze niste versiuni mock, "fake", pe care sa le putem testa 
+-daca "falsificam" aceste dependinte ne putem da seama ca se putea scrie mai bine codul respectiv
+-e vorba de scris cod care sa rezolve problema alaturi de scris cod care sa iti verifice codul => iti poti da seama de imbunatatiri pe care sa le poti face asupra codului care sa rezolve problema
+[1.08.10] - refactoring pe rute
+-in "a-json.route.ts" vrem sa scapam de dependinta "*" din importuri si sa aducem doar elementele din Express care ne intereseaza
+-dupa ce am suprascris "a-json.route.ts", trebuie sa modificam in app.ts, am actualizat sa ia ca ruta functia "setAJsonRoute"
+[1.10.10]
+-am despartit partea care se ocupa de tratarea request-ului ("handler"), de setup-ul ei
+.doar am pus intr-o functie "setAJsonRoute()", functie pe care o exportam, legatura cu handler-ul pentru verbul GET:
+export function setAJsonRoute(router: Router): Router {
+	router.get("/", getAJson);
+	return router;
+}
+function getAJson(_req: Request, res: Response, next: NextFunction) {
+	try {
+		const jsonData = aJsonService.getAJson();
+		return res.json(jsonData);
+	} catch (ex) {
+		return next(ex);
+	}
+}
+-practic, in setAJsonRoute(), functia preia un Router si returneaza tot un Router => in app.ts trebuie sa ii dam ca parametru o instanta de Router din Express
+.acelasi lucru facem si pentru ruta de "discovery/client"
+-totusi, il returneaza abia dupa ce i-a atasat handler-ul definit de functia "getAJson()"
+-am scapat de liniile de genul...
+module.exports.discoveryClientRouter = discoveryClientRouter;
+...pentru ca folosim...
+export { discoveryClientRouter };
+...sau direct...
+export function setdiscoveryClientRouter(router: Router): Router {..}
+...adica "export function"
+[1.12.55]
+-Router in "a-json.route.ts" si "discovery-client.route.ts" este doar o interfata => in codul JavaScript compilat, Router nu se va materializa in nimic => modulul "discovery-client.route.ts" nu va avea dependinte de Express absolut deloc, spre deosebire de vechea implementare => se poate testa aceasta ruta cu un grad mare de izolare
+[1.15.55] - inlocuim serviciile astfel incat sa aduca date din baza de date
+-in loc sa folosim doar GET, vom folosi si POST pe ruta de JSON
+[pana la 1.24.05] - rezolva problemele cu mongo si Compass
+-pot sa ai cai incomplete folosite sau sa fi pus de doua ori calea sau sa nu existe activ serviciul de mongo si Compass sa nu se poata conecta
+[1.24.20] - despre mikro-orm
+npm i -s mikro-orm mongodb
+-mikro-orm e un layer intre mongodb (baza de date) si controller-e noastre care abstractizeaza partea de conectare, partea de selectare a datelor, driver-elor pentru baza de date, etc.
+npm i -D @types/mongodb
+-pachetul de mai sus ne ajuta sa facem legatura cu baza de date
+-pentru ca mikro-orm sa poata fi initializat are nevoie de niste variabile de mediu (environment)
+-mergem in env.ts si adaugam de unde il luam pe mongo si numele bazei de date:
+MONGO_URL: "mongodb://127.0.0.1:27017",
+DB_NAME: "a-json-db"
+-daca nu exista acea baza de date, la prima conexiune se va crea
+[1.27.00] - initializam conexiunea in app.ts
+[1.28.35] - await
+-"await" permite scrierea de cod asincron
+-am pus "await" la initializarea mikro-orm pentru ca nu vrem sa asteptam sa se execute callback la initializarea aplicatiei => vrem doar sa se execute la un moment dat, deci pleaca in mod sincron de capul ei
+-despre o functie "async" stim ca nu se executa pe loc, va astepta terminarea (revenirea din callback) a tuturor functiilor "await" care sunt declarate inauntrul ei
+-antetul functiei, prin acel "Promise"...
+async function makeApp(): Promise<express.Application> {..}
+...spune ca aceasta functie va returna la un moment dat o aplicatie de tip Express
+-aplicatia nu mai merge pentru ca trebuie actualizat "index.ts" pentru ca listen() nu mai e o functie
+-makeApp() returneaza acum o promisiune => in index.ts trebuie sa folosim un "then()" si un "catch()"
+[1.33.35] - problema cu "entities: [],"
+-framework-ul de mikro-orm asteapta niste entitati pe care sa le poata mapa pe baza de date => trebuie sa creeam o entitate
+-ca sa putem tipiza in functiile cu "=>" putem folosi o paranteza extra intre care sa punem parametrii:
+catch((error) => console.log('error (index.ts):', error));
+.inainte aveam "catch(error => ..);"
+-dupa ce am tipizat in "index.ts" ar trebui sa avem acea eroare legata de framework-ul mikro-orm
+-pentru ca foloseam "require" in loc de "import", TypeScript nu stia sa infereze tipul pentru "app" si pentru "error" in index.ts
+[1.37.40] - modelul de entity
+-creeam folder-ul "entities" si "a-json.entity.ts":
+@Entity()
+export class AJson implements MongoEntity<AJson> {
+
+    @PrimaryKey()
+    _id!: ObjectId;
+
+    @SerializedPrimaryKey()
+    id!: string;
+
+    @Property()
+    key1!: string;
+
+    @Property()
+    "key 2"!: string;
+
+    constructor(model?: Partial<AJson>) {
+        if (!model || !(model instanceof Object))
+            model = <AJson><any>{};
+
+        this.key1 = model.key1 || "value 1";
+        this["key 2"] = model["key 2"] || "value 2";
+    }
+}
+-"@Entity()" este un decorator si este folosit pentru adnotare
+-in "key1!: string;", "!" desemneaza obligatoriu, nu poate lipsi din obiectul respectiv
+.spre deosebire de "?" care desemneaza optional
+-mikro-orm este interesata de adnotare pentru ca vazand "@Entity" stie ca poate folosi entitatea respectiva pentru a o mapa cu un obiect ce exista in baza de date
+.mai mult, poate face legatura intre proprietatea "_id" si cheia primara a intrarii in baza de date => face corespondenta intre "_id" si primary key
+[1.40.45] - despre clasa AJson
+-in mare parte seamana foarte mult cu ce aveam pana acum in "a-json.model.ts", insa avem acum acea cheie primara in plus
+-vom folosi un "index.ts" in directorul entities pentru a lista acolo in mod preliminar toate entitatile pe care le vom crea la un moment dat
+-acum putem sa inlocuim "entities: []," cu acest entity creat
+-era "export default [AJson];", pentru ca voia un array => [] => eu trimiteam un {}
+[1.44.20]
+-mikro-orm creeaza un "entity manager" pe care trebuie sa il dam mai departe => avem nevoie de un nou middleware:
+app.use((req: IExpressRequest, _res: express.Response, next: express.NextFunction) => {
+	req.em = orm.em.fork();
+	next();
+});
+-practic am definit un entity manager per fiecare request
+-proprietatea de "EntityManager" din IExpressRequest va fi populata in handler-ul de mai sus
+-prin "fork()" se trage o instanta de entity manager din orm
+[1.47.30]
+-practic, putem comunica cu mongo prin ruta A_JSON_ROUTE
+-deoarece lucram cu JSON pe http, avem nevoie de "body-parser", pe care il instalam si importam:
+npm install body-parser -s
+npm i -D @types/body-parser
+[1.51.50] - body-parser
+-un http request e compus din mai multe bucatele care vin in mod asincron, si cand il trimitem si cand il primim => header si body trebuie citite separat
+-body-parser ne asigura ca se face parsarea (interpretarea) corecta a request-ului
+[1.54.30] - trebuie sa rescriem serviciul de "a-json"
+-acum avem un serviciu care expune (exporta) un "getAJson()" si un "saveAJson()"
+-mai intai se verifica daca avem o instanta valida de EntityManager, inainte de a aduce date din baza de date
+-folosim apoi un parametru de tip String care sa ne dea cheia acelui JSON pe care vrem sa il aducem din baza de date => vrem ca din API-ul nostru sa putem returna un parametru cu un anume "key1":
+localhost:8080/api/json?key1=aditza
+[1.57.10]
+-gasirea acelui JSON cu "aditza" se face cu functia "findOne(AJson, {key1})", unde "key1" este parametrul de tip String de mai sus
+-findOne() inlocuieste acel statement SQL, de genul "SELECT .. FROM .. " etc.
+-acelasi workflow il gasim si in functia saveAJson()
+-functia "persistAndFlush()" este acea care scrie JSON-ul daca acesta nu exista in baza de date
+-poti avea mai multe apeluri de functia "persist()" urmate de un "persistAndFlushAll()" care se asigura ca se vor executa toate
+-ruta este cea care face legatura intre path-ul identificat de Express si serviciul nostru "a-json" abia rescris
+[2.01.00] - trebuie sa rescriem ruta de "a-json"
+[2.06.05] - cum testam noua ruta
+-avem nevoie de Postman pentru ca broswer-ul face un request GET, by default
+-daca mergi la "api/json", adica fara niciun parametru, ar trebui ca broswer-ul sa afiseze "{}", adica un obiect gol
+-in Postman poti importa un "query" / request cu Import -> Raw Text -> "Continue":
+curl -X POST -iH "Content-Type: application/json" -d "{\"key1\":\"aditza\"}" http://localhost/api/json
+-trebuie sa punem portul care trebuie
+[2.09.10] - POST
+-daca totul merge cum trebuie, ar trebui sa primim un status code 201 => CREATED
+-in plus, ar trebui sa fie returnat noul obiect creat
+-se poate verifica si in Compass faptul ca s-a creat o noua baza de date si ca s-a introdus un obiect JSON cu cheia "aditza"
+-ar trebui sa apara o noua baza de date cu acelasi nume pe care l-am dat in env.ts
+[2.10.20] - GET
+curl -i http://localhost/api/json?key1=aditza
+[2.11.25] - recap
+-prin mikro-orm construim un entity manager care face mai usoara comunicarea intre aplicatie si baza de date
+-dupa ce construim entity manager, ii facem un "fork()" la fiecare request pentru a il avea mai departe in aplicatie
+-configuram body-parser-ul
+-observam ca in ruta de "a-json" avem doua path-uri pe care le tratam, unul cu GET si unul cu POST
+.fiecare dintre cele 2 are handler-ul propriu
+-acum avem "async" si "await" in callbacks
+[2.13.10]
+-in functia getAJson() din "a-json.route.ts"...
+aJson = await jsonService.getAJson(req.em, req.query.key1 as string);
+...primeste ca parametru un entity manager creat in app.ts si acel "key", care este un parametru primit in URL, de exemplu "?key1=aditza"
+-de asemenea, functia reprezinta serviciul care aduce un JSON din mongo prin entity manager de orm
+-acest entity manager face parte din obiectul "request"
+.ne aducem aminte ca am creat interfata IExpressRequest care adauga o proprietate numita "em" care reprezinta exact acest entity manager din obiectul "request"
+[2.13.50] - POST
+-nu avem nevoie de parametri, pentru ca nu ne mai uitam doar in URL, ci in corpul request-ului (body of the request)
+-adica acel "?key1=aditza" trebuie sa fie prezent in corpul request-ului astfel:
+{"key1":"aditza"}
+-prin entity manager, aplicatia comunica cu mongo si poate returna date din baza de date, de exemplu prin functia "findOne()" sau "persistAndFlush()"
+-in "a-json.route.ts":
+// daca a aparut o eroare, mergem cu aceasta eroare la urmatorul middleware
+if (aJson instanceof Error) {
+	return next(aJson);
+}
+// daca nu a aparut o eroare, intoarcem status code 201 => CREATED
+// de asemenea, intoarcem fisierul JSON rezultat
+return res.status(201).json(aJson);
+-la ultimul "return" e fain ca se pot inlantui functii
+[pana la 2.18.00] - rezolva problema cu 500
+-lipsea middleware-ul de "fork", ala cu "orm.em.fork()"
+-nu trebuia pus ultimul, conteaza ordinea
+-inainte sa accesam rutele, trebuie sa construim acel entity manager
+-middleware-ele merg in cascada prin next()
+[2.22.00] - ce sunt promises
+-incepem executia unei functii si cand termina, vino inapoi si zi-mi ca ai terminat cu un raspuns "fulfilled (succes) / rejected (eroare)"
+-in mod sincron, instructiunile sunt executate in ordinea in care sunt scrise
+-cand instructiunile sunt incluse intr-o promisiune, executia se muta "in lateral"
+-daca in promise, scriem un cod sinc, codul va rula tot sinc => este important sa scriem de asemenea instructiuni asincrone
+-desi noi vedem un "await" de o functie, doar functia respectiva este oprita pana se primeste raspuns de la ea, dar ea ruleaza in paralel pentru ca in acelasi timp in care se executa functia respectiva, procesul merge mai departe si poate executa alte functii / instructiuni / comenzi
+-promisiunile native sunt transformate de anumite librarii astfel incat sa le faca sa se execute intr-adevar pe un thread paralel => nu este real "parallel threading" dar totusi mai bun decat o executie in lant 
+http://bluebirdjs.com/docs/getting-started.html 
+https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/
+https://nodesource.com/blog/worker-threads-nodejs/
+
+--------------------
+-nu mergea sa porneasca aplicatia pentru ca nu era serviciul de mongo pornit (start_mongo.bat)
+-daca am fi facut debug la un moment dat ar fi dat un timeout cu eroarea:
+error (index.ts): MongoServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+-daca la linting da eroarea cu "tab indentation expected" inseamna ca nu s-a facut "tab", ci doar 5 spatii una dupa alta => scrie in Notepad++ un tab si da-i cu copy/paste
+
+[2.19.00] - [TEME]
+-coverage cu Istanbul
+-unit teste pentru celelalte clase
+-sa lucram de pe repo, partea cu Angular
+
+GitHub, 04-07
+--------------------
+-daca primim eroare pe o ruta => nu avem un listener inregistrat pentru ruta respectiva
+-dupa ce importam obiectul "app" in index.js, il folosim ca un callback pentru request-urile care vin catre server
+
+04. TypeScript
+--------------------
+Quick intro
+----------
+-TypeScript se foloseste pentru a tipiza si pentru a ne proteja de uzul impredictibil al limbajului JavaScript
+
+Convert our Node app to typescript
+----------
+-folosind "ts-node-dev", nu mai face procesul de transpilare pe care l-ar face in mod automat, pentru ca nu are rost sa transpileze daca au aparut erori la compilare
+-transpilare = din .ts in .js
+-deoarece am pus "--watch" in '"ts:node:dev": "ts-node-dev src/index --watch"', de fiecare data cand se modifica fisierul se va reporni server-ul
+-in fisierul "tsconfig.js" avem regulile pentru compilatorul TypeScript
+-pentru a verifica erorile de compilare si a face transpilare, folosim "npm run type:check"
+-putem folosi scriptul de "start" pentru a face tot procesul de compilare si verificare, dar fara transpilare cu '"start": "npm run type:check && npm run ts:node:dev"'
+-cum se face update imports:
+const x = require("y") => import * as x from "y";
+const { x } = require("y") => import { x } from "y";
+-cum se face update exports:
+module.exports.x = x; => export { x };
+module.exports.x = y(); => const x = y(); export { x };
+-regula '"noImplicitAny": true' din "tsconfig.js" ne forteaza sa nu lasam "any" pentru variabile si sa le tipizam corespunzator, de exemplu "router: Router"
+-prin...
+log(message: Error | string)
+...ii spunem compilatorului ca "message" poate fi de ambele tipuri
+-cand nu stim ce date ne vin din surse externe, putem folosi o variabila de tip "any" si functiile "typeof", "instanceof", etc. pentru a verifica tipul, inainte de a lucra cu acea variabila
+.in .NET, nu putem face acest lucru, daca un parametru nu ia tipul pe care noi il declaram => nu merge binding-ul
+-in TypeScript nu merge sa adaugi proprietati on-the-fly => creezi interfete daca nu trebuie logica, altfel creezi clase
+-lint se foloseste pentru "cod style" si "consistency"
+-lint are propriul lui fisier de configurare "tslint.json"
+-ori il adaugam in scriptul de "start", ori folosim comanda "npm run lint" dupa ce am adaugat '"lint": "tslint --project ."' sub "scripts"
+-daca ai probleme cu "spaces" in loc de "tabs", e un buton pe bara de jos care te intreaba ce "Indentation" sa folosesti
+-"body-parser" se foloseste pentru a putea trata request-uri POST
+-"body-parser" ia tot corpul unui request (body of the request) si il face disponibil ca proprietatea "body" a obiectului numit "request" => accesam "request.body" si ajungem la corpul request-ului
+-e nevoie de body-parser pentru ca datele legate de un request vin pe bucati care vor fi "asamblate" la destinatie, iar body-parser face asta automat pentru oricate request-uri si mai mult, formateaza corpul intr-un mod inteligibil
+-"eval" se foloseste pentru a nu lasa "bundler-e" folosite in productie sa curete instructiunile "console.log"
+-totusi, "eval" nu permite liniilor de cod sa fie verificate => se recomanda evitarea folosirii "eval"
+
+05. Debugging Node.js apps
+--------------------
+-in fisierul "tsconfig.json", daca adaugam '"sourceMap": true,', adica sa fie lasat pe "true", atunci, cand facem debug, se va uita la fisiere .js originale, la fisierele sursa si nu la fisierele .js generate in urma transpilarii
+.practic, se face o mapare (mapping = asociere), intre codul TypeScript si codul JavaScript ce ruleaza la runtime in browser => asociaza codul sursa la codul runtime pentru a permite debug pe codul sursa la momentul runtime
+-am adaugat '"ts:node:debug": "ts-node-dev --inspect --watch -- src/index",' sub "scripts" pentru a nu modifica scriptul de "start"
+.am adaugat in schimb "start:debug" care include ce aveam pana acum in "start", dar combinat cu "ts:node:debug"
+-acum, daca intram in Chrome la adresa "chrome://inspect/", ar trebui sa apara aplicatia sub "Remote Target"
+-dupa ce deschidem "Open dedicated DevTools for Node", avem "(no domain)" care contine modulele native din Node si "file://" care contine fisierele sursa .ts si cele create de "ts-node-dev" in procesul de transpilare din .ts in .js
+-atentie, adresa "localhost:8080" trebuia deschisa intr-un Tab din Chrome
+-de asemenea, trebuia sa intru in debug hard way si sa folosesc acest nou script "start:debug", nu din Terminal
+
+06. Modules, packages, libraries
+--------------------
+Modules
+----------
+-"module loaders" se folosesc ca sa faca import de dependintele necesare unui fisier, "index.js" sa zicem, sa faca un request sa le incarce si abia apoi sa le faca disponibile spre a putea fi folosite in acel "index.js"
+-de asemenea, sa asigura sa incarce dependintele in ordinea corespunzatoare si de asemenea sa incarce celelalte dependinte ale dependintelor, asa numitele dependinte tranzitive
+-"require" e inlocuit in TypeScript de "import"
+-in "tsconfig.json" avem "target" care ii spune compilatorului TypeScript pentru ce versiune de JavaScript sa faca generarea de fisiere .js
+.adica sa faca procesul de transpilare compatibil cu o anumita versiune de JavaScript
+
+Packages, libraries
+----------
+-modulele sunt fisiere pe care le scriem noi si cu care vine Node
+-pachetele sau bibliotecile sunt third party dependencies
+
+node_modules
+----------
+-Express are nevoie de alte dependinte, pe care le instaleaza in "node_modules" deodata cu el
+-in productie, se folosesc "bundler-e", care extrag din toate dependintele si din toate dependintele tranzitive exact acele functii pe care le folosim si de care are nevoie aplicatia pentru a functiona
+-dependintele tranzitive sunt administrate de npm, de aia nu apar in package.json
+
+07. Testing
+--------------------
+Basics
+----------
+npm i -D jasmine
+npm i -D @types/jasmine
+-for every package you want to install the TypeScript variant
+-actualizam package.json si adaugam scriptul pentru unit test:
+"test:unit": "ts-node-dev node_modules/jasmine/bin/jasmine --config=test/config.unit.jasmine"
+.aici cand folosim "ts-node-dev", se face compilarea fisierelor, din .ts in .js si astfel Jasmine poate rula unit testele
+.noi vrem sa scriem in TypeScript, dar Jasmine vrea fisiere JavaScript => folosim ts-node-dev ca sa compileze fisierele din .ts in .js, pentru ca Jasmine sa poata rula unit testele
+-adaugam si script-ul de test "test": "npm run test:unit"
+-in fisierul de configurare pentru Jasmine, din "spec/support/jasmine.json", ii spunem unde sunt testele noastre sub "src"
+-we want to test TypeScript files, so we want to go into Jasmine config file and put ".ts" instead of ".js"
+-pentru un test sunt obligatorii "describe", "it", "expect" si "toBe":
+describe('a-json-model', () => {
+	..
+	describe('AJsonModel', () => {
+		it('should work exactly like above', () => {
+			const model = new AJsonModel();
+			expect(model).toBeDefined();
+			expect(model.key1).toBe('value 1');
+		});
+	});
+});
+-se pot crea teste imbricate => "describe" poate contine mai multe "describe"
+-daca am pune "toBe('value 2')", Jasmine ar afisa:
+Failures:
+1) a-json-model AJsonModel should work exactly like above
+	Message:
+		Expected 'value 1' to be 'value 2'.
+	..
+-in acest teste ne asteptam ca obiectul de clasa AJsonModel sa se creeze si sa aiba o proprietate "key1" cu valoarea "value 1"
+-se observa ca testul pica daca am schimbat intentionat valoarea in "value 2"
+-daca vrem sa nu mai apara "<anonymous>...
+at UserContext.<anonymous> (..\spec\a-json.model.spec.ts:30:23)
+...trebuie sa ii dam un nume functiei din "it()"...
+it('should work exactly like above', function constructor() {..}
+...si rezulta:
+at UserContext.constructor (..\spec\a-json.model.spec.ts:30:23)
+
+Unit/integration tests
+----------
+-"a-json.model.test.ts" este usor de testat pentru ca nu are dependinte
+-"unit test" = un test care izoleaza o singura componenta si o testeaza in mod particular
+.de exemplu, "a-json.model.test.ts" este o componenta care nu are dependinte => poate fi izolata => poate fi testata in mod particular
+-"integration test" = un test care afecteaza mai mult de o componenta sau o componenta impreuna cu dependintele sale
+.de exemplu, te duci pe pagina magazinului, adaugi un produs in cos si vizualizezi cosul
+.deja, ai interactionat cu un "View", cu un "Controller" si ai luat si date despre produs din baza de date
+."a-json.data.test.ts" este un integration test pentru ca are dependinte si nu mai poate fi testat in mod particular
+-in loc sa folosim dependintele reale ale "a-json.data.test.ts", putem sa le falsificam (mock-up)
+-pentru mock-up folosim modulul "proxyquire"
+npm i -D proxyquire @types/proxyquire
+-fisierele care au ".it" in ele de regula sunt fisiere de test numite "integration test" => vom redenumi "a-json.data.test.ts" la "a-json.data.it.test.ts"
+-vom crea un fisier duplicat lui "a-json.data.it.test.ts", il vom numi "a-json.data.test.ts" (fara "it") si vom modifica partea de "import" din...
+import * as aJsonData from "../src/data/a-json.data";
+...in:
+import * as proxyquire from "proxyquire";
+-asta ne va ajuta sa construim un mock-up pentru modelul "a-json.model":
+const aJsonData: { getAJson(): { [key: string]: string } } =
+	proxyquire('../src/data/a-json.data',
+		{
+			'../models/a-json.model': {
+				aJsonModel: () => ({ key1: 'value 1' }),
+				AJsonModel: class AJsonModelMock {
+					key1: any;
+					constructor() { this.key1 = 'value 1'; }
+				}
+			}
+		}
+	);
+-in loc sa folosim "import * as aJsonData from '../src/data/a-json.data'" am folosit proxyquire, am importat "a-json.data" si am creat un mock-up pentru modelul de "a-json.model" pe principiul: "proxyquire('file', mocks)"
+-a trebuit sa modific caile spre "a-json.data" si "a-json.model", pentru ca el a presupus ca am pus fisierele de "test" langa fisierele pe care efectiv le testam
+-[BUGS]:
+-cred ca se uita la celelalte fisiere din 07 si din cauza aia dadea erori la unit teste
+
+
+End-to-end tests
+----------
+npm i -D supertest @types/supertest
+
+Notes
+----------
+
+08. Mongo db
+--------------------
+Prerequisites
+----------
+Express app
+----------
+
+-am facut linting pe proiect
+-nu merge daca trimiti duplicate key
+-"a-json.entity.ts" este cea care da valoarea default a "key 2"
+-daca nu se reporneste server-ul cand modificam un fisier inseamna ca nu este folosit fisierul respectiv
+-in getAJson() din a-json.service.ts se intra cand facem un request GET
+-in saveAJson() intra cand se face un POST
+-nu mergea sa fac un POST cu "key1" si "key 2" pentru ca "key1" era deja in baza de date si nu pentru ca ar fi fost gresit request-ul
+-nu o sa mearga cautarea numai dupa "key 2" pentru ca e obligatoriu folosirea "key1"
+
+--------------------CURS 3--------------------
+[Waters-3.mp4]
+[5.50]
+-in package.json, se separa cu ","
+[7.05]
+-"npm start" se uita in scriptul "start" din package.json
+[9.30] - despre Certificate Authority
+[10.55]
+-poti sa copiezi certificatul intr-un fisier .cer
+-fisierul ala .cer il poti instala pentru browser manual
+-cand il instalezi trebuie sa folosesti "Place all certificates in the following store"
+[13.05] - tema cu verbele
+[14.10] - broswer-ul default face un request de GET
+-Postman se foloseste pentru constructia de request-uri, inclusiv POST
+[17.00] - se uita in codul lui de ce ii da 404
+-nu a folosit calea care trebuia, era "localhost/discovery/client/get" si nu "localhost/get"
+-niciuna din functii nu termina request-ul => browser-ul ramane hanging => poti pune "response.send();"
+[20.40]
+-in...
+try {..}
+catch(ex) {
+	return next(ex);
+}
+..."return" nu este absolut necesar
+-se pune ca sa se asigure iesirea din functie, pentru ca altfel e posibil sa trimitem raspuns cu send() de doua ori => response.send() de doua ori => eroare pentru ca raspunsul a fost deja terminat (a fost terminat de la primul "send()")
+[27.10] - cloneaza repo
+[28.15] - exemplu in consola cu functia "timesTwo()"
+-functia returneaza un "x" de tip Number care are valoarea NaN
+.pentru ca inmultind orice numar cu un String => NaN
+-poti verifica tipul variabilei "x" cu "typeof(x)"
+[31.10] - TypeScript
+-cand folosim "node sandbox.js" trebuie sa ne asiguram ca suntem in folder-ul potrivit, adica in folder-ul in care chiar exista "sandbox.js"
+[34.40]
+-in primul rand schimbam extensia din .js in .ts
+npm install typescript -g
+-versiunea de TypeScript o verificam cu "tsc -v", unde tsc = TypeScript Compile
+-in loc de "node sandbox.js" folosim "tsc sandbox.ts"
+.prin acest proces se face transpilarea => din fisier TypeScript => fisier JavaScript
+-atentie ca am redenumit fisierul in .ts
+-fisierul sandbox.js va fi suprascris cand se face "tsc sandbox.ts" pentru ca TypeScript face transpilarea codului
+[pana la 38.20]
+[pana la 40.10] - rezolva o eroare cu Command Prompt in mod Administrator
+[40.20] - convertim timesTwo() la .ts
+-specificam ca parametrul "v" sa fie de tip Number obligatoriu:
+function timesTwo(v: number) {..}
+-vor aparea erori in Command Prompt pentru ca am declarat "x" ca o constanta, dar ii modificam in cod valoarea
+-daca nu ai erori, nu apar in Command Prompt
+-sandbox.js generat de TypeScript este la fel cu cel initial, insa TypeScript ne ajuta pe noi sa scriem cod corect si fara erori
+-TypeScript aduce "static typing"
+-se face prima oara "tsc sandbox.ts" si apoi "node sandbox.js" ca sa rulam codul transpilat
+[pana la 45.20]
+-pot aparea erori daca in numele fisierului avem paranteze => putem pune "tsc 'Curs(1).ts'", dar mai bine ar fi sa evitam astfel de nume de fisiere
+[48.30] - redenumeste toate fisierele in extensia .ts
+[49.45] - modifica package.json
+-nu vom mai avea sub "start" pe "nodemon src/index.js"
+-"ts-node-dev" transpileaza codul si retine intr-un cache fisierele JavaScript rezultate
+[53.05]
+-se adauga in package.json linia...
+"ts:node:dev": "ts-node-dev src/index --watch"
+...si se inlocuieste cu "ts:node:dev" in scriptul de start:
+"start": "npm run ts:node:dev",
+-cu "-s -D" se adauga dependintele sub "devDependencies" adica doar in modul development al aplicatiei
+-aplicatia nu are nevoie de aceste dependinte pentru a rula, deci "ts-node-dev" este potrivit pentru a fi pus sub "devDependencies"
+[54.30] - instaleaza TypeScript local, tot sub "devDependencies"
+[55.30] - a dat un "npm start"
+-s-au adaugat tsconfig.json si tslint.json langa package.json din CleanExpress
+-in tsconfig.json sunt instructiuni pentru compilatorul TypeScript, adica ce reguli sa verifice la compilarea fisierelor .ts
+-in tslint.json sunt instructiuni pentru scrierea fisierelor, de exemplu se poate seta o regula ca o linie de cod sa aiba maxim 160 de caractere
+.practic, tslint.json contine reguli de sintaxa
+-cele doua fisiere ne ajuta sa scriem codul TypeScript
+[59.15] - adauga "type:check" in JavaScript
+-cu "type:check" ne asiguram ca daca apar erori sa nu se mai chinuie sa genereze fisiere JavaScript pentru ca le genereaza degeaba
+-avand in vedere ca avem nevoie de ambele "type:check" si de "ts:node:dev" in scriptul de start, le vom combina cu "&&", dar trebuie avut grija la ordine pentru ca aveam "start": "npm run ts:node:dev && npm run type:check", in loc de "start": "npm run type:check && npm run ts:node:dev", si nu imi aparea "64 errors"
+"ts:node:dev": "ts-node-dev src/index --watch", //"ts:node:dev" ii un alias
+[1.04.00] - incepe sa modifice fisierele
+-incepe cu "a-json.model.ts"
+-TypeScript ne da lucruri comune care sunt comune cu programarea orientata pe obiect
+-in TypeScript trebuie obligatoriu declaram proprietatile inainte sa le accesam
+-"model" cu care se initializeaza AJsonModel este un obiect gol de tip "any"
+-scopul lui AJsonModel ar fi atunci sa preia un obiect cu diverse proprietati si sa il transforme intr-unul cu doar doua proprietati, "key1" si "key 2"
+[1.08.40]
+-toate functiile si clasele din JavaScript si implicit TypeScript au in spate niste obiecte care sunt de tip JSON
+-deoarece in JSON poti avea proprietati cu spatiu, gen "key 2" => si in functiile si clasele din JavaScript poti avea astfel de proprietati
+[1.10.20]
+-modificam "a-json.data.ts"
+-nu mai folosim "require", folosim "import"
+import { AJsonModel } from "../models/a-json.model";
+-linia de mai sus inseamna ca am importat clasa si nu ne-am folosit de function constructor, unde function constructor este "factory" (?)
+-puteam face...
+import { AJsonModel as aJsonModel } from "../models/a-json.model";
+...adica sa folosim un alias
+-daca mergem pe varianta clasa atunci initializarea obiectului se face cu new
+-in final dam export la functia getAJson()
+[pana la 1.14.05]
+[pana la 1.16.05] - rezolva o problema, ca nu era in directorul corect cand folosea "npm start"
+[1.16.20] - modificam "a-json.service.ts"
+[1.18.30] - modificam "a-json.route.ts" si partea cu Express
+-pentru orice modul popular exista si o varianta TypeScript
+-de exemplu, avem nevoie de varianta TypeScript pentru "express":
+npm i @types/express
+-ca sa il putem interpreta pe Express in TypeScript trebuie sa ii instalam echivalentul de TypeScript
+.de aceea nu merge sa folosim direct "import express from 'express'", mai intai trebuie sa ne asiguram ca avem "@types/express" sub "dependencies" in package.json mai intai
+[1.22.45] - trebuie sa tipizam getAJson(_req, res, next) {..} din "a-json.route.ts"
+-prin tipizare ne referim la cei trei parametri si le vom adauga "express." inainte pentru ca sunt obiecte din modulul "express"
+-in "a-json.route.ts" avem o instanta de Router
+-ii spunem ca sub path-ul de "/" se face un request de tip GET si ii atribuim un handler pentru acest request in functia "getAJson()"
+-cand tipizezi codul e mai usor pentru VSC sa iti ofere indicatii cu F12, de exemplu ce metode are obiectul "response" din Express
+[pana la 1.26.20]
+[1.27.20] - modifica "env.ts"
+-vom exporta direct o constanta "env"
+-are dezavantajul ca environmentul aplicatiei, adica portul sau modul in care ruleaza aplicatia, "development" sau "production", poate inca fi schimbat pe parcursul lifetime-ului aplicatiei, chiar daca am pus const
+-doar daca punem Object.freeze() pe obiect devine read-only si nu poate fi modificat:
+export const env = Object.freeze({
+	PORT: 8080,
+	..
+});
+-noi vrem sa fim siguri ca daca am pornit aplicatia in "development", in development vrem sa ramanem
+-daca nu punem Object.freeze(), atunci constanta "env" poate fi invocata si poate fi modificata
+[1.30.20] - modifica "discovery-client.route.ts"
+[1.31.20] - modifica "log.ts"
+[1.32.50] - explica "eval"
+-pentru cazul in care folosim bundler-e
+-un bundler care face si tree shake va da discard la toate console.log()
+-ca sa nu dea discard vom folosi "eval"
+"eval is evil"
+[1.33.40]
+-"message" poate fi de doua tipuri: (message: String | Error)
+[1.34.45] - modifica "app.ts"
+-tipizam variabila "app"
+[1.37.30] - ne-ar trebui o alta proprietate "status" la Error pentru middleware cu 404
+-in TypeScript nu putem pune proprietati on the fly => mostenim Error ca sa putem sa ii adaugam proprietatea "status" prin interfata IExpressError
+-cat timp nu avem nevoie de logica folosim o interfata
+-daca avem nevoie de logica folosim o clasa
+[1.39.45] - interfata IExpressError
+-in TypeScript avem nullable types, acele tipuri care sunt sufixate de "?"
+-avem si obligatory types, acele tipuri care sunt sufixate de "!"
+[1.42.00] - modifica middleware cu 500
+-Express nu implementeaza propria ei versiune de "Error", pur si simplu o foloseste pe aia din JavaScript
+[pana la 1.44.20] - a fost refactor din .js in .ts
+[pana la 1.46.00] - a vorbit de TypeScript
+[1.47.00] - debug easy way
+-folosim "Node.js Debug Terminal", navigam in Terminal la folder-ul care il contine pe package.json si rulam "npm start"
+-ar trebui sa apara "Debugger attached" in Terminal
+-daca nu merge "npm start", trebuie sa folosim "npm run ts:node:dev --inspect"
+-daca nici asa nu merge, trebuie debug hard way
+[1.51.20] - despre tslint
+npm i -d tslint
+-tslint se uita in tslint.json si vede daca sunt respectate regulile de acolo in fisierele din proiect pe care le scriem noi
+-practic "tslint.json" se asigura ca facem cod lizibil, gen sa ai ";" dupa toate instructiunile sau toate fisierele sa se termina in "\n", etc.
+-se mai numeste procesul de "linting"
+-trebuie adaugat in package.json:
+"lint": "tslint --project ."
+-verificarea se face cu "npm run lint" in directorul cu package.json, deci tslint.json trebuie sa fie in acelasi director cu package.json
+-prin "linting" isi poate da seama si ca o variabila ar trebui sa fie "const" in loc de "let" daca aceasta nu se modifica si de exemplu, doar e returnata
+[1.55.50] - in log.ts apar erorile cu "eval forbidden"
+-in tslint.json avem un flag "no-eval" setat pe true
+-se poate folosi...	
+// tslint:disable:no-eval
+...inainte de linia care deranjeaza si...
+// tslint:enable
+...dupa acea linie, pentru a scapa de astfel de erori, dar nu asa se face
+.mai bine nu folosim "eval" deloc
+[2.00.30] - [TEME]
+-facem un branch nou si punem eventualele fix-uri pe proiect
+
+
+--------------------CURS 2--------------------
+[Waters-2.mp4]
+-engine-ul care interpreteaza codul JavaScript in Chrome a fost luat si transformat intr-un runtime environment, Node.js
+-este vorba de V8 Engine din Chrome
+-un browser nu poate avea acces la File System pentru ca ar fi un breach de securitate
+-modulele cu keyword require se importa in variabile:
+const fs = require('fs'); // importa modulul File System
+[8.35] - incepe cod in VSC si cum functioneaza callback functions
+-varianta cu callback functions ne permite sa fim notificati atunci cand se termina de citit fisierul de pe disc
+.altfel, am fi asteptat terminarea citirii pana s-ar fi executat urmatoarea instructiune
+[14.35] - exemplu
+-e ca si cum vine unul si vrea sa cumpere pufuleti => vanzatoarea se duce in spate sa aduca pufuletii => vine alt client care nu poate fi servit
+-in multi-thread => se naste alta vanzatoare care il va servi pe al doilea client
+-in Node.js => vanzatoarea nu se mai duce in spate sa aduca pufuletii => pune pe cineva sa aduca cat timp ea il serveste pe al doilea client
+-in JavaScript, function = first class citizen
+[19.40] - cum isi ia (error si fileData)
+-orice functie care functioneza pe baza de callback se invoca cu parametrii calculati (determinati) in interior si de acolo avem error si fileData:
+function readFile(path, encoding, callback) {
+    // do file related stuff
+    //
+    
+    let error;
+    let fileData;
+
+    callback(error, fileData);
+}
+-de asemenea callback(error, fileData); trebuie sa aiba o semnatura care sa permita apelarea din readFile() in felul in care a fost apelata, adica cu primul parametrul de eroare si al doilea cu sirul de octeti citit din fisier
+.deci, pentru readFile() din modulul 'fs', functia de callback trebuie sa aiba semnatura (eroare, variabila_in_care_sa_puna_citirea_din_fisier)
+[24.10] - modulul 'http'
+-practic, prin require() faci import de namespace
+-prin http am creat practic un server pe care il putem vizita la localhost:80
+[31.40] - se corecteaza eroarea
+-daca lasam portul 80, acesta este deja in folosinta => eroare
+-daca eroarea e neprinsa, crapa server-ul
+-thread blocked, adica un thread care a ramas hanging, cum se intampla atunci cand rulezi example_http.js in consola si el porneste server-ul si nu mai ai ce sa faci in consola respectiva, ar trebui deschisa o alta consola
+[35.30] - sa expunem server-ele astea locale si sa le accesam de pe telefon
+-probabil e nevoie de port forwarding (?)
+-daca pui localhost:8080, localhost:8080/blablabla, acelasi lucru il returneaza example_http.js, pentru ca nu se trateaza in mod personalizat endpoint-ul care face request-ul
+-poti sa dai console.log(request); sa vezi exact ce contine un request
+-request e un obiect pe care JavaScript il face pentru noi
+-obiectul de request contine informatii care ne ajuta sa trimitem un response personalizat in functie de fiecare endpoint care a facut un request
+-folosim proprietatea request.url ca sa facem diferenta intre localhost:8080 si localhost:8080/blablabla
+-cu watcher-e, Node va fi in stare sa isi dea seama ca sursele, fisierele .js, au fost modificate si va actualiza automat server-ul
+[46.40]
+-prin endpoint intelegem ca accesam cu "index.html" sau prin "api/mabaker" sau prin "/"
+[48.10] - daca stergem response.end()
+-daca nu am response.end(), e ca si cum as avea alt fisier .html in loc de index.html, gen sa aiba un nume indexssdgre.html => pentru ca nu intra pe niciunul dintre cele 3 if-uri si nu are cine sa dea response.end() => response-ul ramane hanging pana la un timeout
+-daca nu ai response.end(), e ca si cum nu ai avea acel endpoint definit => e ca si cum nu ai avea un if definit pentru acel endpoint => incearca sa se conecteze pana da de un timeout
+[50.40] - sa rescriem readFileSync()
+-cand rescriem functia, folosim readFile()
+-daca nu gaseste fisierul, crapa tot server-ul pentru ca se arunca o eroare, care daca nu e prinsa va determina oprirea main thread-ului
+-cand am rescris functia cu readFile(), indexHtmlFileContent a devenit undefined, pentru ca rezultatul lui fs.readFile() nu s-a mai scris in aceasta variabila => eroare cand am incercat sa scriem response.write(indexHtmlFileContent);
+-rescrierea se facea direct scriind cu response.write() pe data din antetul functiei
+-node example_http.js ca sa repornesti serverul
+-in loc de response.write(error); am scris response.write(String(error)); pentru ca response.write() asteapta un String
+-uitasem sa pui response.end()
+[1.08.15] - function si arrow functions
+-arrow function nu poate avea propriul context 'this' => se refera la contextul parintelui, al apelantului
+-are legatura si cu closure
+[1.09.20] - callbacks
+-callbacks primesc 2 sau mai multi parametri, de obicei primul este eroarea, iar al doilea raspunsul corect
+-la un callback function ori vine eroarea, ori raspunsul corect => daca este eroare nu are rost sa mai stai dupa raspunsul corect
+.de aia se si testeaza if(error){..} la inceput
+[1.16.45] - modulul 'express'
+-modulele de Node se gasesc pe npmjs.com, dar mai sunt si alte site-uri
+-cu npm install express s-a instalat modulul si dependintele sale
+npm i -g nodemon = -g inseamna global => nodemon se va instala global, global inseamna:
+%AppData%\Roaming\npm\node_modules
+-nodemon example_express.js nu a mers din PowerShell, dar a mers din Command Prompt
+-nodemon are avantajul ca poti salva fisierul .js si nu mai e nevoie de CTRL + C si de alta comanda nodemon example_express.js
+[1.25.30] - http vs https
+-(?)
+[1.27.45] - initializarea proiectului
+-proiectul de Node se initializeaza cu npm init -y => creeaza package.json
+-in package.json, se regasesc dependintele aplicatiei noastre, in "dependencies":
+"dependencies": {
+  "express": "^4.17.1"
+}
+.proiectul are nevoie de express versiunea 4.17.1 in sus, in sus deoarece avem simbolul '^'
+npm i -s express
+i = install
+-s = salveaza in package.json sub "dependencies" pe "express"
+-daca dai doar npm install, intr-un folder in care exista si package.json, se uite in package.json si instaleaza dependintele
+^ = regex match pentru "beginning with..."
+[1.34.45] - dupa instalarea 'express'
+-nodemon index.js ca sa pornim CleanExpress
+-in env.js e definit portul, e o constanta PORT
+[1.43.20] - dupa instalarea 'CleanExpress'
+[1.51.45] - eroarea on purpose
+-era on purpose eroarea 404, trebuia sa folosim calea http://localhost:8080/api/json sau http://localhost:8080/discovery/client
+-pipeline = middleware = mai multe callbacks consecutive
+-toate callbacks primesc request-ul, fac ceva cu ele sau pot delega procesarea acestui request la urmatorul callback din pipeline
+-la noi, in makeApp() avem tot pipeline, toate callbacks prin care se poate procesa un request
+-primul din pipeline, din makeApp() proceseaza request-ul, daca se foloseste ruta http://localhost:8080/discovery/client
+-al doilea callback proceseaza request-ul daca se foloseste ruta http://localhost:8080/api/json
+-la callback de raspuns generic de eroare 404, nu se handle eroarea direct, se construieste un obiect de tip eroarea care se delega mai departe catre urmatorul callback din pipeline:
+next(err);
+-in package.json, sub "start" avem comanda "nodemon src/index.js" care reprezinta practic punctul de intrare al aplicatiei
+[2.00.50] - flow-ul aplicatiei
+-routele din aplicatie au o ruta si un handler...
+app.use(env.A_JSON_ROUTE, aJsonRouter);
+...deci ruta "/api/json" este handle-uita de aJsonRouter
+[2.05.20] - vs ASP
+-routele sunt echivalente controller-elor din ASP
+-fiecare ruta se ocupa de o zona din API, una pentru JSON, alta pentru client, etc.
+-putem avea si subrute (?)
+[2.07.45] - app.js
+-prin next(err); stim sigur ca mai exista un middleware si il vom apela si ii vom pasa acest obiect de eroare err
+-next() poate fi apelat si fara parametri, deci practic delega responsabilitatea urmatorului middleware
+-cand este apelat cu parametru de tip eroare, atunci doar acele middleware care au ca parametru un obiect de tip eroare va "prinde" aceasta responsabilitate (ii va fi delegata aceasta responsabilitate)
+.e practic ca la filtrarea cu try {..} catch, in care blocul de catch prinde o exceptie sau nu, in functie de un filtru
+-creeare de middleware din pipeline se face cu .use()
+[2.09.55] - _next
+-a fost adaugat _next in ultimul middleware pentru ca Node sa stie ca acest middleware este cel de error catching
+-adaugand _next, antetul devine...
+app.use((err, _req, res, _next) => {..}
+...si se observa ca este identic cu middleware-ul 404:
+app.use((_req, _res, next) => {..}
+-ultimul middleware este ultimul care va fi invocat pentru request-ul respectiv
+-in middleware 404 nu ne intereseaza inca daca suntem in 'production' sau in 'development', de aceea doar creeam acel obiect de eroare si impreuna cu request-ul complet ii vom da forward catre ultimul middleware, ala cu 500, in care se face verificarea daca suntem sau nu in 'development'
+-abia aici, impreuna cu tot stack-ul primit prin request-ul complet de la middleware 404, verificam daca suntem in 'production' sau in 'development' ca sa stim cum sa handle eroare sa nu facem leak de informatii in productie ('production')
+-nu se face leak de informatii in productie, daca suntem in 'development', printam in browser, altfel un obiect de eroare gol
+-daca pui 'production' in loc de 'development' in env.js, atunci in browser vei primi un obiect de eroare gol
+-in mod normal, nu am fi avut...
+NODE_ENV: "development",
+...in env.js, ci:
+process.env.NODE_ENV: "development",
+.adica am fi avut efectiv informatii legate de server in process.env si de acolo am fi preluat modul de rulare al aplicatiei, daca este 'production' sau 'development'
+[2.16.55]
+-e o conventie folosirea underscore
+-TypeScript da eroare daca ai un argument intr-o functie si nu este folosit
+-problema este ca o functie cand e folosita ca middleware trebuie sa respecte o anumita semnatura, deci nu putem pur si simplu elimina acel argument => _argument
+
+[Homework]
+--------------------
+
+-server-ul sa fie pus pe https
+--------------------
+(https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/)
+-pentru https ai nevoie de un certificat SSL si o cheie privata
+-certificatele SSL se folosesc in productie, semnate de o autoritate numita CA = Certificate Authority
+-sunt 4 comenzi:
+openssl genrsa -out key.pem
+openssl req -config "D:\Downloads\Programe\Applications\OpenSSL\openssl-0.9.8k_X64\openssl.cnf" -new -key key.pem -out csr.pem
+openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+del csr.pem
+-ultima comanda era de fapt 'rm csr.pem', dar rm e valabila doar pe Linux
+-trebuie folosit https://localhost:8080/
+-sa rulez Command Prompt in Administrator doar a scos eroarea 'Unable to write "random state"'
+-csr = certificate signing request
+-cele 4 comenzi intr-una singura:
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -subj "/C=RO/ST=Brasov/L=Sacele/O=Hammer/OU=Claw Hammer/CN=localhost" -nodes
+-public key cryptography = a message has been encrypted by Bob's public key can only be decrypted by Bob's private key even if it is publicly distributed
+-signature = anyone with access to Bob's public key can verify that a message has been sent by Bob
+-this signature checking basically means that you can verify a particular message if it has been created by someone which had access to Bob's private key
+-it means that you can verify if a message has been encrypted with Bob's private key
+-public key cryptography and signature means that you can trace back a message to a particular private key, back to Bob or someone who has access to Bob's private key
+-more than that, it means Bob's message can only be decrypted using Bob's private key
+-cred ca era o problema cu OpenSSL, respectiv cu fisierul de configurare pentru el
+-de asemenea, daca pun 'certificate: ...' in loc de 'cert' in options, nu mai merge
+-HTTP = informatiile sunt transmise in plain, clear text
+-certificatul este folosit pentru a confirma identitatea unui website, de ex. printr-un certificat se confirma ca google.com apartine intr-adevar de Google
+-certificatul este semnat de un Certificate Authority (CA) pe care browser-ul il recunoaste by default pentru ca se afla in lista sa de autoritati cunoscute
+-acest certificat semnat de Google CA contine cheia publica pentru youtube.com
+-browser-ul recunoaste ca Google CA este o autoritate cunoscuta si cunoaste cheia publica a lui Google CA
+-browser-ul creeaza o cheie privata si o cripteaza cu cheia publica a lui Google CA
+.daca se cripteaza cu cheia publica doar cine are acces la cheia privata o poate decripta
+.de asemenea, doar cine are acces la cheia privata poate cripta cu cheia publica
+-si youtube.com are propria lui cheie privata si poate decripta mesajele primite de la browser
+
+-a il expune pe web
+--------------------
+-am incercat localtunnel.me si ngrok (https://github.com/bubenshchykov/ngrok)
+-pentru ngrok:
+-mai intai se da drumul la server cu nodemon server.js si cu un port specificat, sa zicem 8080
+-apoi se da comanda ngrok http 8080, deci cu acelasi port cu care s-a pornit server-ul
+-eventual este nevoie sa specifici o regula de firewall pentru portul respectiv
+-fisierul de configuratie este la:
+C:\Users\Praid/.ngrok2/ngrok.yml
+ngrok http https://localhost:8088 -host-header="localhost:8088"
+-aici poti vedea tunelele:
+http://localhost:4040/inspect/http
+
+-sa folosim si POST, DELETE, PUT in loc de GET
+--------------------
+-GET, POST, DELETE, PUT = verbe, descriu actiuni
+-GET = folosit in principal pentru a primi date
+-POST = folosit in principal atunci cand trimiti date printr-un submit form
+-GET se poate folosi pentru a trimite date, la fel cum POST se poate folosi pentru a primi date, dar doar pentru ca o masina are marsarier, nu inseamna ca mergi in marsarier cu ea la munca => este counter-intuitive
+-GET se identifica prin adrese de genul...
+www.abc.com?ID=123&name=adrian
+...adica informatiile trimise se regasesc in link => nu se folosesc pentru submit form
+-in POST, aceste informatii sunt incluse in corpul request-ului
+-aceste informatii in GET sunt ca un String care se trimite de la browser la server
+-ID si name sunt GET variables, prezente explicit in URL request-ului
+-POST include aceleasi variabile dar le include in body of the request
+-deci GET are variabilele in URL si POST are variabilele in body of the request, dar in mod fundamental, acelasi lucru il fac ambele metode => transfera date intre browser si server
+-de obicei, cand primesti notificarea aia ca retrimiti datele printr-un formular inseamna ca broswer-ul face un request POST catre server
+-printr-un GET request, nimic nu se schimba pe server, primesti aceeasi pagina de ori cate ori faci un request, de exemplu primesti acelasi articol de pe digi24.ro mereu cu aceeasi variabila sa zicem digi24.ro?articol=politica
+-butoanele de BUY, SUBMIT, etc. sunt legate cu un POST request pentru ca ele permit sa se faca schimbari asupra server-ului => te notifica sa nu faci acelasi request de doua ori ca sa nu cumperi de exemplu de doua ori acelasi produs, sa zicem
+-GET should be idempotent = de cate ori faci exact acelasi request, de atatea ori web server ar trebui sa iti trimit inapoi exact acelasi raspuns (aceeasi pagina) si nu are efecte adverse asupra server-ului
+-HEAD e similar cu GET, dar nu intoarce decat meta informatia din header-e, fara pagina propriu-zisa de pe server
+-PATCH se foloseste cand vrei sa actualizezi o informatie legata de o anumita resursa si doar atat, de exemplu: doar numele unui cont bancar sau data nasterii, nu intreg contul bancar
+-in schimb, cu PUT actualizezi toate informatiile legate de contul bancar, nume, data nasterii, numarul contului, etc.
+-e vorba practic de un replacement al contului bancar, totul se schimba
+-PUT, POST, PATCH = folosite pentru a crea si actualiza resurse, "unsafe"
+-GET e singurul "safe"
+-PUT = update total, PATCH = update partial, POST = create
+-DELETE se foloseste pentru a sterge o anumita resursa de pe server, "unsafe"
+-prin idempotenta se intelege ca de fiecare data cand se face acelasi request, acelasi raspuns il vei primi mereu
+-acestu lucru nu se intampla la POST, vei crea 5 conturi bancare daca faci acelasi request POST de 5 ori
+
+-status codes:
+--------------------
+2xx = success codes, totul a mers cum trebuie => OK => 200
+-totul a mers cum trebuie, dar pe client il intereseaza doar header-ele si nu pagina => NO CONTENT => 204
+3xx = moved, browser-ul se ocupa de ele
+-in principal sunt redirectarile catre alte pagini => MOVED PERMANENTLY => 301
+-301 ar trebui insotit de pagina noua catre care browser-ul sa faca redirectarea
+-MOVED TEMPORARILY => 302
+4xx = client error, clientul a cerut o chestie care nu exista => NOT FOUND => 404
+-clientul a cerut o chestie la care nu are acces => FORBIDDEN => 403
+5xx = server error, server-ul a gresit undeva => INTERNAL SERVER ERROR => 500
+
+-tema:
+--------------------
+-uitasem sa pun module.exports.POSTRouter = POSTRouter; in loc de module.exports.discoveryClientRouter = POSTRouter;
+-daca ramane in hanging inseamna ca am uitat sa pun res.end();
+-dadea 404 NOT FOUND cand incercam sa accesez "/get" pentru ca nu definisem ruta respectiva in app.js
+-de asemenea, trebuia sa modific din require('./routes/post'); in require('./routes/get'); pentru GET
+-nu se incarca .css, pentru ca (https://stackoverflow.com/questions/13395742/can-not-get-css-file)
+-nu mergea sa deschid fisier in "POST" pentru ca nu importasem const fs = require('fs');
+-nu a mers sa vad parametrii din URL pentru ca in antet aveam _req si eu foloseam var user_id = req.param('id'); (fara underscore)
+-se poate observa ca in variabila "res" exista un array numit query, vezi 00-query.png
+-daca am pus index.html in src/public, era luat direct de acolo, indiferent ca exista alt index.html in home.js
+
+Heroku
+--------------------
+-cloneaza proiectul intr-un director specificat:
+git clone https://github.com/heroku/node-js-getting-started.git D:\Projects\Facultate\II\II_Sem_2_10_REPOS\Heroku
+-dupa ce clonez:
+heroku create
+git push heroku master
+heroku ps:scale web=1
+-web=1 practic spune pe cati dyno merge aplicatia
+-daca pui 0 inseamna ca opresti practic aplicatia pentru ca nu exista un dyno care sa proceseze request-uri
+heroku open
+-ca sa vezi logs:
+heroku logs --tail
+-cu Procfile, un fisier text, defineste ce comanda trebuie executata pentru a porni aplicatia web:
+web: node index.js
+-"web" = un tip de proces
+-"node index.js" = comanda necesara pentru a porni acest proces
+-cu heroku ps vezi pe cati dyno merge aplicatia
+-cand faci deploy, Heroku se uita in package.json sa vada ce versiune de Node sa instaleze si in package-lock.json sa instaleze dependintele
+-e important cand faci un push pe Heroku sa incluzi package.json si package-lock.json
+-inainte sa faci deploy trebuie dat un "npm install" ca sa vezi practic ca aplicatia merge in mod local
+-dupa ce faci un "npm install" poti da "heroku local web" pentru a face aplicatia sa mearga local
+-local, aplicatia porneste pe portul 5000
+-cu "git add ." se reflecta modificarile aduse
+-se pregateste un commit:
+git commit -m "Add cool face API"
+-se face push pe Heroku:
+git push heroku master
+-si se deschide aplicatia la "/cool" pentru a verifica:
+heroku open cool
+-prima oara dureaza mai mult sa se conecteze pana porneste dyno
+-daca vrei logging mai detaliat, se face pasul de la:
+https://devcenter.heroku.com/articles/getting-started-with-nodejs#provision-add-ons
+-pentru a rula inca un dyno si a da drumul la bash pe dyno respectiv:
+heroku run bash
+-remember to "exit" twice to terminate bash and dyno
+-se pot aduca modificari de tip "Config vars", vezi:
+https://devcenter.heroku.com/articles/getting-started-with-nodejs#define-config-vars
+-config vars se pot vedea cu comanda "heroku config":
+TIMES: 2
+-pentru a adauga o baza de date si ruta "/db":
+https://devcenter.heroku.com/articles/getting-started-with-nodejs#provision-a-database
+-cu "heroku pg:psql" te poti conecta la baza de date din mighty-ridge-23505
+-documentatia completa este la:
+https://devcenter.heroku.com/categories/nodejs-support
+-pentru a opri dyno web:
+heroku ps:stop web
+
+GitHub, 00-03
+--------------------
+-Node este event-based => toate operatiile sunt puse pe event loop => toate operatiile sunt puse pe main thread cand sunt gata => se folosesc callbacks
+-exista un singur thread, main thread, dar asta nu inseamna ca toate operatiile se executa pe acelasi thread
+-atunci cand se face o operatie de citire, aceasta se porneste pe un alt thread si se pune in event loop si e adusa pe main thread cand e gata
+-yarn e un alt package manager, ca si npm
+-filtrarea pe obiectul "request" e cumbersome, de aceea se foloseste modulul "express"
+-filtrarea se face pentru ca http://localhost si http://localhost/index.html sunt tratate la fel
+-WYSIWYG = what you see is what you get
+-daca in package.json avem '"start": "node src/index.js"', atunci in Command Prompt, comanda "nodemon ." este acelasi lucru cu "nodemon src/index.js"
+-cu "npm run start" sau "npm start", npm se uita in "scripts" din package.json si cauta script-ul de start
+-const app = express(); este practic un callback care se foloseste pentru a trata request-urile
+-"app" poate fi folosita cu modulul "https" pentru a fi pornita cu protocolul https:
+// host the app callback in a https server
+https.createServer({ key: privateKey, cert: certificate }, app).listen(443);
+-"main" din package.json se seteaza la "src/index.js" si va fi entry point-ul in aplicatie
+-makeApp() va fi o functie care defineste diferite callbacks pentru diferitele rute, "api/json", "discovery/client", etc.
+-aplicatia incearca sa potriveasca o ruta, o gaseste si executa callback care a fost inregistrat pentru ruta respectiva
+-daca acel callback nu inchide request-ul, atunci se va apela urmatorul middleware din pipeline
+-avem pregatit un middleware pentru cazul in care nu se gaseste ruta, un middleware care pregateste un raspuns de eroare 404, dar care nu inchide request-ul, ci apeleaza intentionat urmatorul middleware, cel de eroare 500
+
+--------------------CURS 1--------------------
+-cerintele produsului software: purpose, overall description, specific requirements
+-aplicatie care sa tina inventarul unei companii
+-arhitectura:
+-ca punct de plecare, multe aplicatii se potrivesc cu design patterns
+-layer based, MVC, micro-services, event-based
+-micro-services = web-based chat app
+-diagrama de flow
+-diagrama de clase
+-UI mockups design, wireframe
+-Ecran Lista Inventar: paginare, filtru, search bar, lista de item-e din inventar
+-Ecran Adauga Item: nume, numar inventar, utilizator, locatie, data, descriere, ca in clasa InventoryItem
+-Zeppelin tool pentru designer
+-trenduri: web si mobile
+-tehnologiile web:
+-portabilitatea ca avantaj
+-scalabilitate = numarul de user-i care pot fi conectati la un moment dat
+-mai usor sa faci update, toti utilizatorii acceseaza aceeasi versiune a aplicatiei
+-dezavantaje: fara internet, aplicatia nu functioneaza
+-progressive web app = face cache in device si cand te conectezi la internet faci schimb de informatie cu server-ul
+-fluxul mare de date intre client si server ingreuneaza aplicatia
+-Gmail, Youtube TV, PayPal e facut cu Angular
+-nu se convertesc pozele in string-uri si nu se salveaza ca string-uri in baza de date
+-un micro-serviciu face un singur lucru, de exemplu: micro-serviciu care sa menajeze doar partea de date pe care le bagam manual prin pagina de "Add Item"
+-sau un micro-serviciu care sa rezolve doar pagina de "Contact"
+-fiecare client de Skype face parte dintr-o retea peer-to-peer si se evitau astfel nodurile centrale
+-LTS = long term support
+-mongo e clientul, cu mongo se conecteaza la serviciu
+-mongod porneste serviciul de Mongo
+-serviciul functioneaza daca nu iese direct dupa ce dai mongod
+-era gresit port-ul si nu se conecta
+-connection string pentru Compass:
+mongodb://localhost:27017/
+-Mongo nu este un model de baze relational ci niste records formatate ca JSON
+-Compass nu se conecteaza daca serviciul de Mongo nu e deschis
+
+--------------------CURS 0--------------------
+-Marius Branzea = web-developer de 10 ani
+-Vali Ianchis = 'software enthusiast', pentru vanilla js
+-Marcel Francu = desktop software development
+-Catalin Chitu = in echipa cu Marcel, tehnologii desktop, Angular
+-Augustin Braslasu = express
+
+Curs
+-vanilla js = java script fara niciun framework, nativ, low level
+-js pe server
+-Mongo
+-F12 pe fiecare site sa vezi ce e in spate

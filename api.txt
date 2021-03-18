@@ -1,0 +1,19 @@
+Authentication in Node.js - #1 
+npm init -y
+npm i express
+npm i -D typescript
+npm i -D @types/node @types/express
+npx tsc --init
+mkdir src
+-configurezi "index.ts"..
+npx tsc
+npm i -D ts-node-dev
+curl localhost:3000
+
+Authentication in Node.js - #2
+npm i express-session
+-we will use "Redis" because "express-session" only has an in-memory store
+npm i connect-redis ioredis
+npm i mongoose
+npm i -D @types/express-session @types/connect-redis @types/ioredis @types/mongodb @types/mongoose
+-
