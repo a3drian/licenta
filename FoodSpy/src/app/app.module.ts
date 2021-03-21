@@ -17,6 +17,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+// HTTP:
+import { HttpClientModule } from '@angular/common/http';
+
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
 
@@ -37,8 +41,10 @@ import { ScanFoodComponent } from './scan-food/scan-food.component';
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatTableModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
