@@ -1,17 +1,20 @@
 <b>add-meal</b> works!
 
-<h2>Breakfast</h2>
+<mat-form-field appearance="outline">
+    <mat-label>Select meal type</mat-label>
+    <mat-select formControlName="meal">
+        <mat-option *ngFor="let meal of meals" [value]="meal">
+            {{ meal }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
 
-<div class="wrap">
-    <div class="search">
-        <input type="text" class="searchTerm" placeholder="Look for food...">
-        <button type="submit" class="searchButton">
-            Search
-        </button>
-    </div>
+<div class="search">
+    <input #searchBox type="text" id="search-box" (input)="search(searchBox.value)" placeholder="Look for food..." />
+    <button type="submit" class="searchButton">
+        Search
+    </button>
 </div>
-
-<input #searchBox id="search-box" (input)="search(searchBox.value)" />
 
 <table mat-table [dataSource]="foods">
 
@@ -45,7 +48,7 @@
         <tr mat-row *matRowDef="let row; columns: foodsColumns;"></tr>
     </ng-container>
 
-	</table>
+</table>
 
 <div>
     <button [routerLink]="['/add/scan']">

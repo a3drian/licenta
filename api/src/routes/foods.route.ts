@@ -1,7 +1,7 @@
 import { Router, Response, NextFunction } from 'express';
 import { EntityManager } from '@mikro-orm/core';
 import { Food } from '../entities/food.entity';
-import { Filter } from '../models/filter.model';
+import { FoodsFilter } from '../filters/foods-filter.model';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as foodService from '../services/foods.service';
 
@@ -36,7 +36,7 @@ async function getFoods(
    console.log('food.route.ts, getFoods()^');
    console.log('');
 
-   let foods: Error | Food[] | Filter[] | null;
+   let foods: Error | Food[] | FoodsFilter[] | null;
    
    const name = req.query.name ? req.query.name.toString() : '';
    console.log('');

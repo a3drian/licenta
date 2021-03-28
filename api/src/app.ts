@@ -13,8 +13,8 @@ import { IExpressRequest } from './interfaces/IExpressRequest';
 import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
 import entities from './entities';
 
-// import { setInventoryItemRoute } from './routes/inventory-items.route';
 import { setFoodRoute } from './routes/foods.route';
+import { setUserRoute } from './routes/users.route';
 
 let app: Application;
 
@@ -51,6 +51,7 @@ async function makeApp(): Promise<Application> {
 
   // routes
   app.use(env.FOODS_ROUTE, setFoodRoute(Router()));
+  app.use(env.USERS_ROUTE, setUserRoute(Router()));
   // app.use(env.INVENTORY_ITEMS_ROUTE, setInventoryItemRoute(Router()));
 
   // 404

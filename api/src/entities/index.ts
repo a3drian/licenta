@@ -1,3 +1,3 @@
-import { Food } from './food.entity';
+import { User } from './user.entity';
 
-export default [Food];
+export default [User];

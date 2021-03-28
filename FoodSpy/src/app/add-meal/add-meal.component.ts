@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/operators';
 // Item filtering:
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { MealsService } from '../services/meals.service';
 
 @Component({
   selector: 'app-add-meal',
@@ -15,13 +16,17 @@ export class AddMealComponent implements OnInit {
 
   foods: IFood[] = [];
   foodsColumns: string[] = [
-		'id',
-		'name',
-		'qty',
-		'unit'
-	];
+    'id',
+    'name',
+    'qty',
+    'unit'
+  ];
+  meals: string[] = [];
 
-  constructor(private foodsService: FoodsService) { }
+  constructor(
+    private foodsService: FoodsService,
+    private mealsService: MealsService
+  ) { }
 
   ngOnInit(): void {
     // Search:
@@ -36,6 +41,14 @@ export class AddMealComponent implements OnInit {
       .subscribe(
         (data) => {
           this.foods = data;
+        }
+      );
+    // Meals:
+    this.meals = this.mealsService
+      .getMeals()
+      .map(
+        (meals) => {
+          return meals.name
         }
       );
   }
