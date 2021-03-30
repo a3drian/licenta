@@ -35,19 +35,19 @@ async function getUsers(
    console.log('user.route.ts, getUsers()^');
    console.log('');
 
-   let users: Error | User[] | null;
+   let response: Error | User[] | null;
 
    try {
-      users = await userService.getUsers(req.em);
+      response = await userService.getUsers(req.em);
    } catch (ex) {
       return next(ex);
    }
 
-   if (users instanceof Error) {
-      return next(users);
+   if (response instanceof Error) {
+      return next(response);
    }
 
-   return res.status(200).json(users);
+   return res.status(200).json(response);
 }
 
 // POST
@@ -68,10 +68,10 @@ async function postUser(
    console.log('users.route.ts, postUser()^');
    console.log('');
 
-   let user: Error | User;
+   let response: Error | User;
    try {
-      user = await userService
-         .addUser(
+      response = await userService
+         .registerUser(
             req.em,
             req.body
          );
@@ -79,9 +79,9 @@ async function postUser(
       return next(ex);
    }
 
-   if (user instanceof Error) {
-      return next(user);
+   if (response instanceof Error) {
+      return next(response);
    }
 
-   return res.status(201).json(user);
+   return res.status(201).json(response);
 }

@@ -3,8 +3,9 @@ import { EntityManager } from '@mikro-orm/core';
 import { User } from '../entities/user.entity';
 
 export {
-   addUser,
+   registerUser,
    getUsers,
+   getUserByEmail,
    /*
    getUser,
    updateUser,
@@ -45,33 +46,33 @@ async function getUsers(
    }
 }
 
-async function getUserByUsername(
+async function getUserByEmail(
    em: EntityManager,
-   username: string
+   email: string
 ): Promise<Error | User | null> {
    if (!(em instanceof EntityManager)) {
-      console.log(`ERROR: users.service.ts, getUserByUsername(): em is not instanceof EntityManager`);
+      console.log(`ERROR: users.service.ts, getUserByEmail(): em is not instanceof EntityManager`);
       return Error('invalid request');
    }
 
-   if (!username || typeof username !== 'string') {
+   if (!email || typeof email !== 'string') {
       return Error('invalid params');
    }
 
    console.log('');
-   console.log('user.service.ts, getUserByUsername():');
-   console.log('username:', username);
+   console.log('user.service.ts, getUserByEmail():');
+   console.log('email:', email);
 
    try {
 
       const user = await em
          .findOne(
             User,
-            { username: username }
+            { email: email }
          );
 
       console.log('user:', user);
-      console.log('user.service.ts, getUserByUsername()^');
+      console.log('user.service.ts, getUserByEmail()^');
       console.log('');
 
       return user;
@@ -81,31 +82,31 @@ async function getUserByUsername(
 }
 
 // POST
-async function addUser(
+async function registerUser(
    em: EntityManager,
    user: Partial<User>
 ): Promise<Error | User> {
    if (!(em instanceof EntityManager)) {
-      console.log(`ERROR: users.service.ts, addUser(): em is not instanceof EntityManager`);
-      return Error('invalid request');
+       console.log(`ERROR: register.service.ts, registerUser(): em is not instanceof EntityManager`);
+       return Error('invalid request');
    }
 
    if (!user || typeof user !== 'object' || user.id) {
-      return Error('invalid params');
+       return Error('invalid params');
    }
 
    try {
-      const addedUser = new User(user);
+       const registeredUser = new User(user);
 
-      console.log('');
-      console.log('users.service.ts, addUser():');
-      console.log('addedUser:', addedUser);
-      console.log('users.service.ts, addUser()^');
-      console.log('');
+       console.log('');
+       console.log('register.service.ts, registerUser():');
+       console.log('registeredUser:', registeredUser);
+       console.log('register.service.ts, registerUser()^');
+       console.log('');
 
-      await em.persistAndFlush(addedUser);
-      return addedUser;
+       await em.persistAndFlush(registeredUser);
+       return registeredUser;
    } catch (ex) {
-      return ex;
+       return ex;
    }
 }

@@ -1,7 +1,7 @@
 import { IUser } from "../interfaces/IUser";
 
 export class User implements IUser {
-   username!: string;
+   email!: string;
    password!: string;
 
    public constructor(partial?: Partial<User>) {

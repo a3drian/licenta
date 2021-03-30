@@ -1,7 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 
 import { Food } from '../entities/food.entity';
-import { Filter } from '../models/filter.model';
 
 export {
    addFood,
@@ -17,7 +16,7 @@ export {
 async function getFoods(
    em: EntityManager,
    name: string
-): Promise<Error | Food[] | Filter[]> {
+): Promise<Error | Food[]> {
    if (!(em instanceof EntityManager)) {
       console.log(`ERROR: foods.service.ts, getFoods(): em is not instanceof EntityManager`);
       return Error('invalid request');
@@ -25,17 +24,11 @@ async function getFoods(
 
    console.log('name:', name);
 
-   const filter: Partial<Filter> = {};
-   if (name) {
-      filter.name = name;
-   }
-   console.log('filter:', filter);
-
    try {
 
       const items = await em.find(
          Food,
-         filter
+         {}
       );
       await new Promise(
          (resolve) => {

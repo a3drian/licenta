@@ -20,16 +20,19 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 // HTTP:
 import { HttpClientModule } from '@angular/common/http';
-
+// Frontend:
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
+// Authentication:
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     AddMealComponent,
-    ScanFoodComponent
+    ScanFoodComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,

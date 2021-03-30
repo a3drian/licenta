@@ -15,6 +15,9 @@ import entities from './entities';
 
 import { setFoodRoute } from './routes/foods.route';
 import { setUserRoute } from './routes/users.route';
+// Authentication:
+import { setRegisterRoute } from './routes/register.route';
+import { setLoginRoute } from './routes/login.route';
 
 let app: Application;
 
@@ -52,6 +55,8 @@ async function makeApp(): Promise<Application> {
   // routes
   app.use(env.FOODS_ROUTE, setFoodRoute(Router()));
   app.use(env.USERS_ROUTE, setUserRoute(Router()));
+  app.use(env.REGISTER_ROUTE, setRegisterRoute(Router()));
+  app.use(env.LOGIN_ROUTE, setLoginRoute(Router()));
   // app.use(env.INVENTORY_ITEMS_ROUTE, setInventoryItemRoute(Router()));
 
   // 404

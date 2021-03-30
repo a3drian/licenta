@@ -9,8 +9,11 @@ export const env = Object.freeze({
 	NODE_ENV: 'development',
 
 	MONGO_URL: CLUSTER_URI,
-	DB_NAME: 'foodspy',
+	DB_NAME: 'FoodSpyDb',
 
 	FOODS_ROUTE: '/db/foods',
-	USERS_ROUTE: '/db/users'
+	USERS_ROUTE: '/db/users',
+
+	REGISTER_ROUTE: '/api/register',
+	LOGIN_ROUTE: '/api/login'
 });

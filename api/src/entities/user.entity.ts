@@ -21,7 +21,7 @@ export class User implements IUser {
    id!: string;
 
    @Property()
-   username!: string;
+   email!: string;
    @Property()
    password!: string;
 
