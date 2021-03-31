@@ -1,17 +1,19 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { BehaviorSubject } from "rxjs";
+import { catchError } from "rxjs/operators";
+import { throwError } from "rxjs";
 import { User } from '../models/User';
 
-interface AuthResponseData {
+export interface AuthResponseData {
 
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-    user = new BehaviorSubject<User>({ email: null, password: null });
+    user = new BehaviorSubject<User | null>(null);
     REGISTER_URL: string = '/api/register';
     LOGIN_URL: string = '/api/login';
 
@@ -19,6 +21,15 @@ export class AuthService {
         private http: HttpClient,
         private router: Router
     ) { }
+
+    private handleError(errorResponse: HttpErrorResponse) {
+        let errorMessage = 'Unexpected error occurred when registering an user which is not connected to the API!';
+        if (!errorResponse.error) {
+            return throwError(errorMessage);
+        }
+        errorMessage = errorResponse.error.message;
+        return throwError(errorMessage);
+    }
 
     register(_email: string, _password: string) {
         return this.http
@@ -28,6 +39,13 @@ export class AuthService {
                     email: _email,
                     password: _password
                 }
+            )
+            .pipe(
+                catchError(
+                    (errorResponse) => {
+                        return this.handleError(errorResponse);
+                    }
+                )
             );
     }
 
@@ -39,6 +57,9 @@ export class AuthService {
                     email: _email,
                     password: _password
                 }
+            )
+            .pipe(
+                catchError(this.handleError)
             );
     }
 }

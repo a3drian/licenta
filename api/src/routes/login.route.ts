@@ -39,6 +39,13 @@ async function loginUser(
                 body.email
             );
 
+        if (!response) {
+            const userDoesNotExistError: Error = new Error;
+            userDoesNotExistError.name = 'NO_ACCOUNT';
+            userDoesNotExistError.message = 'No account found!';
+            return res.status(404).json(userDoesNotExistError);
+        }
+
         if (response instanceof Error) {
             return next(response);
         }
@@ -53,8 +60,10 @@ async function loginUser(
             if (match) {
                 console.log('Passwords match!');
             } else {
-                console.log('Passwords do not match!');
-                return res.status(401).json(response);
+                const wrongPasswordError: Error = new Error;
+                wrongPasswordError.name = 'WRONG_PASSWORD';
+                wrongPasswordError.message = 'Wrong e-mail or password!';
+                return res.status(401).json(wrongPasswordError);
             }
         }
 

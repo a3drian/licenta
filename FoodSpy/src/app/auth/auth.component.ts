@@ -1,6 +1,8 @@
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from "./auth.service";
+import { Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { AuthResponseData, AuthService } from "./auth.service";
 
 @Component({
     selector: 'app-auth',
@@ -8,13 +10,18 @@ import { AuthService } from "./auth.service";
 })
 export class AuthComponent {
 
+    authForm: FormGroup;
+
+    isInLoadingMode: boolean = false;
     isInDebugMode: boolean = true;
     isInLoginMode: boolean = false;
-    authForm: FormGroup;
+
     loginButtonText: string = 'Log in';
     registerButtonText: string = 'Register';
     existingAccountButtonText: string = 'Already have an account? Log in';
     noAccountButtonText: string = 'No account? Register';
+
+    error: string | null = null;
 
     onSwitchBetweenLoggedInAndOut(): void {
         this.isInLoginMode = !this.isInLoginMode;
@@ -24,9 +31,14 @@ export class AuthComponent {
         return this.authForm.valid;
     }
 
+    isLoading(): boolean {
+        return this.isInLoadingMode;
+    }
+
     constructor(
         private formBuilder: FormBuilder,
-        private authService: AuthService
+        private authService: AuthService,
+        private router: Router
     ) {
         this.authForm = this.formBuilder
             .group(
@@ -50,9 +62,35 @@ export class AuthComponent {
         const email = form.email;
         const password = form.password;
 
-        this.authService
-            .login(email, password)
-            .subscribe();
+        this.isInLoadingMode = true;
+
+        // allows us to change what observable it holds based on the request,
+        // if it's a log in or a sign up one
+        let authObservable: Observable<AuthResponseData>;
+        if (this.isInLoginMode) {
+            authObservable = this.authService.login(email, password);
+        } else {
+            authObservable = this.authService.register(email, password);
+        }
+
+        authObservable
+            .subscribe(
+                (responseData) => {
+                    console.log('Response data for log in / sign up request:');
+                    console.log(responseData);
+                    this.isInLoadingMode = false;
+                    // navigation from inside the code, not from inside the template
+                    // this.router.navigate(['/recipes']);
+                },
+                // we always throwError(errorMessage) in the service => we can simply display the message here
+                (errorMessage) => {
+                    console.log('Error when trying to log in / sign up:');
+                    console.log(errorMessage);
+
+                    this.error = errorMessage;
+                    this.isInLoadingMode = false;
+                }
+            );
 
         this.authForm.reset();
     }

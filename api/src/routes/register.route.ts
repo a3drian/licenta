@@ -30,8 +30,27 @@ async function registerUser(
     console.log('register.route.ts, registerUser()^');
     console.log('');
 
-    let response: Error | User;
+    let response: Error | User | null;
     try {
+
+        const body = req.body;
+
+        response = await userService
+            .getUserByEmail(
+                req.em,
+                body.email
+            );
+
+        if (response instanceof Error) {
+            return next(response);
+        }
+
+        if (response instanceof User) {
+            const conflictError: Error = new Error;
+            conflictError.name = 'EMAIL_EXISTS';
+            conflictError.message = 'E-mail already exists!';
+            return res.status(409).json(conflictError);
+        }
 
         const registeredUser = new User(
             {

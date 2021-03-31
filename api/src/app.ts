@@ -60,11 +60,13 @@ async function makeApp(): Promise<Application> {
   // app.use(env.INVENTORY_ITEMS_ROUTE, setInventoryItemRoute(Router()));
 
   // 404
-  app.use((_req: Request, _res: Response, next: NextFunction) => {
-    const err = new Error('Not Found') as IExpressError;
-    err.status = 404;
-    next(err);
-  });
+  app.use(
+    (_req: Request, _res: Response, next: NextFunction) => {
+      const err = new Error('Not Found') as IExpressError;
+      err.status = 404;
+      next(err);
+    }
+  );
 
   // 500
   app.use(

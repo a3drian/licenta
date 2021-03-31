@@ -1786,56 +1786,603 @@ providers: [
 -Angular will now take all the "interceptors" injected in the application and will run their respective "intercept()" method whenever a request leaves the application or a response enters the application
 
 Manipulating Request Objects
+----------
+-inside of an "interceptor" you can change the "request" object being intercepted:
+intercept(req: HttpRequest<any>, next: HttpHandler): {
+	const modifiedRequest = req.clone(
+				{
+					headers: req.headers.append(
+						'Auth', 'xyz'
+					)
+				}
+			);
+	return next.handle(modifiedRequest);
+}
+-we need "modifiedRequest" because "req" is immutable
+
 Response Interceptors
+----------
+-just like with a "request", you can change the "response" in the "intercept()" method
+-your "request" is an "observable" to which you subscribe => the "response" is also an "observable":
+intercept(req: HttpRequest<any>, next: HttpHandler): {
+	..
+	return next
+				.handle(modifiedRequest)
+				.pipe(
+					tap(
+						event => {
+							if (event.type === HttpEventType.Response) {
+								console.log('Response has arrived, body data:');
+								console.log(event.body);
+							}
+						}
+					)
+				);
+}
+.notice the "pipe()", "tap()"
+-you can "observe" different responses using "HttpClient" and one of which is an "event", which is the most "granular" type of "observable" you can have (can fine tune many things)
+
 Multiple Interceptors
+----------
+-adding the "LoggingInterceptorService"
+-(!) note the order of which you provide them in "app.module" is very important => represents the order in which they are executed:
+providers: [
+	{
+		provide: HTTP_INTERCEPTORS,
+		useClass: AuthInterceptorService,
+		multi: true
+	},
+	{
+		provide: HTTP_INTERCEPTORS,
+		useClass: LoggingInterceptorService,
+		multi: true
+	}
+]
+-basically, you want the authorization "interceptor" to be executed first
+
 Wrap Up
+----------
+-learned to send requests to the API
+-"GET", "POST", etc. return an "observable" => we can use "RxJS" operators on them, like "subscribe()", etc.
+
 Useful Resources & Links
+----------
+https://angular.io/guide/http
 
 
 19. Course Project - Http
 --------------------
 Module Introduction
+----------
+-we want to make the "Save data" and "Fetch data" buttons to work
+
 Backend (Firebase) Setup
+----------
+https://console.firebase.google.com/project/course-project-http-e66bc/overview
+-"Start in Test Mode"
+https://course-project-http-e66bc-default-rtdb.europe-west1.firebasedatabase.app/
+
 Setting Up the DataStorage Service
+----------
+-"Save data" and "Fetch data" buttons are in the "header" component, but we don't want to put "HttpClient" there because the "recipes" are in another component => it doesn't make sense
+-adding the "data-storage.service"
+-for every service you must use "@Injectable", and in our case we use it like this:
+@Injectable({ providedIn: 'root' })
+-remember that "HttpClientModule" must first be imported into "app.module"
+-next we inject "HttpClient" in "data-storage.service" from:
+import { HttpClient } from '@angular/common/http';
+
 Storing Recipes
+----------
+-creating the "PUT" request with "storeRecipes()" method by first injecting the "recipe.service" into "data-storage.service" and this allows us to have...
+const recipes = this.recipeService.getRecipes();
+...which communicates directly with the "recipe" component where we display all the recipes
+-because we want to override all the "recipes" at each click of "Save data" button, we use a "PUT" request instead of a "POST" request
+.note that the override is characteristic to Firebase in our case
+-again remember that the request will only be sent if we "subscribe()" to it
+-we will call "storeRecipes()" from the "header" component => we need to inject "data-storage.service" in the "header" component
+
 Fetching Recipes
+----------
+-"fetchRecipes()" for the "Fetch data" button
+-to answer "where do you want to subscribe?" ask "where are you interested in the response?"
+-therefore, we will "subscribe()" in the "data-storage.service" and pass the "recipes" back to the "recipe" component:
+fetchRecipes() {
+	this.http
+	.get<Recipe[]>(..)
+	.pipe(
+		map(recipes => {
+			return recipes.map(recipe => {
+				return {
+					...recipe,
+					ingredients: recipe.ingredients ? recipe.ingredients : []
+				};
+			});
+		})
+	)
+	.subscribe(recipes => {
+		this.recipeService.setRecipes(recipes);
+	});
+}
+."setRecipes()" is used to overwrite all the "recipes":
+setRecipes(recipes: Recipe[]) {
+	this.recipes = recipes;
+	this.recipesChanged.next(this.recipes.slice());
+}
+-using "this.recipes.slice()" we are pushing a new copy of the "recipes" and because we are calling the "next()" method of the "subject" named "recipesChanged" => all interested parties will be notified that the "recipe" list has been modified => update all interested parties
+
 Transforming Response Data
+----------
+-just to be on the safe side, whenever we fetch recipes, we want to initialize the "recipe"'s "ingredients" array, so note the...
+ingredients: recipe.ingredients ? recipe.ingredients : []
+...line above, from "fetchRecipes()"
+-"...recipe" means that we make a copy of the "recipe" argument we receive as parameter
+.sometimes called the "spread operator"
+
 Resolving Data Before Loading
+----------
+-routes like "http://localhost:4200/recipes/0" do not work anymore because we are not accessing an array anymore => we need to change the "ngOnInit()" method of "recipe" component
+-"resolver" = some code that runs before and a route is loaded to ensure that certain data that the route depends on is there
+.basically it helps with avoiding handling errors such as:
+ERROR TypeError: Cannot read property 'name' of undefined ..
+-we are building "RecipesResolverService" which implements "Resolve"
+-"Resolve<Recipe[]>" means that in the end, "RecipesResolverService" will resolve certain routes to an array of "Recipe" and make that array of "Recipe" available when accessing those particular routes
+resolve(
+	route: ActivatedRouteSnapshot,
+	state: RouterStateSnapshot
+) {
+	return this.dataStorageService.fetchRecipes();
+}
+-note that the first argument makes reference to the "route" being accesed ("route: ActivatedRouteSnapshot")
+-in the "resolver", you either return an array of recipes or return an "observable" that in the end will yield an array of recipes
+.because we can't load the recipes first, we are going to return an "observable"
+-note that we don't actually "subscribe()" in "resolve()", because it will "subscribe()" automatically by Angular and will find out when "recipes" are actually there
+-we need to add the "resolver" to the ":id" and ":id/edit" routes in "app-routing.module":
+const appRoutes: Routes = [
+	..,
+	{
+		path: 'recipes', component: RecipesComponent, children: [
+		  ..,
+		  { path: ':id', component: RecipeDetailComponent, resolve: [RecipesResolverService] },
+		  { path: ':id/edit', component: RecipeEditComponent, resolve: [RecipesResolverService] },
+		]
+	},
+	..
+];
+-basically, what happens is whenever we access ":id" and ":id/edit" routes, we first pass through the "RecipesResolverService" which requests the recipes from the API and only after that continues the navigation to the ":id" and ":id/edit" routes
+-the "resolver" enables us now to load "http://localhost:4200/recipes/0" and refresh it without getting errors in the console
+
 Fixing a Bug with the Resolver
+----------
+-because the "resolver" automatically fetches all the recipes => existing recipes and their changes get overwritten => we can check if we already have recipes and only if we don't we are going to overwrite them
 
-
-20. Authentication  Route Protection in Angular
+20. Authentication Route Protection in Angular
 --------------------
 Module Introduction
+----------
+-lock down parts of the application or the entire application
+
 How Authentication Works
 ----------
--interaction between client and server
+-client sends authentication data
+[1.13]
 -sessions do not work with Angular because we are building SPAs that deal with a backend which is a RESTful API
 .a RESTful API is stateless => no sessions possiblity
--client and server are decoupled from each other
--server validates user and gives access
--(?)
+-client and server are decoupled from each other, Angular is decoupled from the backend
+[2.47]
+-server validates user and gives access by giving the client a token, typically a JWT
+-the token is generated server-side, with a certain algorithm and secret which only the server knows => only server can validate requests
+-the token is stored client-side on the local storage and attaches the token to any subsequent request to the server
+.the token can be sent as a query parameter (or through the header) because even if you change it locally or in the URL, it's still the server the one that validates it because it is the one who created it
+.basically, we can't change the token locally
+-client sends authentication data, server sends token, token is then used for all subsequent requests
+
 Adding the Auth Page
+----------
+-"login" page should always be visible
+-adding the "auth/auth.component.ts" and "auth/auth.component.html"
+.don't forget to add it to "app.module"
+[2.30 - 4.10] - building "auth/auth.component.html"
+-remember to add "auth" component to "app-routing.module", basically registering a new "path" in our application
+[6.05] - adding a link to "/auth"
+
 Switching Between Auth Modes
+----------
+-adding...
+onSwitchMode(){
+	this.isInLoginMode = !this.isInLoginMode;
+}
+...to dynamically change the user interface, based on whether or not the user is logged in
+-in the template, we add...
+<button class="btn btn-primary" type="submit">{{ isInLoginMode ? 'Login' : 'Register' }}</button>
+...and:
+<button class="btn btn-primary" type="button" (click)="onSwitchMode()">Switch to {{ isInLoginMode ? 'Login' : 'Register' }}</button>
+-one button submits the form and the other is a simple button
+-to use "type="submit"", the "<button>" needs to be inside the "<form>"
+
 Handling Form Input
+----------
+-using a "template driven" form => "ngModel" on the "<input type="email" ..>"
+-"required" and "email" from the "<input type="email" ..>" are both validators Angular ships with
+<input type="password" id="password" class="form-control" ngModel name="password" required minlength="6" />
+-the form...
+<form #authForm="ngForm">..</form>
+...is referenced using "#authForm" => this gives us access to the form that is automatically created by Angular
+-"#authForm" = local reference
+-note the "ngForm"
+-now this allows us to disable a button if the form is not valid:
+<button class="btn btn-primary" type="submit" [disabled]="!authForm.valid">..<button>
+-the button should now be disabled until you input email and a password of at least 6 characters
+[2.25]
+-we can use "(ngSubmit)" on the form to be able to manipulate it in the "auth.component.ts":
+<form (ngSubmit)="onSubmit(authForm)">..</form>
+-you can call "form.reset()" in the component to reset it once the user clicked the "submit" button
+-scrisesem "ngMoodel" pe "<input type="email" ..>" si nu aparea "email" cu "console.log()"
+
 Preparing the Backend
+----------
+-de data asta, am pus...
+{
+	"rules": {
+		".read": "auth != null",
+		".write": "auth != null"
+	}
+}
+...in Firebase => only authenticated users can read and write recipes
+-de asemenea, Firebase -> "Authentication" -> and enable "Email/Password" sign-in method
+
 Make sure you got Recipes in your backend!
+----------
+-before blocking the app using the Firebase rules
+
 Preparing the Signup Request
+----------
+-we only need to be able to sign up and sign in users
+https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
+-endpoint for signing up:
+https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[API_KEY]
+-endpoint for signing in:
+https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]
+-Firebase automatically creates an unique "id" for each user
+-Firebase returns an "idToken" which is the token we need to use with each subsequent request
+[1.56]
+-adding the "AuthService" service
+-when you inject a service into a service, the "@Injectable" decorator is mandatory
+[3.33]
+[4.04]
+-the "Web API key" becomes available once you enter "Authentication" once
+-in the "AuthService" we've defined a "signUp()" method which makes a "POST" request to Google's identity toolkit to be able to sign up an user:
+signUp(email: string, password: string) {
+	// sends request to Firebase required endpoint for signing users up
+	return this.http.post(
+		'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD_le8NweVrBpqTeTnx9NPymvQzLiPbUuU',
+		{
+			'email': email,
+			'password': password,
+			'returnSecureToken': true
+		}
+	);
+}
+-this is a "prepared observable" because we used "return this.http.post(..)"
+.(!) remember that you need to "subscribe()" for that request (and any request) to actually be sent away to the API
+-adding "interface AuthResponseData {..}" to convert the generic "POST" request to a specialized "POST" request:
+return this.http.post<AuthResponseData>(..)
+
 Sending the Signup Request
+----------
+-we will inject "AuthService" in "AuthComponent" to be able to use the "signUp()" method of the service
+-"signUp()" returns a "prepared observable" => we need to "subscribe()"
+-if successful we should be able to get a response which is identical to our built interface "AuthResponseData"
+-you should see the registered user in the "User panel" under "Authentication"
+
 Adding a Loading Spinner & Error Handling Logic
+----------
+https://loading.io/css
+-using the "isLoading" boolean to hide the form while it is loading...
+<form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)" *ngIf="!isLoading">
+...and otherwise showing a "<div>" with the loading spinner:
+<div *ngIf="isLoading">
+	<app-loading-spinner></app-loading-spinner>
+</div>
+[4.40] - adding error handling
+-we either have an error message or no errors occurred => "error === null"
+<div class="alert alert-danger" *ngIf="error">
+	<p>{{ error }}</p>
+</div>
+.that's why the "*ngIf" is so simple, "*ngIf="error""
+-we tell the user an error occurred, but not which error occured
+
 Improving Error Handling
+----------
+-"EMAIL_EXISTS" error is thrown by Firebase
+-we should avoid handling errors within the "auth.component" => too much logic into the component, the component should just update the UI based on whether or not the user is logged in
+-"catchError" catches the error but you still need to subsequently wrap the error into another observable so that in the "auth.component" you will be able to handle the error
+-now, the logic for handling errors is moved into the "auth-service" and since we've added "catchError" and "throwError" we can still show the error message in the "auth.component"
+-we always throwError(errorMessage) in the service => we can simply display the message here:
+this.authService
+        .signUp(email, password)
+        .subscribe(
+			(responseData) => {..}
+			(errorMessage) => {
+				console.log('Error when trying to sign up:');
+				console.log(errorMessage);
+				this.error = errorMessage;
+				this.isLoading = false;
+          }
+        );
+-in case there is a network error and not a Firebase error:
+if (!errorResponse.error || !errorResponse.error.error) {..}
+
 Sending Login Requests
+----------
+-login response data is different to sign up response data
+interface AuthResponseData {
+	..
+	registered?: boolean;
+}
+-since the "subscribe()" block is exactly the same in both log in and sign up methods, we defined...
+let authObs: Observable<AuthResponseData>;
+.this "observable" returns an "AuthResponseData" because if you remember, the "POST" request in the "auth-service" was "this.http.post<AuthResponseData>"
+-basically, "authObs" will either received the "prepared observable" corresponding to the "log in" request or the "sign up" request:
+if (this.isInLoginMode) {
+	authObs = this.authService.signIn(email, password);
+} else {
+	authObs = this.authService.signUp(email, password)
+}
+
 Login Error Handling
+----------
+-we will add a "private" method that is used to share error handling logic between the "log in" request and the "sign up" request, like so...
+.pipe(
+	catchError(this.handleError)
+);
+...or like so:
+.pipe(
+	catchError(
+		(errorResponse) => {
+			return this.handleError(errorResponse);
+		}
+	)
+);
+.note that we "return throwError(errorMessage)" inside of "this.handleError()"
+
 Creating & Storing the User Data
+----------
+-adding the "User" model
+-"_token: string" and "_tokenExpirationDate: string" will both be "private" fields in the "User" model
+.both are needed to be able to work with the Firebase API
+-we defined...
+get token() {..}
+...so that the user cannot mess with their respective "token"
+-more than that, in the "getter" we can check if the "token" has not expired or if it does not exist at all => "return null"
+[3.58] - adding "User" to "AuthService"
+-we will store the authenticated user as a "subject" in "AuthService", from "RxJS":
+user = new Subject<User>();
+[4.39] - signing up
+-"tap()" allows us to perform some actions without actually changing the "observable chain" => we will use "tap()" to get the response data from our "POST" log in / sign up request and then use that response data to assign the "token" to the user that logs in or signs up:
+tap(
+	(responseData) => {
+		// + + because we need to convert responseData.expiresIn to a number
+		const expirationDate = new Date(new Date().getTime() + +responseData.expiresIn * 1000);
+		const user = new User(
+			responseData.email,
+			responseData.localId,
+			responseData.idToken,
+			expirationDate
+		);
+		this.user.next(user);
+	}
+)
+-notice the usage of the "user" "Subject" in "this.user.next(user);"
+.this means that we are basically emitting (notifying) the fact that our current authenticated user is the one with the credentials from the "const user" object => the entire application knows who the currently logged in user is
+-(!) aici nu merge sa pun...
+tap(this.handleAuthentication)
+
 Reflecting the Auth State in the UI
+----------
+-we want to redirect the user once they log in or sign up => we can redirect in the "auth.component" or in the "AuthService"
+-if you need data from the service to go alongside the authenticated user => use "AuthService"
+-if you need data from the component to go alongside the authenticated user => use "auth.component"
+-we want to reflect the fact that we are logged in or not in the UI, so we want to add "Logout" only if user is logged in, etc.
+[3.57]
+-because we used a "Subject<User>()", the "subject" will inform the entire application when the user changes
+-we have implemented...
+ngOnInit(): void {
+	this.userSubscription = this.authService.user
+		.subscribe(
+			(user) => {
+				// "user" is either "null" if not logged in
+				// or "!null" if the "user" is an actual concrete object aka. is logged in
+				if (user) {
+					this.isAuthenticated = true;
+				}
+				// can be written as:
+				// this.isAuthenticated = !!user;
+			}
+		);
+}
+...in the "header" component => "header" will always be notified when the user is logged in, when the user logs out, etc. => basically, we "subscribed" to that "Subject<User>()" from the "AuthService"
+.note that by using "subscribe()" we get access to a "user" object
+-it is important to note that these types of explicit subscriptions need to be manually managed => we need to implement "OnDestroy()":
+ngOnDestroy(): void {
+	this.userSubscription.unsubscribe();
+}
+[7.50] - adding "isAuthenticated" to "header" template
+
 Adding the Token to Outgoing Requests
+----------
+-remember that "Fetch data" does not work yet, because we have not added our "token" to our request => "401 UNAUTHORIZED"
+-we need to look into our "Fetch data" and "Save data" request and attach our user "token" to them
+-we could try "subscribing" like we did in the "header" component, but we don't care for about every change in the "Subject<User>()", we just need the "token"
+[2.23] - BehaviorSubject
+-instead of using...
+user = new Subject<User>();
+...in "AuthService" we will use a "BehaviorSubject":
+user = new BehaviorSubject<User>(null);
+-"BehaviorSubject" is different to "Subject"
+.with "Subject" you need to "subscribe" when the event of user logging in happens, so before an user actually logs in (basically, you need to be "prepared" and anticipate)
+.with "BehaviorSubject" you have access to the logged in user even if you subscribed only after the event of user logging in has been emitted
+-so basically, even if the user has logged in long ago, we can still access the current user's "token" => that's why you initialize it with "null"
+-it's basically the difference between an "ongoing subscription" and an "on-demand subscription", so only when we need it
+[3.24]
+[4.51]
+-(!) returning from inside a "subscribe()" does not work => we need to "pipe()" the "user" and "recipe" "observables" into one single "subscribe()":
+fetchRecipes() {
+	return this.authService.user
+		.pipe(
+			take(1),
+			exhaustMap(
+				(user) => {
+					return this.http
+						.get<Recipe[]>(
+							'https://course-project-auth-default-rtdb.europe-west1.firebasedatabase.app/recipes.json',
+							{
+								params: new HttpParams().set('auth', user.token)
+							}
+						);
+				}
+			),
+			map(recipes => {
+				return recipes.map(
+					recipe => {
+						return {
+							...recipe,
+							ingredients: recipe.ingredients ? recipe.ingredients : []
+						};
+					}
+				);
+			}),
+			tap(
+				recipes => {
+					this.recipeService.setRecipes(recipes);
+				}
+			)
+		);
+}
+."take(1)" is similar to us "subscribing" and then immediately "unsubscribing" from an "observable"
+."exhaustMap()" waits for the first "observable" to complete and then carries on with the next "observable" and so on
+-you start with a "user" "observable" and then when you finish with that you can carry on with the "POST" request
+[8.10]
+-some APIs require you to add the token as query param or as part of the request "header"
+-we have added as query param with "new HttpParams()"
+
 Attaching the Token with an Interceptor
+----------
+-adding an "interceptor" instead of appending the "token" to both "Fetch data" and "Save data" requests
+-adding "AuthInterceptorService" which cannot be "{ 'providedIn': 'root' }" because we need to add it in the "app-routing.module"
+-we need to implement "HttpInterceptor" and the "intercept()" method
+-we will once again use "take()", "exhaustMap()"
+-using "clone()" to copy the original "request"
+[5.00]
+-the new "providers" array:
+providers: [
+	ShoppingListService,
+	RecipeService,
+	{
+		provide: HTTP_INTERCEPTORS,
+		useClass: AuthInterceptorService,
+		multi: true
+	}
+]
+-some re-factoring needed to get rid of user token in "fetchRecipes()"
+-because "Subject<User>()" was initialized with "null" and because our "interceptor" is used including for "log in" and "sign up" requests...
+return this.authService.user
+			.pipe(
+				take(1),
+				exhaustMap(
+					(user) => {..}
+				)
+			);
+..."user" is "null" => the "token" does not exist => request fails
+-you can add a check whether or not the "user" is "null" in "intercept" or excluding the "interceptor" for "log in" and "sign up" requests
+
 Adding Logout
+----------
+-the logout method...
+logout() {
+	this.user.next(null);
+}
+...just basically sets the "Subject<User>()" back to its initial value, which was "null" and because we are dealing with a "Subject", every place of the application will now treat the user as being logged out
+-remember to set "isAuthenticated" to "false"
+-also, because there are many places, not only the "header" which can trigger a "logout", it's not a good idea to redirect after logging out in the "header" component => it's a better idea to redirect after "logout" in "auth-service"
+
 Adding Auto-Login
+----------
+-persisting the "token" once we reload the app, so once the Angular app restarts
+-you can work with "cookies" or "local storage"
+-using "local storage" in "handleAuthentication()":
+localStorage.setItem('userData', JSON.stringify(user));
+-Chrome Dev Tools -> Application -> Local Storage, and now you should be able to see the "userData" as a "key" and the "user" as a JSON object
+-accessing "userData" for "autoLogin()":
+const userData = JSON.parse(localStorage.getItem('userData'));
+.note it's "getItem()" and not "get"
+-basically, even if we refresh "localhost:4200" we still will be able to load and log in an user based off the data in "local storage"
+-finally, we call in "app.component" in "ngOnInit()" the "autoLogin()" function we just wrote
+
 Adding Auto-Logout
+----------
+-in case the "token" expires we need to add a timer to automatically log the user off
+-just make sure that when you manually log out, the timer is set back to its default value of let's say 1 hour
+-you want to clear the timer when you "logout()"...
+clearTimeout(this.tokenExpirationTimer);
+...where "tokenExpirationTimer" is a "private tokenExpirationTimer: any;" property
+-we set the timer wherever we change the currently logged in user, so in "autoLogin()"...
+this.autoLogout(responseData.expiresIn * 1000);
+...and also in "handleAuthentication()":
+const remainingTokenTime = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+this.autoLogout(remainingTokenTime);
+[6.26] - checking timer works correctly
+-(!) am scris "this.logout" in loc de "this.logout()" si nu apela functia
+
 Adding an Auth Guard
+----------
+-"auth guard" runs logic before resolving the "route"
+-we need to implement "AuthGuardService" which implements "CanActivate" and "canActivate()"
+-first param of "canActivate()" is the currently active route
+[2.38] - canActivate()
+-this is where we basically return "isAuthenticated" but in a different way, by using "return !!user"
+[3.59]
+-we need to add the guard in "app-routing":
+const appRoutes: Routes = [
+	{ path: '', redirectTo: '/recipes', pathMatch: 'full' },
+	{
+		path: 'recipes',
+		component: RecipesComponent,
+		canActivate: [AuthGuardService],
+		..
+	}
+]
+.notice that we can add an array of "guards", not just "AuthGuardService"
+[5.26]
+-"canActivate()" can also return an "UrlTree" which can be used to redirect the user if it is trying to access a path which is "guarded"
+-this means we don't need to manually redirect inside of "AuthGuardService"
+[7.20] - UrlTree
+-instead of "return !!user", we use:
+..
+(user) => {
+	const isAuth = !!user;
+	if (isAuth) {
+		return true;
+	}
+
+	return this.router.createUrlTree(['/auth']);
+}
+[9.19]
+-so the logic so far was to "subscribe" to our currently logged in user, mapping that user to a value of either "true" or "false" and then redirecting if user is logged in or not
+-the problem is we are continously subscribing to the "user" and it might cause strange side effects in the "guard" => use "take(1)" to only get the latest user subscribed value and then immediately "unsubscribe"
+.by "continously subscribing" I meant "ongoing listening" to the currently logged in user
+
 Wrap Up
+----------
+-make sure the "token" is cleared when user logs out or when the "token" expires
+[1.15]
+-"BehaviorSubject" because this always gives access to the latest logged in user
+
 Useful Resources & Links
+----------
+https://firebase.google.com/docs/reference/rest/auth
+https://jwt.io
 
 
 21. Dynamic Components

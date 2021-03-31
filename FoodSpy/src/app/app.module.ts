@@ -23,6 +23,7 @@ import { HttpClientModule } from '@angular/common/http';
 // Frontend:
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 // Authentication:
 import { AuthComponent } from './auth/auth.component';
 
@@ -32,7 +33,8 @@ import { AuthComponent } from './auth/auth.component';
     DashboardComponent,
     AddMealComponent,
     ScanFoodComponent,
-    AuthComponent
+    AuthComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,

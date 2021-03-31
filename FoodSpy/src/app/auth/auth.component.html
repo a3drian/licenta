@@ -1,36 +1,32 @@
-<div class="row">
-    <div class="col-xs-12 col-md-6 col-md-offset-3">
-        <!--
-		<div class="alert alert-danger" *ngIf="error">
-			<p>{{ error }}</p>
-		</div>
-		<div *ngIf="isLoading" style="text-align: center;">
-			<app-loading-spinner></app-loading-spinner>
-		</div>
-        -->
-        <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-            <div>
-                <label for="email">E-Mail</label>
-                <input formControlName="email" type="email" id="email" required email />
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input formControlName="password" type="password" id="password" required minlength="3" />
-            </div>
-            <div>
-                <button type="submit" [disabled]="!isFormValid()">
-                    {{ isInLoginMode ? loginButtonText : registerButtonText }}
-                </button>
-                <br>
-                <button type="button" (click)="onSwitchBetweenLoggedInAndOut()">
-                    {{ isInLoginMode ? noAccountButtonText : existingAccountButtonText }}
-                </button>
-                <br>
-                <button type="button">Forgot e-mail / password ?</button>
-                <br>
-            </div>
-        </form>
+<div>
+    <div *ngIf="error">
+        <p>{{ error }}</p>
     </div>
+    <div *ngIf="isLoading()" style="text-align: center;">
+        <app-loading-spinner></app-loading-spinner>
+    </div>
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading()">
+        <div>
+            <label for="email">E-Mail</label>
+            <input formControlName="email" type="email" id="email" required email />
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input formControlName="password" type="password" id="password" required minlength="3" />
+        </div>
+        <div>
+            <button type="submit" [disabled]="!isFormValid()">
+                {{ isInLoginMode ? loginButtonText : registerButtonText }}
+            </button>
+            <br>
+            <button type="button" (click)="onSwitchBetweenLoggedInAndOut()">
+                {{ isInLoginMode ? noAccountButtonText : existingAccountButtonText }}
+            </button>
+            <br>
+            <button type="button">Forgot e-mail / password ?</button>
+            <br>
+        </div>
+    </form>
 </div>
 
 <div *ngIf="isInDebugMode">
