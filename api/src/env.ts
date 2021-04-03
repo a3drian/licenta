@@ -3,17 +3,18 @@ console.log(require('dotenv').config());
 
 const CLUSTER_URI = process.env.ENV_MONGO_URI;
 
-export const env = Object.freeze({
-	PORT: process.env.PORT || 8080,	// for compatibility with Heroku
+export const env = Object.freeze(
+	{
+		PORT: process.env.PORT || 8080,	// for compatibility with Heroku
 
-	NODE_ENV: 'development',
+		NODE_ENV: 'development',
 
-	MONGO_URL: CLUSTER_URI,
-	DB_NAME: 'FoodSpyDb',
+		MONGO_URL: CLUSTER_URI,
+		DB_NAME: 'FoodSpyDb',
 
-	FOODS_ROUTE: '/db/foods',
-	USERS_ROUTE: '/db/users',
+		USERS_ROUTE: '/db/users',
 
-	REGISTER_ROUTE: '/api/register',
-	LOGIN_ROUTE: '/api/login'
-});
+		REGISTER_ROUTE: '/api/register',
+		LOGIN_ROUTE: '/api/login'
+	}
+);

@@ -7,8 +7,6 @@ import {
 } from '@mikro-orm/core';
 import { ObjectId } from 'mongodb';
 
-// import { IUser } from '../../../foodspy-shared/IUser';
-// import { IUser } from 'foodspy-shared';
 import { IUser } from '../interfaces/IUser';
 
 @Entity()
