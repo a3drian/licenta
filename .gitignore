@@ -1,4 +1,13 @@
 FoodSpy/node_modules
 api/node_modules
 
+# Resources/
+
 token.txt
+
+# foods / meals backend
+
+FoodSpyAPI/.vs
+FoodSpyAPI/bin
+FoodSpyAPI/obj
+FoodSpyAPI/appsettings.json
