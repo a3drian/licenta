@@ -14,7 +14,7 @@ export const env = Object.freeze(
 
 		USERS_ROUTE: '/db/users',
 
-		REGISTER_ROUTE: '/api/register',
-		LOGIN_ROUTE: '/api/login'
+		REGISTER_ROUTE: '/auth/register',
+		LOGIN_ROUTE: '/auth/login'
 	}
 );

@@ -4,6 +4,7 @@ import { User } from '../entities/user.entity';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
 import { decryptPassword } from '../services/password.service';
+import { ERROR_CODES, STATUS_CODES } from '../common';
 
 export { setLoginRoute };
 
@@ -41,9 +42,9 @@ async function loginUser(
 
         if (!response) {
             const userDoesNotExistError: Error = new Error;
-            userDoesNotExistError.name = 'NO_ACCOUNT';
+            userDoesNotExistError.name = ERROR_CODES.NO_ACCOUNT;
             userDoesNotExistError.message = 'No account found!';
-            return res.status(404).json(userDoesNotExistError);
+            return res.status(STATUS_CODES.NOT_FOUND).json(userDoesNotExistError);
         }
 
         if (response instanceof Error) {
@@ -54,16 +55,14 @@ async function loginUser(
             console.log(response);
             const formPassword = body.password;
             const storedPassword = response.password;
-            console.log('formPass:', formPassword);
-            console.log('storedPassword:', storedPassword);
             const match = decryptPassword(formPassword, storedPassword);
             if (match) {
-                console.log('Passwords match!');
+                console.log('Passwords match! Signing user in...');
             } else {
                 const wrongPasswordError: Error = new Error;
-                wrongPasswordError.name = 'WRONG_PASSWORD';
+                wrongPasswordError.name = ERROR_CODES.WRONG_PASSWORD;
                 wrongPasswordError.message = 'Wrong e-mail or password!';
-                return res.status(401).json(wrongPasswordError);
+                return res.status(STATUS_CODES.UNAUTHORIZED).json(wrongPasswordError);
             }
         }
 
@@ -74,5 +73,5 @@ async function loginUser(
         return next(ex);
     }
 
-    return res.status(201).json(response);
+    return res.status(STATUS_CODES.OK).json(response);
 }

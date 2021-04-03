@@ -13,6 +13,8 @@ import { IExpressRequest } from './interfaces/IExpressRequest';
 import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
 import entities from './entities';
 
+import { ERROR_CODES, STATUS_CODES } from './common';
+
 import { setUserRoute } from './routes/users.route';
 // Authentication:
 import { setRegisterRoute } from './routes/register.route';
@@ -59,8 +61,8 @@ async function makeApp(): Promise<Application> {
   // 404
   app.use(
     (_req: Request, _res: Response, next: NextFunction) => {
-      const err = new Error('Not Found') as IExpressError;
-      err.status = 404;
+      const err = new Error(ERROR_CODES.NOT_FOUND) as IExpressError;
+      err.status = STATUS_CODES.NOT_FOUND;
       next(err);
     }
   );
@@ -69,7 +71,7 @@ async function makeApp(): Promise<Application> {
   app.use(
     (err: IExpressError, _req: Request, res: Response, _next: NextFunction) => {
       res
-        .status(err.status || 500)
+        .status(err.status || STATUS_CODES.SERVER_ERROR)
         .send(env.NODE_ENV === 'development' ? err : {});
     }
   );

@@ -3,6 +3,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { User } from '../entities/user.entity';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
+import { STATUS_CODES } from '../common';
 
 export { setUserRoute };
 
@@ -47,7 +48,7 @@ async function getUsers(
       return next(response);
    }
 
-   return res.status(200).json(response);
+   return res.status(STATUS_CODES.OK).json(response);
 }
 
 // POST
@@ -83,5 +84,5 @@ async function postUser(
       return next(response);
    }
 
-   return res.status(201).json(response);
+   return res.status(STATUS_CODES.CREATED).json(response);
 }

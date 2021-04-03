@@ -1,0 +1,15 @@
+const OK = 200;
+const CREATED = 201;
+const UNAUTHORIZED = 401;
+const NOT_FOUND = 404;
+const CONFLICT = 409;
+const SERVER_ERROR = 500;
+
+export const STATUS_CODES = {
+  OK,
+  CREATED,
+  UNAUTHORIZED,
+  NOT_FOUND,
+  CONFLICT,
+  SERVER_ERROR
+};

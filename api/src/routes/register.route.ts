@@ -4,6 +4,7 @@ import { User } from '../entities/user.entity';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
 import { encryptPassword } from '../services/password.service';
+import { ERROR_CODES, STATUS_CODES } from '../common';
 
 export { setRegisterRoute };
 
@@ -47,9 +48,9 @@ async function registerUser(
 
         if (response instanceof User) {
             const conflictError: Error = new Error;
-            conflictError.name = 'EMAIL_EXISTS';
+            conflictError.name = ERROR_CODES.EMAIL_EXISTS;
             conflictError.message = 'E-mail already exists!';
-            return res.status(409).json(conflictError);
+            return res.status(STATUS_CODES.CONFLICT).json(conflictError);
         }
 
         const registeredUser = new User(
@@ -73,5 +74,5 @@ async function registerUser(
         return next(response);
     }
 
-    return res.status(201).json(response);
+    return res.status(STATUS_CODES.CREATED).json(response);
 }
