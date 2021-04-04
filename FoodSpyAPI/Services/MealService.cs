@@ -1,6 +1,8 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FoodSpyAPI.Common;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -114,6 +116,36 @@ namespace FoodSpyAPI.Services
 			List<Meal> mealsList = meals.ToList();
 
 			_logger.LogInformation($"Meals of type: '{type}' ...");
+			foreach (Meal meal in mealsList) {
+				_logger.LogInformation($"Meal: {meal}\n");
+			}
+
+			return mealsList;
+		}
+
+		public async Task<List<Meal>> SearchMealsByEmail(string email, SortOrder sortOrder = SortOrder.Descending)
+		{
+			string sortOrderName = Enum.GetName(typeof(SortOrder), sortOrder);
+			_logger.LogInformation($"Searching by email of '{email}' and sort order '{sortOrderName}' ...");
+
+			string SORT_BY_DATE = nameof(Meal.CreatedAt);
+			SortDefinition<Meal> sortDefinition;
+			if (sortOrder == SortOrder.Descending) {
+				sortDefinition = new SortDefinitionBuilder<Meal>().Descending(SORT_BY_DATE);
+			} else {
+				sortDefinition = new SortDefinitionBuilder<Meal>().Ascending(SORT_BY_DATE);
+			}
+
+			FindOptions<Meal> findOptions = new FindOptions<Meal>() { Sort = sortDefinition };
+
+			IAsyncCursor<Meal> meals = await _meals
+				.FindAsync<Meal>(
+					filter: meal => meal.Email.Equals(email),
+					findOptions
+				);
+			List<Meal> mealsList = meals.ToList();
+
+			_logger.LogInformation($"Meals with email: '{email}' ...");
 			foreach (Meal meal in mealsList) {
 				_logger.LogInformation($"Meal: {meal}\n");
 			}

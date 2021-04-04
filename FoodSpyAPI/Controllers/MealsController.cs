@@ -6,6 +6,8 @@ using FoodSpyAPI.Helpers;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Services;
 using AutoMapper;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -163,6 +165,23 @@ namespace FoodSpyAPI.Controllers
 			try {
 
 				List<Meal> searchResults = await _mealService.SearchMealsByType(type);
+				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(searchResults);
+				return mappedMeals;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
+
+		[HttpPost("search")]
+		public async Task<ActionResult<List<MealModel>>> SearchMealsByEmail([FromBody] SearchByEmailOptions searchQuery)
+		{
+			try {
+
+				string email = searchQuery.Email;
+				SortOrder sortOrder = searchQuery.SortOrder;
+
+				List<Meal> searchResults = await _mealService.SearchMealsByEmail(email, sortOrder);
 				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(searchResults);
 				return mappedMeals;
 
