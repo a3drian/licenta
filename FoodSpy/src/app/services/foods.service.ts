@@ -9,19 +9,20 @@ import { IFood } from '../interfaces/IFood';
    providedIn: 'root'
 })
 export class FoodsService {
-   readonly BASE_URL: string = '/db/foods';
+   readonly BASE_URL: string = '/api/foods';
+   readonly SEARCH_BY_NAME_URL: string = this.BASE_URL + '/search?name=';
 
    constructor(private http: HttpClient) { }
 
    // GET
-   getData(
+   getFood(
       name = ''
-   ): Observable<[IFood[] | null]> {
+   ): Observable<IFood[] | null> {
 
       let params = new HttpParams()
          .set('name', name.toString());
 
-      console.log('getData():');
+      console.log('getFood():');
       console.log('params:', params);
 
       const keys = params.keys();
@@ -46,9 +47,7 @@ export class FoodsService {
             ),
             map(
                (response) => {
-                  return [
-                     response.body
-                  ];
+                  return response.body;
                }
             )
          );
@@ -60,7 +59,7 @@ export class FoodsService {
       console.log('search(term: string):');
 
       return this.http
-         .get<IFood[]>(`${this.BASE_URL}?name=${term}`)
+         .get<IFood[]>(`${this.SEARCH_BY_NAME_URL}${term}`)
          .pipe(
             tap(
                (x) => {

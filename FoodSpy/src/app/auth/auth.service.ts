@@ -14,8 +14,8 @@ export interface AuthResponseData {
 export class AuthService {
 
     user = new BehaviorSubject<User | null>(null);
-    REGISTER_URL: string = '/api/register';
-    LOGIN_URL: string = '/api/login';
+    REGISTER_URL: string = '/auth/register';
+    LOGIN_URL: string = '/auth/login';
 
     constructor(
         private http: HttpClient,

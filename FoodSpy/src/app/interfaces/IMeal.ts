@@ -1,3 +1,8 @@
+import { IFood } from "./IFood";
+
 export interface IMeal {
-   name: string;
+   email: string;
+   type: string;
+   foods: IFood[];
+   createdAt?: Date;
 }

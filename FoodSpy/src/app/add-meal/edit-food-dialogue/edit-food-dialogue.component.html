@@ -1,0 +1,30 @@
+<!-- <p><b>edit-food-dialogue</b> works!</p> -->
+
+<h2 mat-dialog-title>{{food.name}}</h2>
+
+<div mat-dialog-content style="width: 500px; height: 500px;">
+   <form [formGroup]="editMealForm">
+      <div>
+         <label for="quantity">Quantity</label>
+         <input formControlName="quantity" type="number" id="quantity" required>
+      </div>
+      <mat-form-field appearance="outline">
+         <mat-label for="unit">Select unit</mat-label>
+         <mat-select formControlName="unit">
+            <mat-option *ngFor="let unit of units" [value]="unit">
+               {{ unit }}
+            </mat-option>
+         </mat-select>
+      </mat-form-field>
+   </form>
+   <mat-dialog-actions>
+      <button mat-dialog-close (click)="saveEditedFood()" [disabled]="!isFormValid()">Add to meal</button>
+   </mat-dialog-actions>
+
+   <div *ngIf="isInDebugMode">
+      <p>Food ID: {{ food.id }}</p>
+      <p>Form value:<br>{{ editMealForm.value | json }}</p>
+      <p>Form status:<br>{{ editMealForm.status }}</p>
+   </div>
+
+</div>

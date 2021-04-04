@@ -9,10 +9,10 @@ export class MealsService {
 
    meals: IMeal[] =
       [
-         new Meal({ name: 'Breakfast' }),
-         new Meal({ name: 'Lunch' }),
-         new Meal({ name: 'Dinner' }),
-         new Meal({ name: 'Snack' })
+         new Meal({ type: 'Breakfast' }),
+         new Meal({ type: 'Lunch' }),
+         new Meal({ type: 'Dinner' }),
+         new Meal({ type: 'Snack' })
       ];
 
    constructor() { }

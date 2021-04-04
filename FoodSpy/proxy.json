@@ -1,9 +1,9 @@
 {
-	"/db": {
+	"/auth/*": {
 		"target": "http://localhost:8080",
 		"secure": false
 	},
-	"/api": {
+	"/api/*": {
 		"target": "http://localhost:8088",
 		"secure": false
 	}

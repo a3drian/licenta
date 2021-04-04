@@ -18,6 +18,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
 // HTTP:
 import { HttpClientModule } from '@angular/common/http';
 // Frontend:
@@ -26,6 +28,7 @@ import { ScanFoodComponent } from './scan-food/scan-food.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 // Authentication:
 import { AuthComponent } from './auth/auth.component';
+import { EditFoodDialogueComponent } from './add-meal/edit-food-dialogue/edit-food-dialogue.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +37,8 @@ import { AuthComponent } from './auth/auth.component';
     AddMealComponent,
     ScanFoodComponent,
     AuthComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    EditFoodDialogueComponent
   ],
   imports: [
     BrowserModule,
@@ -47,6 +51,8 @@ import { AuthComponent } from './auth/auth.component';
     MatFormFieldModule,
     MatSelectModule,
     MatTableModule,
+    MatCheckboxModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule

@@ -1,13 +1,21 @@
 <b>add-meal</b> works!
 
-<mat-form-field appearance="outline">
-    <mat-label>Select meal type</mat-label>
-    <mat-select formControlName="meal">
-        <mat-option *ngFor="let meal of meals" [value]="meal">
-            {{ meal }}
-        </mat-option>
-    </mat-select>
-</mat-form-field>
+<form [formGroup]="addMealForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+        <mat-label>Select meal type</mat-label>
+        <mat-select formControlName="meal">
+            <mat-option *ngFor="let meal of mealTypes" [value]="meal">
+                {{ meal }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <br>
+
+    <button type="submit" [disabled]="!isFormValid()">
+        Add meal
+    </button>
+</form>
 
 <div class="search">
     <input #searchBox type="text" id="search-box" (input)="search(searchBox.value)" placeholder="Look for food..." />
@@ -16,7 +24,7 @@
     </button>
 </div>
 
-<table mat-table [dataSource]="foods">
+<table mat-table [dataSource]="databaseFoods">
 
     <!-- ID -->
     <ng-container matColumnDef="id">
@@ -33,13 +41,25 @@
     <!-- Qty -->
     <ng-container matColumnDef="qty">
         <th mat-header-cell *matHeaderCellDef> Quantity </th>
-        <td mat-cell *matCellDef="let element"> {{element.qty}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
     </ng-container>
 
     <!-- Unit -->
     <ng-container matColumnDef="unit">
         <th mat-header-cell *matHeaderCellDef> Unit </th>
         <td mat-cell *matCellDef="let element"> {{element.unit}} </td>
+    </ng-container>
+
+    <!-- Selection checkbox -->
+    <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef> Add to meal </th>
+        <td mat-cell *matCellDef="let food">
+            <!-- <mat-checkbox (change)="selectRow(food)" [checked]="checkIsRowSelected(food)"></mat-checkbox> -->
+            <!--  routerLink="/edit/{{ food }}" -->
+            <button class="button" mat-stroked-button color="accent" (click)="openDialog(food)">
+                Edit qty and add to meal
+            </button>
+        </td>
     </ng-container>
 
     <!-- Table headers -->
@@ -61,4 +81,10 @@
     <button [routerLink]="['']">
         Back
     </button>
+</div>
+
+<div *ngIf="isInDebugMode">
+    <p>Form value:<br>{{ addMealForm.value | json }}</p>
+    <p>Form status:<br>{{ addMealForm.status }}</p>
+    <p>{{ meal | json }}</p>
 </div>

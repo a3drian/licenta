@@ -1,7 +1,7 @@
 export interface IFood {
 	id: string;
 	name: string;
-	qty: number;
+	quantity: number;
 	unit: string;
 	calories: number;	// kCal
 	fats: number;		// g
