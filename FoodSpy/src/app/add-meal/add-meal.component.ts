@@ -50,6 +50,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
       );
     const initialFoods: IFood[] = [];
     this.meal.foods = initialFoods;
+    if (!this.isInDebugMode) {  // only slice if not in Debug Mode
+      this.foodsColumns = this.foodsColumns.slice(1);
+    }
   }
 
   ngOnInit(): void {
@@ -88,7 +91,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.dialogueSubscription.unsubscribe();
+    // this.dialogueSubscription.unsubscribe();
   }
 
   isFormValid(): boolean {
@@ -122,21 +125,23 @@ export class AddMealComponent implements OnInit, OnDestroy {
     console.log('Food from dialogue:', food);
     this.addedFoods.push(food);
     console.log('Added foods []:', this.addedFoods);
+    this.populateMeal();
+  }
+
+  private populateMeal() {
+    console.log('populateMeal():');
     const mealFromForm = this.addMealForm.value;
     this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
     this.meal.foods = this.addedFoods;
     console.log('mealFromForm:', mealFromForm);
     console.log('this.meal', this.meal);
+    console.log('populateMeal()^');
   }
 
   onSubmit(): void {
-    const mealFromForm = this.addMealForm.value;
-    this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
-    this.meal.foods = this.addedFoods;
+    this.populateMeal();
     this.meal.email = 'add-meal@email.com';
     this.meal.createdAt = new Date();
-    console.log('mealFromForm:', mealFromForm);
-    console.log('this.meal', this.meal);
     this.mealsService
       .addMeal(this.meal)
       .subscribe();

@@ -27,7 +27,7 @@
 <table mat-table [dataSource]="databaseFoods">
 
     <!-- ID -->
-    <ng-container matColumnDef="id">
+    <ng-container matColumnDef="id" *ngIf="isInDebugMode">
         <th mat-header-cell *matHeaderCellDef> ID </th>
         <td mat-cell *matCellDef="let element"> {{element.id}} </td>
     </ng-container>
