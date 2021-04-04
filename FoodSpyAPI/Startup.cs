@@ -9,11 +9,14 @@ using Microsoft.Extensions.Options;
 using FoodSpyAPI.Controllers;
 using FoodSpyAPI.Services;
 using FoodSpyAPI.Settings;
+using Microsoft.OpenApi.Models;
 
 namespace FoodSpyAPI
 {
 	public class Startup
 	{
+		private const string API_VERSION = "v1";
+		private const string AUTHOR = "Teodor-Adrian Manghiuc";
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -66,6 +69,22 @@ namespace FoodSpyAPI
 					);
 				});
 
+			// Register the Swagger generator
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc(API_VERSION, new OpenApiInfo
+				{
+					Version = API_VERSION,
+
+					Title = "FoodSpyAPI",
+					Description = "API for FoodSpy application.",
+					Contact = new OpenApiContact
+					{
+						Name = AUTHOR
+					}
+				});
+			});
+
 			services.AddControllers();
 		}
 
@@ -77,6 +96,15 @@ namespace FoodSpyAPI
 			}
 
 			app.UseRouting();
+
+			// Enable middleware to serve generated Swagger as a JSON endpoint.
+			app.UseSwagger();
+
+			// Enable middleware to serve swagger-ui, specifying the Swagger JSON endpoint.
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodSpyAPI");
+			});
 
 			app.UseCors("CorsPolicy");
 

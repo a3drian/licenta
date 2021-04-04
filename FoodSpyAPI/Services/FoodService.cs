@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FoodSpyAPI.Helpers;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -107,9 +108,13 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Searching by name of '{name}' ...");
 
+			FilterDefinition<Food> nameFilter = Builders<Food>
+				.Filter
+				.Regex("Name", new BsonRegularExpression(name, "i"));
+
 			IAsyncCursor<Food> foods = await _foods
 				 .FindAsync<Food>(
-					  filter: food => food.Name.Contains(name)
+					  filter: nameFilter
 				 );
 			List<Food> foodsList = foods.ToList();
 
