@@ -173,47 +173,6 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
-		[HttpPost("search")]
-		public async Task<ActionResult<List<MealModel>>> SearchMealsByEmail([FromBody] SearchByEmailOptions searchQuery)
-		{
-			try {
-
-				string email = searchQuery.Email;
-				SortOrder sortOrder = searchQuery.SortOrder;
-
-				List<Meal> searchResults = await _mealService.SearchMealsByEmail(email, sortOrder);
-				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(searchResults);
-				return mappedMeals;
-
-			} catch (Exception e) {
-				return LogDatabaseException(e);
-			}
-		}
-
-		/*
-		[HttpGet("search")]
-		public async Task<ActionResult<List<MealModel>>> SearchMealsByName(string name)
-		{
-			 try
-			 {
-
-				  if (!Validator.IsEmptySearchTerm(name))
-				  {
-						return await GetMeals();
-				  }
-
-				  List<Meal> searchResults = await _mealService.SearchMealsByName(name);
-				  List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(searchResults);
-				  return mappedMeals;
-
-			 }
-			 catch (Exception e)
-			 {
-				  return LogDatabaseException(e);
-			 }
-		}
-		*/
-
 		private ObjectResult LogDatabaseException(Exception e)
 		{
 			_logger.LogError(e.ToString());

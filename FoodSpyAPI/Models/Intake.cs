@@ -8,42 +8,42 @@ using FoodSpyAPI.Interfaces;
 
 namespace FoodSpyAPI.Models
 {
-	public class Meal : IMeal
+	public class Intake : IIntake
 	{
 		[BsonId]
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("type")]
+		[BsonElement("email")]
 		[Required]
-		public string Type { get; set; }
-
-		[BsonElement("foods")]
-		[Required]
-		public List<Food> Foods { get; set; }
+		public string Email { get; set; }
 
 		[BsonElement("createdAt")]
 		[Required]
 		public DateTime CreatedAt { get; set; }
 
-		public Meal() { }
-		public Meal(Meal meal)
+		[BsonElement("meals")]
+		[Required]
+		public List<Meal> Meals { get; set; }
+
+		public Intake() { }
+		public Intake(Intake intake)
 		{
-			this.Type = meal.Type;
-			this.Foods = meal.Foods;
-			this.CreatedAt = meal.CreatedAt;
+			this.Email = intake.Email;
+			this.Meals = intake.Meals;
+			this.CreatedAt = intake.CreatedAt;
 		}
 		public override string ToString()
 		{
 			string output = "{" + "\n";
 
 			output += $"\t Id: {Id} \n";
-			output += $"\t Type: {Type} \n";
-			output += $"\t Foods: \n";
-			foreach (Food food in Foods) {
-				output += $"\t Food: {food} \n";
-			}
+			output += $"\t Email: {Email} \n";
 			output += $"\t CreatedAt: {CreatedAt} \n";
+			output += $"\t Meals: \n";
+			foreach (Meal meal in Meals) {
+				output += $"\t Meal: {meal} \n";
+			}
 
 			output += "}" + "\n";
 

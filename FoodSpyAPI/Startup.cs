@@ -17,6 +17,7 @@ namespace FoodSpyAPI
 	{
 		private const string API_VERSION = "v1";
 		private const string AUTHOR = "Teodor-Adrian Manghiuc";
+		private const string TITLE = "FoodSpyAPI";
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -29,30 +30,34 @@ namespace FoodSpyAPI
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// AutoMapper
-			services.AddAutoMapper(typeof(MealsController));
 			services.AddAutoMapper(typeof(FoodsController));
+			services.AddAutoMapper(typeof(MealsController));
+			services.AddAutoMapper(typeof(IntakesController));
 
 			// Databases
-			// requires using Microsoft.Extensions.Options
-			// Meals database
-			services.Configure<MealsDatabaseSettings>(
-				 Configuration.GetSection(nameof(MealsDatabaseSettings)));
-
-			services.AddSingleton<IMealsDatabaseSettings>(sp =>
-				 sp.GetRequiredService<IOptions<MealsDatabaseSettings>>().Value);
-
-			// Services
-			services.AddSingleton<MealService>();
-
 			// Foods database
 			services.Configure<FoodsDatabaseSettings>(
 				Configuration.GetSection(nameof(FoodsDatabaseSettings)));
 
 			services.AddSingleton<IFoodsDatabaseSettings>(sp =>
 				sp.GetRequiredService<IOptions<FoodsDatabaseSettings>>().Value);
+			// Meals database
+			services.Configure<MealsDatabaseSettings>(
+				 Configuration.GetSection(nameof(MealsDatabaseSettings)));
+
+			services.AddSingleton<IMealsDatabaseSettings>(sp =>
+				 sp.GetRequiredService<IOptions<MealsDatabaseSettings>>().Value);
+			// Intakes database
+			services.Configure<IntakesDatabaseSettings>(
+				Configuration.GetSection(nameof(IntakesDatabaseSettings)));
+
+			services.AddSingleton<IIntakesDatabaseSettings>(sp =>
+				sp.GetRequiredService<IOptions<IntakesDatabaseSettings>>().Value);
 
 			// Services
 			services.AddSingleton<FoodService>();
+			services.AddSingleton<MealService>();
+			services.AddSingleton<IntakeService>();
 
 			// CORS
 			services.AddCors(options =>
@@ -76,7 +81,7 @@ namespace FoodSpyAPI
 				{
 					Version = API_VERSION,
 
-					Title = "FoodSpyAPI",
+					Title = TITLE,
 					Description = "API for FoodSpy application.",
 					Contact = new OpenApiContact
 					{
@@ -103,7 +108,7 @@ namespace FoodSpyAPI
 			// Enable middleware to serve swagger-ui, specifying the Swagger JSON endpoint.
 			app.UseSwaggerUI(c =>
 			{
-				c.SwaggerEndpoint("/swagger/v1/swagger.json", "FoodSpyAPI");
+				c.SwaggerEndpoint($"/swagger/{API_VERSION}/swagger.json", TITLE);
 			});
 
 			app.UseCors("CorsPolicy");
