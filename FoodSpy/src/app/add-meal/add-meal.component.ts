@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // Item filtering:
 import { Observable, pipe, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { IDailyIntake } from '../interfaces/IDailyIntake';
 
 @Component({
   selector: 'app-add-meal',
@@ -22,6 +23,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
+  day: IDailyIntake = <IDailyIntake>{};
 
   databaseFoods: IFood[] = [];
   addedFoods: IFood[] = [];

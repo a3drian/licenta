@@ -29,6 +29,7 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
 // Authentication:
 import { AuthComponent } from './auth/auth.component';
 import { EditFoodDialogueComponent } from './add-meal/edit-food-dialogue/edit-food-dialogue.component';
+import { MealHistoryComponent } from './meal-history/meal-history.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { EditFoodDialogueComponent } from './add-meal/edit-food-dialogue/edit-fo
     ScanFoodComponent,
     AuthComponent,
     LoadingSpinnerComponent,
-    EditFoodDialogueComponent
+    EditFoodDialogueComponent,
+    MealHistoryComponent
   ],
   imports: [
     BrowserModule,

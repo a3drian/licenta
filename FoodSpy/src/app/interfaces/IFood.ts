@@ -7,4 +7,6 @@ export interface IFood {
 	fats: number;		// g
 	carbs: number;		// g
 	proteins: number;	// g
+
+	toString(): string;
 }

@@ -5,6 +5,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
 import { AuthComponent } from './auth/auth.component';
+import { MealHistoryComponent } from './meal-history/meal-history.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, pathMatch: 'full' }, // home page
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'add', component: AddMealComponent },
   { path: 'add/scan', component: ScanFoodComponent },
   { path: 'auth', component: AuthComponent },
+  { path: 'history/:id', component: MealHistoryComponent },
   { path: '**', redirectTo: '' }
 ];
 

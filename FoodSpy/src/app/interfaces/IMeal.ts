@@ -1,4 +1,4 @@
-import { IFood } from "./IFood";
+import { IFood } from './IFood';
 
 export interface IMeal {
    email: string;
