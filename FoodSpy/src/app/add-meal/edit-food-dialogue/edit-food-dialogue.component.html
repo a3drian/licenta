@@ -3,7 +3,7 @@
 <h2 mat-dialog-title>{{food.name}}</h2>
 
 <div mat-dialog-content style="width: 500px; height: 500px;">
-   <form [formGroup]="editMealForm">
+   <form [formGroup]="editFoodForm">
       <div>
          <label for="quantity">Quantity</label>
          <input formControlName="quantity" type="number" id="quantity" required>
@@ -23,8 +23,8 @@
 
    <div *ngIf="isInDebugMode">
       <p>Food ID: {{ food.id }}</p>
-      <p>Form value:<br>{{ editMealForm.value | json }}</p>
-      <p>Form status:<br>{{ editMealForm.status }}</p>
+      <p>Form value:<br>{{ editFoodForm.value | json }}</p>
+      <p>Form status:<br>{{ editFoodForm.status }}</p>
    </div>
 
 </div>

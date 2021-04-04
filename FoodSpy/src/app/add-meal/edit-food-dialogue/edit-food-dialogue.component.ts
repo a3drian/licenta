@@ -3,6 +3,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IFood } from '../../interfaces/IFood';
 import { UnitsService } from 'src/app/services/units.service';
+import { Food } from 'src/app/models/Food';
+import { positiveIntegerValidator } from 'src/app/shared/validators/positiveIntegerValidator';
 
 @Component({
   selector: 'app-edit-food-dialogue',
@@ -13,7 +15,7 @@ export class EditFoodDialogueComponent implements OnInit {
 
   isInDebugMode: boolean = true;
 
-  editMealForm: FormGroup;
+  editFoodForm: FormGroup;
 
   units: string[] = [];
 
@@ -23,10 +25,13 @@ export class EditFoodDialogueComponent implements OnInit {
     private formBuilder: FormBuilder,
     private unitsService: UnitsService
   ) {
-    this.editMealForm = this.formBuilder
+    this.editFoodForm = this.formBuilder
       .group(
         {
-          quantity: ['', Validators.required],
+          quantity: [
+            '',
+            [Validators.required, positiveIntegerValidator()]
+          ],
           unit: ['', Validators.required]
         }
       );
@@ -45,17 +50,19 @@ export class EditFoodDialogueComponent implements OnInit {
 
   saveEditedFood(): void {
     if (this.isFormValid()) {
-      const editedFood = this.editMealForm.value;
-      this.food.quantity = editedFood.quantity;
-      this.food.unit = editedFood.unit;
-      this.dialogReference.close(this.food);
+      const editedFood = new Food(this.food);
+      // need an auxiliary variable to not modify the entry in the table
+      const foodFromForm = this.editFoodForm.value;
+      editedFood.quantity = foodFromForm.quantity;
+      editedFood.unit = foodFromForm.unit;
+      this.dialogReference.close(editedFood);
     } else {
       this.dialogReference.close(null);
     }
   }
 
   isFormValid(): boolean {
-    return this.editMealForm.valid;
+    return this.editFoodForm.valid;
   }
 
 }

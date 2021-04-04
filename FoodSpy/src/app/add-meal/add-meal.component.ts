@@ -34,6 +34,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
   ];
   mealTypes: string[] = [];
 
+  dialogueSubscription: any;
+
   constructor(
     private foodsService: FoodsService,
     private mealsService: MealsService,
@@ -43,14 +45,11 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.addMealForm = this.formBuilder
       .group(
         {
-          meal: ['', Validators.required]
+          mealType: ['', Validators.required]
         }
       );
     const initialFoods: IFood[] = [];
     this.meal.foods = initialFoods;
-  }
-  ngOnDestroy(): void {
-    this.dialogueSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -80,12 +79,16 @@ export class AddMealComponent implements OnInit, OnDestroy {
       );
     // Meals:
     this.mealTypes = this.mealsService
-      .getMeals()
+      .getMealTypes()
       .map(
         (meals) => {
           return meals.type
         }
       );
+  }
+
+  ngOnDestroy(): void {
+    this.dialogueSubscription.unsubscribe();
   }
 
   isFormValid(): boolean {
@@ -94,7 +97,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
     return validForm && validFoods;
   }
 
-  dialogueSubscription: any;
 
   openDialog(food: IFood) {
     console.log('Selected food:', food);
@@ -119,23 +121,25 @@ export class AddMealComponent implements OnInit, OnDestroy {
   addFoodFromDialogueToMeal(food: IFood): void {
     console.log('Food from dialogue:', food);
     this.addedFoods.push(food);
-    console.log('added foods array:', this.addedFoods);
+    console.log('Added foods []:', this.addedFoods);
     const mealFromForm = this.addMealForm.value;
-    this.meal = mealFromForm;
-    this.meal.type = mealFromForm.type ? mealFromForm.type : '';
-    mealFromForm.foods = this.addedFoods;
+    this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
     this.meal.foods = this.addedFoods;
-    console.log(mealFromForm);
+    console.log('mealFromForm:', mealFromForm);
     console.log('this.meal', this.meal);
   }
 
   onSubmit(): void {
-    const editedMeal = this.addMealForm.value;
-    this.meal = editedMeal;
-    editedMeal.foods = this.addedFoods;
+    const mealFromForm = this.addMealForm.value;
+    this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
     this.meal.foods = this.addedFoods;
-    console.log(editedMeal);
+    this.meal.email = 'add-meal@email.com';
+    this.meal.createdAt = new Date();
+    console.log('mealFromForm:', mealFromForm);
     console.log('this.meal', this.meal);
+    this.mealsService
+      .addMeal(this.meal)
+      .subscribe();
   }
 
   // Item filtering:
