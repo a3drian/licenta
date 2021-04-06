@@ -1,43 +1,75 @@
-import { Component, OnInit } from '@angular/core';
-import { IMeal } from '../interfaces/IMeal';
-import { MealsService } from '../services/meals.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { IIntake } from '../interfaces/IIntake';
+import { IntakesService } from '../services/intakes.service';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+
+  isAuthenticated: boolean = false;
+  private userSubscription: Subscription = new Subscription;
+
+  currentTime: Date = new Date();
+  currentDate: string;
+  authenticatedUserEmail: string | undefined = '';
 
   isInDebugMode: boolean = true;
 
-  USER_EMAIL = 'add-meal@email.com';
+  USER_EMAIL = 'add-intake@email.com';
 
-  meals: any;
-  mealsColumns: string[] = [
+  intakes: any;
+  intakesColumns: string[] = [
     'id',
     'email',
-    'type',
     'foods',
     'createdAt',
     'details'
   ];
 
   constructor(
-    private mealsService: MealsService
-  ) { }
+    private intakesService: IntakesService,
+    private authService: AuthService
+  ) {
+    this.currentDate = this.currentTime.toISOString().split("T")[0];
+  }
 
   ngOnInit(): void {
-    this.mealsService
-      .getMealsByEmail(this.USER_EMAIL)
+    this.userSubscription = this.authService.user
+      .subscribe(
+        (user) => {
+          // the opposite of not having an user authenticated, eg. false => !false = true
+          if (user) {
+            this.isAuthenticated = true;
+            this.authenticatedUserEmail = user.email;
+            this.USER_EMAIL = this.authenticatedUserEmail;
+          }
+        }
+      );
+    this.intakesService
+      .getIntakesByEmail(this.USER_EMAIL)
       .subscribe(
         (meals) => {
-          this.meals = meals;
+          this.intakes = meals;
         }
       )
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
-      this.mealsColumns = this.mealsColumns.slice(2);
+      this.intakesColumns = this.intakesColumns.slice(2);
     }
+    console.log(`constructor(): ${this.authenticatedUserEmail}`);
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription.unsubscribe();
+  }
+
+  onLogout(): void {
+    this.isAuthenticated = false;
+    this.authService.logout();
   }
 
 }

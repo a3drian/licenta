@@ -21,15 +21,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 // HTTP:
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 // Frontend:
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-// Authentication:
-import { AuthComponent } from './auth/auth.component';
 import { EditFoodDialogueComponent } from './add-meal/edit-food-dialogue/edit-food-dialogue.component';
 import { MealHistoryComponent } from './meal-history/meal-history.component';
+import { IntakeHistoryComponent } from './intake-history/intake-history.component';
+// Authentication:
+import { AuthComponent } from './auth/auth.component';
+import { AuthInterceptorService } from './auth/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,8 @@ import { MealHistoryComponent } from './meal-history/meal-history.component';
     AuthComponent,
     LoadingSpinnerComponent,
     EditFoodDialogueComponent,
-    MealHistoryComponent
+    MealHistoryComponent,
+    IntakeHistoryComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +62,9 @@ import { MealHistoryComponent } from './meal-history/meal-history.component';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

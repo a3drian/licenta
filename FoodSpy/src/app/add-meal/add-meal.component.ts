@@ -5,12 +5,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { IFood } from '../interfaces/IFood';
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
 import { IMeal } from '../interfaces/IMeal';
-import { MealsService } from '../services/meals.service';
+import { IIntake } from '../interfaces/IIntake';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // Item filtering:
 import { Observable, pipe, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { IDailyIntake } from '../interfaces/IDailyIntake';
+import { MealsService } from '../services/meals.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-add-meal',
@@ -23,7 +24,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
-  day: IDailyIntake = <IDailyIntake>{};
+  day: IIntake = <IIntake>{};
 
   databaseFoods: IFood[] = [];
   addedFoods: IFood[] = [];
@@ -42,7 +43,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
     private foodsService: FoodsService,
     private mealsService: MealsService,
     private formBuilder: FormBuilder,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private authService: AuthService
   ) {
     this.addMealForm = this.formBuilder
       .group(
@@ -74,7 +76,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
       );
     // Foods
     this.foodsService
-      .getFood()
+      .getFoods()
       .subscribe(
         (data) => {
           if (data) {
@@ -101,7 +103,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
     const validFoods = this.meal.foods.length !== 0;
     return validForm && validFoods;
   }
-
 
   openDialog(food: IFood) {
     console.log('Selected food:', food);
@@ -142,7 +143,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.populateMeal();
-    this.meal.email = 'add-meal@email.com';
+    // this.meal.email = 'add-meal@email.com';
     this.meal.createdAt = new Date();
     this.mealsService
       .addMeal(this.meal)

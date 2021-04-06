@@ -3,7 +3,6 @@ import { IMeal } from '../interfaces/IMeal';
 
 export class Meal implements IMeal {
 
-   email!: string;
    type!: string;
    foods!: IFood[];
    createdAt?: Date | undefined;

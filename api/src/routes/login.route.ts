@@ -5,6 +5,8 @@ import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
 import { decryptPassword } from '../services/password.service';
 import { ERROR_CODES, STATUS_CODES } from '../common';
+import { IAuthResponseData } from '../interfaces/IAuthResponseData';
+import { AuthResponseData } from '../models/AuthResponseData';
 
 export { setLoginRoute };
 
@@ -12,6 +14,8 @@ function setLoginRoute(router: Router): Router {
     router.post('/', loginUser);
     return router;
 }
+
+const THIRTY_MINUTES: number = 1800;    // in seconds
 
 // POST
 async function loginUser(
@@ -58,6 +62,12 @@ async function loginUser(
             const match = decryptPassword(formPassword, storedPassword);
             if (match) {
                 console.log('Passwords match! Signing user in...');
+                let authResponseData: IAuthResponseData = new AuthResponseData;
+                authResponseData.email = response.email;
+                authResponseData.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+                authResponseData.id = response.id;
+                authResponseData.expiresIn = THIRTY_MINUTES;
+                return res.status(200).json(authResponseData);
             } else {
                 const wrongPasswordError: Error = new Error;
                 wrongPasswordError.name = ERROR_CODES.WRONG_PASSWORD;

@@ -65,24 +65,5 @@ export class MealsService {
          );
       return request;
    }
-
-   // Get meals by e-mail
-   getMealsByEmail(email: string) {
-      const request = this.http
-         .post(
-            this.SEARCH_URL,
-            new SearchByEmail(
-               {
-                  email: email
-               }
-            )
-         )
-         .pipe(
-            tap(
-               () => { }
-            )
-         );
-
-      return request;
-   }
+   
 }

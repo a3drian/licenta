@@ -1,0 +1,37 @@
+<p><b>intake-history</b> works!</p>
+
+<h1>
+   Intake information
+</h1>
+
+<div *ngIf="intakeWasFound">
+
+   <div *ngIf="isInDebugMode">
+      <label>Intake email:</label>
+      <label>{{ intake.email }}</label>
+   </div>
+
+   <div *ngFor="let food of intake.meals">
+      <label>Foods:</label>
+      <p>{{ food }}</p>
+   </div>
+
+   <div>
+      <label>Created at:</label>
+      <label>{{ intake.createdAt | date }}</label>
+   </div>
+
+</div>
+
+<div *ngIf="!intakeWasFound">
+   <p>
+      Intake was not found!
+   </p>
+</div>
+
+<!-- Go back button -->
+<div>
+   <button [routerLink]="['']">
+      Back
+   </button>
+</div>

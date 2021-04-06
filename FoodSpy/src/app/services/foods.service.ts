@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { IFood } from '../interfaces/IFood';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
    providedIn: 'root'
@@ -12,17 +13,20 @@ export class FoodsService {
    readonly BASE_URL: string = '/api/foods';
    readonly SEARCH_BY_NAME_URL: string = this.BASE_URL + '/search?name=';
 
-   constructor(private http: HttpClient) { }
+   constructor(
+      private http: HttpClient,
+      private authService: AuthService
+   ) { }
 
    // GET
-   getFood(
-      name = ''
+   getFoods(
+      foodName = ''
    ): Observable<IFood[] | null> {
 
       let params = new HttpParams()
-         .set('name', name.toString());
+         .set('name', foodName.toString());
 
-      console.log('getFood():');
+      console.log('getFoods():');
       console.log('params:', params);
 
       const keys = params.keys();

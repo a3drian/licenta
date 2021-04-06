@@ -10,6 +10,8 @@ import { AuthResponseData, AuthService } from "./auth.service";
 })
 export class AuthComponent {
 
+    DASHBOARD_URL: string = '';
+
     authForm: FormGroup;
 
     isInLoadingMode: boolean = false;
@@ -80,7 +82,7 @@ export class AuthComponent {
                     console.log(responseData);
                     this.isInLoadingMode = false;
                     // navigation from inside the code, not from inside the template
-                    // this.router.navigate(['/recipes']);
+                    this.router.navigate([this.DASHBOARD_URL]);
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
                 (errorMessage) => {

@@ -5,15 +5,16 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
 import { AuthComponent } from './auth/auth.component';
-import { MealHistoryComponent } from './meal-history/meal-history.component';
+import { IntakeHistoryComponent } from './intake-history/intake-history.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, pathMatch: 'full' }, // home page
   // { path: '', component: AuthComponent, pathMatch: 'full' }, // authentication page
+  // { path: 'dashboard', component: DashboardComponent }, // home page
   { path: 'add', component: AddMealComponent },
   { path: 'add/scan', component: ScanFoodComponent },
   { path: 'auth', component: AuthComponent },
-  { path: 'history/:id', component: MealHistoryComponent },
+  { path: 'history/:id', component: IntakeHistoryComponent },
   { path: '**', redirectTo: '' }
 ];
 
