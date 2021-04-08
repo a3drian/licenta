@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { AuthResponseData, AuthService } from "./auth.service";
 import { Constants } from '../shared/Constants';
+import { log } from "../shared/Logger";
 
 @Component({
     selector: 'app-auth',
@@ -54,14 +55,13 @@ export class AuthComponent {
     }
 
     onSubmit(): void {
-        console.log('onSubmit():');
 
         if (!this.isFormValid()) {
             return;
         }
 
         const form = this.authForm.value;
-        console.log(form);
+        log('auth.component.ts', 'onSubmit()', 'Form data:', form);
 
         const email = form.email;
         const password = form.password;
@@ -80,16 +80,14 @@ export class AuthComponent {
         authObservable
             .subscribe(
                 (responseData) => {
-                    console.log('Response data for log in / sign up request:');
-                    console.log(responseData);
+                    log('auth.component', 'onSubmit()', 'Response data for log in / sign up request:', responseData);
                     this.isInLoadingMode = false;
                     // navigation from inside the code, not from inside the template
                     this.router.navigate([this.DASHBOARD_URL]);
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
                 (errorMessage) => {
-                    console.log('Error when trying to log in / sign up:');
-                    console.log(errorMessage);
+                    log('auth.component', 'onSubmit()', 'Error when trying to log in / sign up:', errorMessage);
 
                     this.error = errorMessage;
                     this.isInLoadingMode = false;

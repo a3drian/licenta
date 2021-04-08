@@ -58,9 +58,7 @@ export class AuthService {
             responseData.token,
             expirationDate
         );
-        console.log('AUTHENTICATION USER...');
-        console.log(user);
-        console.log('AUTHENTICATION USER^^^');
+        log('auth.service.ts', 'handleAuthentication()', 'Authenticated user:', user);
         this.user.next(user);
         this.autoLogout(tokenExpiryTime);
         localStorage.setItem(this.LOCAL_STORAGE_USER_DATA_KEY, JSON.stringify(user));
@@ -158,7 +156,7 @@ export class AuthService {
 
     autoLogout(expirationDuration: number): void {
         // amount of ms before token is invalid
-        console.log(`Auto logout in: ${expirationDuration / 1000 / 60} minutes.`);
+        log('auth.service.ts', 'autoLogout()', `Auto logout in: ${expirationDuration / 1000 / 60} minutes.`);
         this.tokenExpirationTimer = setTimeout(
             () => { this.logout() },
             expirationDuration

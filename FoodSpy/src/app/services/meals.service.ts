@@ -6,14 +6,16 @@ import { IMeal } from '../interfaces/IMeal';
 import { ISearchOptions } from '../interfaces/searchOptions/ISearchOptions';
 import { Meal } from '../models/Meal';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
+import { log } from '../shared/Logger';
+import { Constants } from '../shared/Constants';
 
 @Injectable({
    providedIn: 'root'
 })
 export class MealsService {
 
-   readonly BASE_URL: string = '/api/meals';
-   readonly SEARCH_URL: string = '/api/meals/search/';
+   readonly BASE_URL: string = Constants.APIEndpoints.MEALS_BASE_URL;
+   readonly SEARCH_URL: string = Constants.APIEndpoints.MEALS_SEARCH_URL;
 
    meals: IMeal[] =
       [
@@ -31,7 +33,7 @@ export class MealsService {
 
    // ADD
    addMeal(meal: IMeal): Observable<IMeal> {
-      console.log('addMeal(meal: IMeal):');
+      log('meals.service.ts', 'addMeal(meal: IMeal)', '');
 
       const request = this.http
          .post<IMeal>(
@@ -41,7 +43,7 @@ export class MealsService {
          .pipe(
             tap(
                () => {
-                  console.log('Item "', meal.type, '"was created!');
+                  log('meals.service.ts', 'addMeal(meal: IMeal)', `Item '${meal.type}' was created!`);
                }
             )
          );
@@ -51,19 +53,18 @@ export class MealsService {
 
    // Get meal by ID
    getMealById(id: string): Observable<IMeal> {
-      console.log('getDataById(id: string):');
       const url = `${this.BASE_URL}/${id}`;
-      console.log('url:', url);
+      log('meals.service.ts', 'getDataById(id: string)', 'URL:', url);
 
       const request = this.http.get<IMeal>(url)
          .pipe(
             tap(
                (response) => {
-                  console.log('Meal fetched:', response);
+                  log('meals.service.ts', 'getDataById(id: string)', 'Meal fetched:', response);
                }
             )
          );
       return request;
    }
-   
+
 }

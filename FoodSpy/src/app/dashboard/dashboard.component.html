@@ -42,16 +42,9 @@
     <!-- Details -->
     <ng-container matColumnDef="details">
         <th mat-header-cell *matHeaderCellDef> Details </th>
-        <!--
-        <td mat-cell *matCellDef="let element">
-            <button routerLink="/history/{{ element.id }}" class="button" mat-stroked-button color="secondary">
-                View
-            </button>
-        </td>
-        -->
         <td mat-cell *matCellDef="let element">
             <button class="button" mat-stroked-button color="primary" (click)="viewIntakeDetails(element.id)">
-                View (click)
+                View
             </button>
         </td>
     </ng-container>
@@ -73,12 +66,12 @@
 <!-- Add new meal -->
 <div>
     <button (click)="addNewMeal()">
-        Add new meal (click)
+        Add new meal
     </button>
 </div>
 
 <div>
-    <button [routerLink]="['/auth']">
+    <button (click)="authenticate()">
         Authenticate
     </button>
 </div>

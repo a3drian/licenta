@@ -30,7 +30,7 @@ export class AuthInterceptorService implements HttpInterceptor {
                 exhaustMap(
                     (user) => {
 
-                        console.log('Do I have user?', !user);
+                        log('auth-interceptor.service.ts', 'intercept()', `Do I have user for route '${req.url}':`, !user);
 
                         // do not modify the log in / register requests
                         if (!user) {

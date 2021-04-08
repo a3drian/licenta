@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
       this.intakesColumns = this.intakesColumns.slice(2);
     }
-    console.log(`dashboard.ts.constructor(): ${this.authenticatedUserEmail}`);
+    log('dashboard.ts', 'constructor()', 'this.authenticatedUserEmail', this.authenticatedUserEmail);
   }
 
   ngOnDestroy(): void {
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
-  viewIntakeDetails(intakeId: string) {
+  viewIntakeDetails(intakeId: string): void {
     log('dashboard.ts', 'viewIntakeDetails()', `Attempting to access intake with id: '${intakeId}'`);
     if (this.isAuthenticated) {
       this.router.navigate([`/history/${intakeId}`]);
@@ -84,12 +84,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  addNewMeal() {
+  addNewMeal(): void {
     if (this.isAuthenticated) {
       this.router.navigate(['/add']);
     } else {
       log('dashboard.ts', 'addNewMeal()', 'User is not authenticated!');
     }
+  }
+
+  authenticate(): void {
+
   }
 
 }

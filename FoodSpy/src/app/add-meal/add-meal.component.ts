@@ -14,6 +14,7 @@ import { Observable, pipe, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { IUser } from '../interfaces/IUser';
 import { UserService } from '../auth/user.service';
+import { log } from '../shared/Logger';
 
 @Component({
   selector: 'app-add-meal',
@@ -102,7 +103,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
         }
       );
     this.authenticatedUserEmail = this.user.email;
-    console.log(`add-meal.ts.constructor(): ${this.authenticatedUserEmail}`);
+    log('add-meal.ts', this.constructor.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
   }
 
   ngOnDestroy(): void {
@@ -117,7 +118,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   openDialog(food: IFood) {
-    console.log('Selected food:', food);
+    log('add-meal.component.ts', this.openDialog.name, 'Selected food:', food);
+
     const dialogRef = this.dialog
       .open(
         EditFoodDialogueComponent,
@@ -137,20 +139,18 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   addFoodFromDialogueToMeal(food: IFood): void {
-    console.log('Food from dialogue:', food);
+    log('add-meal.component.ts', this.addFoodFromDialogueToMeal.name, 'Food from dialogue:', food);
     this.addedFoods.push(food);
-    console.log('Added foods []:', this.addedFoods);
+    log('add-meal.component.ts', this.addFoodFromDialogueToMeal.name, 'Added foods []:', this.addedFoods);
     this.populateMeal();
   }
 
   private populateMeal() {
-    console.log('populateMeal():');
     const mealFromForm = this.addMealForm.value;
     this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
     this.meal.foods = this.addedFoods;
-    console.log('mealFromForm:', mealFromForm);
-    console.log('this.meal', this.meal);
-    console.log('populateMeal()^');
+    log('add-meal.component.ts', this.populateMeal.name, 'mealFromForm:', mealFromForm);
+    log('add-meal.component.ts', this.populateMeal.name, 'this.meal', this.meal);
   }
 
   onSubmit(): void {
@@ -166,7 +166,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   searchTerms = new Subject<string>();
   searchTerm: string = '';
   search(term: string): void {
-    console.log('search(term):', term);
+    log('add-meal.component.ts', this.search.name, 'Search term:', term);
     this.searchTerm = term;
     this.searchTerms.next(term);
   }

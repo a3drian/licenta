@@ -5,10 +5,10 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-   public user!: IUser;
+   public user!: any;
 
    constructor(private authService: AuthService) {
       log('user.service.ts', 'constructor()', 'called autoLogin()');
-      this.authService.autoLogin();
+      // this.authService.autoLogin();
    }
 }

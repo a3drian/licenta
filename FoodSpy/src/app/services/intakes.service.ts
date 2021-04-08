@@ -6,6 +6,7 @@ import { IIntake } from '../interfaces/IIntake';
 import { ISearchOptions } from '../interfaces/searchOptions/ISearchOptions';
 import { Intake } from '../models/Intake';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
+import { log } from '../shared/Logger';
 
 @Injectable({
    providedIn: 'root'
@@ -19,7 +20,6 @@ export class IntakesService {
 
    // ADD
    addIntake(intake: IIntake): Observable<IIntake> {
-      console.log('addIntake(intake: IIntake):');
 
       const request = this.http
          .post<IIntake>(
@@ -29,7 +29,7 @@ export class IntakesService {
          .pipe(
             tap(
                () => {
-                  console.log('Intake for e-mail:"', intake.email, '"was created!');
+                  log('intake.service.ts', 'addIntake(intake: IIntake)', `Intake for e-mail '${intake.email}' was created!`);
                }
             )
          );
@@ -39,15 +39,14 @@ export class IntakesService {
 
    // Get intake by ID
    getIntakeById(id: string): Observable<IIntake> {
-      console.log('getDataById(id: string):');
       const url = `${this.BASE_URL}/${id}`;
-      console.log('url:', url);
+      log('intakes.service.ts', 'getIntakeById(id: string)', 'URL:', url);
 
       const request = this.http.get<IIntake>(url)
          .pipe(
             tap(
                (response) => {
-                  console.log('Intake fetched:', response);
+                  log('intakes.service.ts', 'getIntakeById(id: string)', 'Intake fetched:', response);
                }
             )
          );

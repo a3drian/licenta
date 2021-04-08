@@ -5,13 +5,15 @@ import { map, tap } from 'rxjs/operators';
 
 import { IFood } from '../interfaces/IFood';
 import { AuthService } from '../auth/auth.service';
+import { log } from '../shared/Logger';
+import { Constants } from '../shared/Constants';
 
 @Injectable({
    providedIn: 'root'
 })
 export class FoodsService {
-   readonly BASE_URL: string = '/api/foods';
-   readonly SEARCH_BY_NAME_URL: string = this.BASE_URL + '/search?name=';
+   readonly BASE_URL: string = Constants.APIEndpoints.FOODS_BASE_URL;
+   readonly SEARCH_BY_NAME_URL: string = this.BASE_URL + Constants.APIEndpoints.FOODS_SERACH_URL;
 
    constructor(
       private http: HttpClient,
@@ -26,16 +28,6 @@ export class FoodsService {
       let params = new HttpParams()
          .set('name', foodName.toString());
 
-      console.log('getFoods():');
-      console.log('params:', params);
-
-      const keys = params.keys();
-
-      keys.forEach(element => {
-         const value = params.getAll(element);
-         console.log(element, '\t', value);
-      });
-
       return this.http
          .get<IFood[]>(this.BASE_URL,
             {
@@ -46,7 +38,7 @@ export class FoodsService {
          .pipe(
             tap(
                (response) => {
-                  console.log('Foods fetched:', response.body);
+                  log('foods.service.ts', 'getFoods()', 'Foods fetched:', response.body);
                }
             ),
             map(
@@ -60,16 +52,16 @@ export class FoodsService {
    // FILTER
    search(term: string): Observable<IFood[]> {
 
-      console.log('search(term: string):');
+      log('foods.service.ts', 'search(term: string)', '');
 
       return this.http
          .get<IFood[]>(`${this.SEARCH_BY_NAME_URL}${term}`)
          .pipe(
             tap(
-               (x) => {
-                  x.length ?
-                     console.log(`found ${x.length} items matching '${term}'`) :
-                     console.log(`no items matching '${term}'`)
+               (searchResults) => {
+                  searchResults.length ?
+                     log('foods.service.ts', 'search(term: string)', `Found ${searchResults.length} items matching: `, term) :
+                     log('foods.service.ts', 'search(term: string)', 'No items matching: ', term);
                }
             )
          );

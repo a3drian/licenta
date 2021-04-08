@@ -17,6 +17,7 @@ function setLoginRoute(router: Router): Router {
 
 const THIRTY_MINUTES: number = 1800;    // in seconds
 const FIVE_MINUTES: number = 300;    // in seconds
+const FIFTEEN_MINUTES: number = 900;    // in seconds
 
 // POST
 async function loginUser(
@@ -67,7 +68,7 @@ async function loginUser(
                 authResponseData.email = response.email;
                 authResponseData.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
                 authResponseData.id = response.id;
-                authResponseData.expiresIn = FIVE_MINUTES;
+                authResponseData.expiresIn = FIFTEEN_MINUTES;
                 return res.status(200).json(authResponseData);
             } else {
                 const wrongPasswordError: Error = new Error;

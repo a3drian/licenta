@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IMeal } from '../interfaces/IMeal';
 import { Meal } from '../models/Meal';
 import { Constants } from '../shared/Constants';
+import { log } from '../shared/Logger';
 
 @Component({
   selector: 'app-meal-history',
@@ -26,7 +27,7 @@ export class MealHistoryComponent implements OnInit {
   ) {
     this.activatedRoute.params.subscribe(
       (params) => {
-        console.log('params:', params);
+        log('meal-history.ts', 'constructor()', 'params:', params);
         this.mealId = params.id ? params.id : '0';
       }
     );
@@ -37,16 +38,18 @@ export class MealHistoryComponent implements OnInit {
         .getMealById(this.mealId)
         .subscribe(
           (data) => {
-            console.log('constructor() data:', data);
+            log('meal-history.ts', 'constructor()', '(data), data:', data);
             this.idNotFound = false;
-            console.log('constructor(), (data), this.idNotFound:', this.idNotFound);
+            log('meal-history.ts', 'constructor()', '(data), this.idNotFound:', this.idNotFound);
+
           },
           (error) => {
-            console.log('constructor(), (error), error:', error);
+            log('meal-history.ts', 'constructor()', '(error), error:', error);
+
             if (error.status === 404) {
               this.idNotFound = true;
             }
-            console.log('constructor(), (error) this.idNotFound:', this.idNotFound);
+            log('meal-history.ts', 'constructor()', '(error) this.idNotFound:', this.idNotFound);
           }
         );
     }

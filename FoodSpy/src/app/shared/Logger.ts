@@ -8,6 +8,10 @@ const log = function (
    object?: any
 ) {
    if (Constants.isInDebugMode) {
-      console.log(`${className}.${caller}: ${message}`, object);
+      if (object) {
+         console.log(`${className}.${caller}: ${message}`, object);
+      } else {
+         console.log(`${className}.${caller}: ${message}`, '');
+      }
    }
 };
