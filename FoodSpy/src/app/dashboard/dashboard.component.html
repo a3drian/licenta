@@ -3,7 +3,7 @@
 <!-- TO DO -->
 <!-- Calendar -->
 
-<h2>{{ authenticatedUserEmail }}</h2>
+<h3>Welcome, {{ authenticatedUserEmail }}</h3>
 
 <h2>{{ currentDate }}</h2>
 
@@ -45,6 +45,11 @@
         <td mat-cell *matCellDef="let element">
             <button routerLink="/history/{{ element.id }}" class="button" mat-stroked-button color="secondary">
                 View
+            </button>
+        </td>
+        <td mat-cell *matCellDef="let intake">
+            <button class="button" mat-stroked-button color="primary" (click)="viewIntakeDetails(intake)">
+                View (click)
             </button>
         </td>
     </ng-container>

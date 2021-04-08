@@ -7,11 +7,12 @@ import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialog
 import { IMeal } from '../interfaces/IMeal';
 import { IIntake } from '../interfaces/IIntake';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-// Item filtering:
-import { Observable, pipe, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Constants } from '../shared/Constants';
 import { MealsService } from '../services/meals.service';
 import { AuthService } from '../auth/auth.service';
+// Item filtering:
+import { Observable, pipe, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-meal',
@@ -20,7 +21,11 @@ import { AuthService } from '../auth/auth.service';
 })
 export class AddMealComponent implements OnInit, OnDestroy {
 
-  isInDebugMode: boolean = true;
+  isInDebugMode: boolean = Constants.isInDebugMode;
+
+  isAuthenticated: boolean = false;
+  private userSubscription: Subscription = new Subscription;
+  authenticatedUserEmail: string = '';
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
@@ -46,6 +51,16 @@ export class AddMealComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private authService: AuthService
   ) {
+    this.userSubscription = this.authService.user
+      .subscribe(
+        (user) => {
+          // the opposite of not having an user authenticated, eg. false => !false = true
+          if (user) {
+            this.isAuthenticated = true;
+            this.authenticatedUserEmail = user.email;
+          }
+        }
+      );
     this.addMealForm = this.formBuilder
       .group(
         {
@@ -92,10 +107,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
           return meals.type
         }
       );
+    console.log(`add-meal.ts.constructor(): ${this.authenticatedUserEmail}`);
   }
 
   ngOnDestroy(): void {
     // this.dialogueSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
   }
 
   isFormValid(): boolean {

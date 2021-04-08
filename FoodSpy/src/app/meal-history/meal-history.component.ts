@@ -3,6 +3,7 @@ import { MealsService } from '../services/meals.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IMeal } from '../interfaces/IMeal';
 import { Meal } from '../models/Meal';
+import { Constants } from '../shared/Constants';
 
 @Component({
   selector: 'app-meal-history',
@@ -11,7 +12,7 @@ import { Meal } from '../models/Meal';
 })
 export class MealHistoryComponent implements OnInit {
 
-  isInDebugMode: boolean = true;
+  isInDebugMode: boolean = Constants.isInDebugMode;
 
   meal: IMeal = <IMeal>{};
   mealId: string = '';

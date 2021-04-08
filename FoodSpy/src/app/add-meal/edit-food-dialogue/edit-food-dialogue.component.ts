@@ -5,6 +5,7 @@ import { IFood } from '../../interfaces/IFood';
 import { UnitsService } from 'src/app/services/units.service';
 import { Food } from 'src/app/models/Food';
 import { positiveIntegerValidator } from 'src/app/shared/validators/positiveIntegerValidator';
+import { Constants } from '../../shared/Constants';
 
 @Component({
   selector: 'app-edit-food-dialogue',
@@ -13,7 +14,7 @@ import { positiveIntegerValidator } from 'src/app/shared/validators/positiveInte
 })
 export class EditFoodDialogueComponent implements OnInit {
 
-  isInDebugMode: boolean = true;
+  isInDebugMode: boolean = Constants.isInDebugMode;
 
   editFoodForm: FormGroup;
 

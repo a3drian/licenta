@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { throwError } from "rxjs";
 import { User } from '../models/User';
+import { Constants } from '../shared/Constants';
 
 export interface AuthResponseData {
     email: string;
@@ -17,9 +18,11 @@ export interface AuthResponseData {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-    REGISTER_URL: string = '/auth/register';
-    LOGIN_URL: string = '/auth/login';
-    LOGOUT_REDIRECT_URL: string = '/auth';
+    isInDebugMode: boolean = Constants.isInDebugMode;
+
+    REGISTER_URL: string = Constants.APIEndpoints.REGISTER_URL;
+    LOGIN_URL: string = Constants.APIEndpoints.LOGIN_URL;
+    LOGOUT_REDIRECT_URL: string = Constants.APIEndpoints.LOGOUT_REDIRECT_URL;
 
     LOCAL_STORAGE_USER_DATA_KEY: string = 'localStorageUser';
 

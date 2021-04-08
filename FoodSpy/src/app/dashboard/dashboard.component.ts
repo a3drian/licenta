@@ -3,6 +3,7 @@ import { IIntake } from '../interfaces/IIntake';
 import { IntakesService } from '../services/intakes.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { Constants } from '../shared/Constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,16 +12,14 @@ import { AuthService } from '../auth/auth.service';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  isInDebugMode: boolean = Constants.isInDebugMode;
+
   isAuthenticated: boolean = false;
   private userSubscription: Subscription = new Subscription;
+  authenticatedUserEmail: string = '';
 
   currentTime: Date = new Date();
   currentDate: string;
-  authenticatedUserEmail: string | undefined = '';
-
-  isInDebugMode: boolean = true;
-
-  USER_EMAIL = 'add-intake@email.com';
 
   intakes: any;
   intakesColumns: string[] = [
@@ -46,21 +45,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
           if (user) {
             this.isAuthenticated = true;
             this.authenticatedUserEmail = user.email;
-            this.USER_EMAIL = this.authenticatedUserEmail;
           }
         }
       );
     this.intakesService
-      .getIntakesByEmail(this.USER_EMAIL)
+      .getIntakesByEmail(this.authenticatedUserEmail)
       .subscribe(
-        (meals) => {
-          this.intakes = meals;
+        (intakes) => {
+          this.intakes = intakes;
         }
       )
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
       this.intakesColumns = this.intakesColumns.slice(2);
     }
-    console.log(`constructor(): ${this.authenticatedUserEmail}`);
+    console.log(`dashboard.ts.constructor(): ${this.authenticatedUserEmail}`);
   }
 
   ngOnDestroy(): void {
@@ -70,6 +68,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onLogout(): void {
     this.isAuthenticated = false;
     this.authService.logout();
+  }
+
+  viewIntakeDetails(intake: IIntake) {
+
   }
 
 }

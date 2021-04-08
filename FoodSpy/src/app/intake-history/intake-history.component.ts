@@ -3,6 +3,7 @@ import { IntakesService } from '../services/intakes.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IIntake } from '../interfaces/IIntake';
 import { Intake } from '../models/Intake';
+import { Constants } from '../shared/Constants';
 
 @Component({
   selector: 'app-intake-history',
@@ -11,7 +12,7 @@ import { Intake } from '../models/Intake';
 })
 export class IntakeHistoryComponent implements OnInit {
 
-  isInDebugMode: boolean = true;
+  isInDebugMode: boolean = Constants.isInDebugMode;
 
   intake: IIntake = <IIntake>{};
   intakeId: string = '';

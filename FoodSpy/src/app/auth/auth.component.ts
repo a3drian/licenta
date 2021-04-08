@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { AuthResponseData, AuthService } from "./auth.service";
+import { Constants } from '../shared/Constants';
 
 @Component({
     selector: 'app-auth',
@@ -10,12 +11,13 @@ import { AuthResponseData, AuthService } from "./auth.service";
 })
 export class AuthComponent {
 
+    isInDebugMode: boolean = Constants.isInDebugMode;
+
     DASHBOARD_URL: string = '';
 
     authForm: FormGroup;
 
     isInLoadingMode: boolean = false;
-    isInDebugMode: boolean = true;
     isInLoginMode: boolean = false;
 
     loginButtonText: string = 'Log in';
