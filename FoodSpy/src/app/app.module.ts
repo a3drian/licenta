@@ -32,6 +32,7 @@ import { IntakeHistoryComponent } from './intake-history/intake-history.componen
 // Authentication:
 import { AuthComponent } from './auth/auth.component';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
+import { UserService } from './auth/user.service';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
     HttpClientModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
+    UserService
   ],
   bootstrap: [AppComponent]
 })

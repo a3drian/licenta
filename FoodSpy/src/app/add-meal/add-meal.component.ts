@@ -9,10 +9,11 @@ import { IIntake } from '../interfaces/IIntake';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Constants } from '../shared/Constants';
 import { MealsService } from '../services/meals.service';
-import { AuthService } from '../auth/auth.service';
 // Item filtering:
 import { Observable, pipe, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { IUser } from '../interfaces/IUser';
+import { UserService } from '../auth/user.service';
 
 @Component({
   selector: 'app-add-meal',
@@ -26,6 +27,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
   isAuthenticated: boolean = false;
   private userSubscription: Subscription = new Subscription;
   authenticatedUserEmail: string = '';
+
+  public user: IUser;
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
@@ -49,18 +52,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
     private mealsService: MealsService,
     private formBuilder: FormBuilder,
     public dialog: MatDialog,
-    private authService: AuthService
+    private userService: UserService
   ) {
-    this.userSubscription = this.authService.user
-      .subscribe(
-        (user) => {
-          // the opposite of not having an user authenticated, eg. false => !false = true
-          if (user) {
-            this.isAuthenticated = true;
-            this.authenticatedUserEmail = user.email;
-          }
-        }
-      );
+    this.user = this.userService.user;
     this.addMealForm = this.formBuilder
       .group(
         {
@@ -107,6 +101,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
           return meals.type
         }
       );
+    this.authenticatedUserEmail = this.user.email;
     console.log(`add-meal.ts.constructor(): ${this.authenticatedUserEmail}`);
   }
 

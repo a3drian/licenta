@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IIntake } from '../interfaces/IIntake';
 import { IntakesService } from '../services/intakes.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { Constants } from '../shared/Constants';
+import { log } from '../shared/Logger';
+import { Router } from '@angular/router';
+import { UserService } from '../auth/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,7 +34,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private intakesService: IntakesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router,
+    private userService: UserService
   ) {
     this.currentDate = this.currentTime.toISOString().split("T")[0];
   }
@@ -45,6 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           if (user) {
             this.isAuthenticated = true;
             this.authenticatedUserEmail = user.email;
+            this.userService.user = user;
           }
         }
       );
@@ -70,8 +75,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
-  viewIntakeDetails(intake: IIntake) {
+  viewIntakeDetails(intakeId: string) {
+    log('dashboard.ts', 'viewIntakeDetails()', `Attempting to access intake with id: '${intakeId}'`);
+    if (this.isAuthenticated) {
+      this.router.navigate([`/history/${intakeId}`]);
+    } else {
+      log('dashboard.ts', 'viewIntakeDetails()', 'User is not authenticated!');
+    }
+  }
 
+  addNewMeal() {
+    if (this.isAuthenticated) {
+      this.router.navigate(['/add']);
+    } else {
+      log('dashboard.ts', 'addNewMeal()', 'User is not authenticated!');
+    }
   }
 
 }

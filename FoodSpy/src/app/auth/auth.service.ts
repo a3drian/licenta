@@ -6,6 +6,7 @@ import { catchError, tap } from "rxjs/operators";
 import { throwError } from "rxjs";
 import { User } from '../models/User';
 import { Constants } from '../shared/Constants';
+import { log } from "../shared/Logger";
 
 export interface AuthResponseData {
     email: string;
@@ -25,6 +26,7 @@ export class AuthService {
     LOGOUT_REDIRECT_URL: string = Constants.APIEndpoints.LOGOUT_REDIRECT_URL;
 
     LOCAL_STORAGE_USER_DATA_KEY: string = 'localStorageUser';
+    LOCAL_STORAGE_USER_EMAIL_KEY: string = 'localStorageUserEmail';
 
     private tokenExpirationTimer: any;
 
@@ -107,7 +109,7 @@ export class AuthService {
     }
 
     logout() {
-        console.log('auth.service.logout()');
+        log('auth.service', 'logout()', '');
         this.user.next(null);
         localStorage.removeItem(this.LOCAL_STORAGE_USER_DATA_KEY);
         if (this.tokenExpirationTimer) {
@@ -117,8 +119,8 @@ export class AuthService {
         this.router.navigate([this.LOGOUT_REDIRECT_URL]);
     }
 
-    autoLogin() {
-        console.log('Called autoLogin()');
+    autoLogin(): void {
+        log('auth.service', 'autoLogin()', '');
 
         const localStorageUserData = localStorage.getItem(this.LOCAL_STORAGE_USER_DATA_KEY);
         if (!localStorageUserData) {
@@ -154,7 +156,7 @@ export class AuthService {
         }
     }
 
-    autoLogout(expirationDuration: number) {
+    autoLogout(expirationDuration: number): void {
         // amount of ms before token is invalid
         console.log(`Auto logout in: ${expirationDuration / 1000 / 60} minutes.`);
         this.tokenExpirationTimer = setTimeout(
