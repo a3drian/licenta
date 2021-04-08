@@ -2,6 +2,7 @@ import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpParams, HttpR
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { exhaustMap, take } from "rxjs/operators";
+import { log } from "../shared/Logger";
 import { AuthService } from "./auth.service";
 
 
@@ -19,7 +20,7 @@ export class AuthInterceptorService implements HttpInterceptor {
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
 
-        let httpHeaders = new HttpHeaders();
+        let httpHeaders: HttpHeaders;
 
         // we use "take(1)" so we don't have to manually "unsubscribe()"
         // "exhaustMap" waits for the "user" observable, then continues with the "http" observable
@@ -37,7 +38,7 @@ export class AuthInterceptorService implements HttpInterceptor {
                         }
 
                         if (user.token) {
-                            httpHeaders.set('Authorization', user.token);
+                            httpHeaders = new HttpHeaders().set('Authorization', user.token);
                         }
 
                         const modifiedRequest = req
@@ -46,7 +47,8 @@ export class AuthInterceptorService implements HttpInterceptor {
                                     headers: httpHeaders
                                 }
                             );
-                        console.log('modifiedRequest', modifiedRequest);
+                        log('auth-interceptor.service', 'intercept()', 'httpHeaders:', httpHeaders);
+                        log('auth-interceptor.service', 'intercept()', 'modifiedRequest:', modifiedRequest);
                         return next.handle(modifiedRequest);
                     }
                 )
