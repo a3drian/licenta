@@ -33,6 +33,8 @@ import { IntakeHistoryComponent } from './intake-history/intake-history.componen
 import { AuthComponent } from './auth/auth.component';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { UserService } from './auth/user.service';
+import { HeaderComponent } from './header/header.component';
+import { IntakesComponent } from './intakes/intakes.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,9 @@ import { UserService } from './auth/user.service';
     LoadingSpinnerComponent,
     EditFoodDialogueComponent,
     MealHistoryComponent,
-    IntakeHistoryComponent
+    IntakeHistoryComponent,
+    HeaderComponent,
+    IntakesComponent
   ],
   imports: [
     BrowserModule,

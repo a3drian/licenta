@@ -5,7 +5,7 @@
 </h1>
 
 <h2>
-   {{ user.email }}
+   {{ authenticatedUserEmail }}
 </h2>
 
 <div *ngIf="intakeWasFound">
@@ -35,7 +35,7 @@
 
 <!-- Go back button -->
 <div>
-   <button [routerLink]="['']">
+   <button [routerLink]="['/dashboard']">
       Back
    </button>
 </div>

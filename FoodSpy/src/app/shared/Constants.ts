@@ -1,11 +1,12 @@
 export { Constants }
 
 class Constants {
-   static isInDebugMode: boolean = false;
+   static isInDebugMode: boolean = true;
    static APIEndpoints =
       {
          REGISTER_URL: '/auth/register',
          LOGIN_URL: '/auth/login',
+         AUTH_URL: '/auth',
          LOGOUT_REDIRECT_URL: '/auth',
 
          FOODS_BASE_URL: '/api/foods',

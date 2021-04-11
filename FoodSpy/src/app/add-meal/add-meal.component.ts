@@ -29,7 +29,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   private userSubscription: Subscription = new Subscription;
   authenticatedUserEmail: string = '';
 
-  public user: IUser;
+  public user: IUser | null = null;
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
@@ -55,7 +55,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private userService: UserService
   ) {
-    this.user = this.userService.user;
     this.addMealForm = this.formBuilder
       .group(
         {
@@ -70,6 +69,11 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.user = this.userService.user;
+    if (this.user) {
+      this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
+      log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+    }
     // Search:
     this.searchTerms
       .pipe(
@@ -102,8 +106,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
           return meals.type
         }
       );
-    this.authenticatedUserEmail = this.user.email;
-    log('add-meal.ts', this.constructor.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
   }
 
   ngOnDestroy(): void {

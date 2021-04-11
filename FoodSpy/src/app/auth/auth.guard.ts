@@ -26,11 +26,11 @@ export class AuthGuardService implements CanActivate {
                (user) => {
                   const isAuth = !!user;
                   if (isAuth) {
-                     log('auth.guard.ts', 'canActivate()', 'User is authenticated');
+                     log('auth.guard.ts', this.canActivate.name, 'User is authenticated');
                      return true;
                   }
 
-                  log('auth.guard.ts', 'canActivate()', 'User is not authenticated and tried to access route:', route.url);
+                  log('auth.guard.ts', this.canActivate.name, 'User is not authenticated and tried to access route:', route.url);
                   return this.router.createUrlTree([Constants.APIEndpoints.LOGOUT_REDIRECT_URL]);
                }
             )

@@ -22,7 +22,8 @@ export class IntakeHistoryComponent implements OnInit {
   intakeWasFound: boolean = false;
   idNotFound: boolean = false;
 
-  user: IUser;
+  user: IUser | null = null;
+  authenticatedUserEmail: string = '';
 
   constructor(
     private intakesService: IntakesService,
@@ -30,7 +31,6 @@ export class IntakeHistoryComponent implements OnInit {
     private router: Router,
     private userService: UserService
   ) {
-    this.user = this.userService.user;
     this.activatedRoute.params.subscribe(
       (params) => {
         log('intake-history.ts', 'constructor()', 'params:', params);
@@ -60,6 +60,11 @@ export class IntakeHistoryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.user = this.userService.user;
+    if (this.user) {
+      this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
+      log('intake-history.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+    }
     this.intakesService
       .getIntakeById(this.intakeId)
       .subscribe(

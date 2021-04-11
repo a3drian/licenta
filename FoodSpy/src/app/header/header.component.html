@@ -1,0 +1,15 @@
+<p><b>header</b> works!</p>
+
+<div *ngIf="isAuthenticated">
+   <h3>Welcome, {{ authenticatedUserEmail }}</h3>
+   <button (click)="onLogout()">
+      Logout
+   </button>
+</div>
+
+<div *ngIf="!isAuthenticated">
+   <h3>Welcome to FoodSpy!</h3>
+   <button (click)="logIn()">
+      Log in
+   </button>
+</div>

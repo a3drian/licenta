@@ -1,6 +1,6 @@
 <b>add-meal</b> works!
 
-<h1>{{ user.email }}</h1>
+<h1>{{ authenticatedUserEmail }}</h1>
 
 <form [formGroup]="addMealForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
@@ -80,10 +80,12 @@
 
 <!-- Go back button -->
 <div>
-    <button [routerLink]="['']">
+    <button [routerLink]="['/dashboard']">
         Back
     </button>
 </div>
+
+<router-outlet></router-outlet>
 
 <div *ngIf="isInDebugMode">
     <p>Form value:<br>{{ addMealForm.value | json }}</p>

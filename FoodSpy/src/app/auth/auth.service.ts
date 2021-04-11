@@ -58,7 +58,7 @@ export class AuthService {
             responseData.token,
             expirationDate
         );
-        log('auth.service.ts', 'handleAuthentication()', 'Authenticated user:', user);
+        log('auth.service.ts', this.handleAuthentication.name, 'Authenticated user:', user);
         this.user.next(user);
         this.autoLogout(tokenExpiryTime);
         localStorage.setItem(this.LOCAL_STORAGE_USER_DATA_KEY, JSON.stringify(user));
@@ -107,7 +107,7 @@ export class AuthService {
     }
 
     logout() {
-        log('auth.service', 'logout()', '');
+        log('auth.service', this.logout.name, '');
         this.user.next(null);
         localStorage.removeItem(this.LOCAL_STORAGE_USER_DATA_KEY);
         if (this.tokenExpirationTimer) {
@@ -118,7 +118,7 @@ export class AuthService {
     }
 
     autoLogin(): void {
-        log('auth.service', 'autoLogin()', '');
+        log('auth.service', this.autoLogin.name, '');
 
         const localStorageUserData = localStorage.getItem(this.LOCAL_STORAGE_USER_DATA_KEY);
         if (!localStorageUserData) {
@@ -156,7 +156,7 @@ export class AuthService {
 
     autoLogout(expirationDuration: number): void {
         // amount of ms before token is invalid
-        log('auth.service.ts', 'autoLogout()', `Auto logout in: ${expirationDuration / 1000 / 60} minutes.`);
+        log('auth.service.ts', this.autoLogout.name, `Auto logout in: ${expirationDuration / 1000 / 60} minutes.`);
         this.tokenExpirationTimer = setTimeout(
             () => { this.logout() },
             expirationDuration

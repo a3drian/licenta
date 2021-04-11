@@ -30,7 +30,7 @@ export class AuthInterceptorService implements HttpInterceptor {
                 exhaustMap(
                     (user) => {
 
-                        log('auth-interceptor.service.ts', 'intercept()', `Do I have user for route '${req.url}':`, !user);
+                        log('auth-interceptor.service.ts', this.intercept.name, `Do I have user for route '${req.url}':`, !!user);
 
                         // do not modify the log in / register requests
                         if (!user) {
@@ -47,8 +47,8 @@ export class AuthInterceptorService implements HttpInterceptor {
                                     headers: httpHeaders
                                 }
                             );
-                        log('auth-interceptor.service', 'intercept()', 'httpHeaders:', httpHeaders);
-                        log('auth-interceptor.service', 'intercept()', 'modifiedRequest:', modifiedRequest);
+                        log('auth-interceptor.service', this.intercept.name, 'httpHeaders:', httpHeaders);
+                        log('auth-interceptor.service', this.intercept.name, 'modifiedRequest:', modifiedRequest);
                         return next.handle(modifiedRequest);
                     }
                 )

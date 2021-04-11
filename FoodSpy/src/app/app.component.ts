@@ -17,11 +17,15 @@ export class AppComponent {
   ) { }
 
   ngOnInit(): void {
-    log('app.ts', 'ngOnInit()', 'called autoLogin()');
+    log('app.ts', this.ngOnInit.name, 'called autoLogin()');
     this.authService.autoLogin();
     this.authService.user.subscribe(
       (user) => {
         this.userService.user = user;
+        if (user) {
+          this.userService.isAuthenticated = true;
+          this.userService.authenticatedUserEmail = user.email;
+        }
       }
     )
   }

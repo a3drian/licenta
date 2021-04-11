@@ -38,7 +38,7 @@ export class FoodsService {
          .pipe(
             tap(
                (response) => {
-                  log('foods.service.ts', 'getFoods()', 'Foods fetched:', response.body);
+                  log('foods.service.ts', this.getFoods.name, 'Foods fetched:', response.body);
                }
             ),
             map(

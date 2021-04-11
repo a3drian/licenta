@@ -61,7 +61,7 @@ export class AuthComponent {
         }
 
         const form = this.authForm.value;
-        log('auth.component.ts', 'onSubmit()', 'Form data:', form);
+        log('auth.component.ts', this.onSubmit.name, 'Form data:', form);
 
         const email = form.email;
         const password = form.password;
@@ -80,14 +80,14 @@ export class AuthComponent {
         authObservable
             .subscribe(
                 (responseData) => {
-                    log('auth.component', 'onSubmit()', 'Response data for log in / sign up request:', responseData);
+                    log('auth.component', this.onSubmit.name, 'Response data for log in / sign up request:', responseData);
                     this.isInLoadingMode = false;
                     // navigation from inside the code, not from inside the template
                     this.router.navigate([this.DASHBOARD_URL]);
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
                 (errorMessage) => {
-                    log('auth.component', 'onSubmit()', 'Error when trying to log in / sign up:', errorMessage);
+                    log('auth.component', this.onSubmit.name, 'Error when trying to log in / sign up:', errorMessage);
 
                     this.error = errorMessage;
                     this.isInLoadingMode = false;
