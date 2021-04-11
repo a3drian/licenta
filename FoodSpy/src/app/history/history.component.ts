@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
 
 @Component({
-  selector: 'app-scan-food',
-  templateUrl: './scan-food.component.html',
-  styleUrls: ['./scan-food.component.scss']
+  selector: 'app-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.scss']
 })
-export class ScanFoodComponent implements OnInit {
+export class HistoryComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.isInDebugMode;
 

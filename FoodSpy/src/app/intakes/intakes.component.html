@@ -1,4 +1,4 @@
-<p><b>intakes</b> works!</p>
+<p *ngIf="isInDebugMode"><b>intakes</b> works!</p>
 
 <!-- TO DO -->
 <!-- Calendar -->
@@ -65,11 +65,5 @@
 <div>
    <button (click)="addNewMeal()">
       Add new meal
-   </button>
-</div>
-
-<div>
-   <button (click)="scanBarcode()">
-      Scan barcode
    </button>
 </div>

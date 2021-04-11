@@ -2,11 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { IntakesComponent } from './intakes/intakes.component';
 import { AddMealComponent } from './add-meal/add-meal.component';
 import { ScanFoodComponent } from './scan-food/scan-food.component';
-import { AuthComponent } from './auth/auth.component';
-import { IntakesComponent } from './intakes/intakes.component';
+import { HistoryComponent } from './history/history.component';
 import { IntakeHistoryComponent } from './intake-history/intake-history.component';
+import { AuthComponent } from './auth/auth.component';
 import { AuthGuardService } from './auth/auth.guard';
 
 /*
@@ -45,7 +46,7 @@ const routes: Routes = [
   },
   {
     path: 'history',
-    component: IntakeHistoryComponent,
+    component: HistoryComponent,
     canActivate: [AuthGuardService],
     children: [
       {

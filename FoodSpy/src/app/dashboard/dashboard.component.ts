@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Constants } from '../shared/Constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -6,6 +7,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+
+  isInDebugMode: boolean = Constants.isInDebugMode;
+
   constructor() { }
-  ngOnInit(): void { }
+
+  ngOnInit(): void {
+  }
+
 }

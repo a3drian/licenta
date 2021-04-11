@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './auth/user.service';
 import { log } from './shared/Logger';
+import { Constants } from './shared/Constants';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +10,9 @@ import { log } from './shared/Logger';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
+  isInDebugMode: boolean = Constants.isInDebugMode;
+
   title = 'FoodSpy';
 
   constructor(

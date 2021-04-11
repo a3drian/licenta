@@ -1,4 +1,4 @@
-<p><b>header</b> works!</p>
+<p *ngIf="isInDebugMode"><b>header</b> works!</p>
 
 <div *ngIf="isAuthenticated">
    <h3>Welcome, {{ authenticatedUserEmail }}</h3>

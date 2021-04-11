@@ -1,4 +1,4 @@
-<b>add-meal</b> works!
+<p *ngIf="isInDebugMode"><b>add-meal</b> works!</p>
 
 <h1>{{ authenticatedUserEmail }}</h1>
 
@@ -73,7 +73,7 @@
 </table>
 
 <div>
-    <button [routerLink]="['/add/scan']">
+    <button (click)="scanBarcode()">
         Scan barcode
     </button>
 </div>

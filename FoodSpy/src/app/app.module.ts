@@ -35,6 +35,7 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { UserService } from './auth/user.service';
 import { HeaderComponent } from './header/header.component';
 import { IntakesComponent } from './intakes/intakes.component';
+import { HistoryComponent } from './history/history.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { IntakesComponent } from './intakes/intakes.component';
     MealHistoryComponent,
     IntakeHistoryComponent,
     HeaderComponent,
-    IntakesComponent
+    IntakesComponent,
+    HistoryComponent
   ],
   imports: [
     BrowserModule,

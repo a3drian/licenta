@@ -9,12 +9,13 @@ import { IIntake } from '../interfaces/IIntake';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Constants } from '../shared/Constants';
 import { MealsService } from '../services/meals.service';
-// Item filtering:
-import { Observable, pipe, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { IUser } from '../interfaces/IUser';
 import { UserService } from '../auth/user.service';
 import { log } from '../shared/Logger';
+import { Router } from '@angular/router';
+// Item filtering:
+import { Observable, pipe, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-meal',
@@ -26,7 +27,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
   isInDebugMode: boolean = Constants.isInDebugMode;
 
   isAuthenticated: boolean = false;
-  private userSubscription: Subscription = new Subscription;
   authenticatedUserEmail: string = '';
 
   public user: IUser | null = null;
@@ -53,7 +53,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
     private mealsService: MealsService,
     private formBuilder: FormBuilder,
     public dialog: MatDialog,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {
     this.addMealForm = this.formBuilder
       .group(
@@ -71,6 +72,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this.userService.user;
     if (this.user) {
+      this.isAuthenticated = this.userService.isAuthenticated;
       this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
       log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
@@ -110,7 +112,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // this.dialogueSubscription.unsubscribe();
-    this.userSubscription.unsubscribe();
   }
 
   isFormValid(): boolean {
@@ -171,6 +172,14 @@ export class AddMealComponent implements OnInit, OnDestroy {
     log('add-meal.component.ts', this.search.name, 'Search term:', term);
     this.searchTerm = term;
     this.searchTerms.next(term);
+  }
+
+  scanBarcode(): void {
+    if (this.isAuthenticated) {
+      this.router.navigate(['dashboard/scan']);
+    } else {
+      log('intakes.ts', this.scanBarcode.name, 'User is not authenticated!');
+    }
   }
 
 }
