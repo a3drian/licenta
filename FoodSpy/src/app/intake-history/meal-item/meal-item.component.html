@@ -1,0 +1,17 @@
+<p *ngIf="isInDebugMode"><b>meal-item</b> works!</p>
+
+<p>
+   Meal type:
+   {{ meal.type }}
+</p>
+
+<p>
+   Created at:
+   {{ meal.createdAt | date }}
+</p>
+
+<p>
+   Foods:
+   <app-food-item *ngFor="let food of meal.foods" [food]="food">
+   </app-food-item>
+</p>

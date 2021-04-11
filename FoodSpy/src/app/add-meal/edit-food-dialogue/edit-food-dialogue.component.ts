@@ -30,7 +30,7 @@ export class EditFoodDialogueComponent implements OnInit {
       .group(
         {
           quantity: [
-            '',
+            100,
             [Validators.required, positiveIntegerValidator()]
           ],
           unit: ['', Validators.required]

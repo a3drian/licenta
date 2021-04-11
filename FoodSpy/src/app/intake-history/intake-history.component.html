@@ -15,9 +15,11 @@
       <label>{{ intake.email }}</label>
    </div>
 
-   <div *ngFor="let food of intake.meals">
-      <label>Foods:</label>
-      <p>{{ food }}</p>
+   <div>
+      <label>Meals:</label>
+      <app-meal-item *ngFor="let food of intake.meals" [meal]="food">
+
+      </app-meal-item>
    </div>
 
    <div>

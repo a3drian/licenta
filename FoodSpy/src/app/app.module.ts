@@ -4,9 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-// App components:
-import { DashboardComponent } from './dashboard/dashboard.component';
-
 // Angular Material:
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
@@ -22,20 +19,22 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 // HTTP:
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-// Frontend:
-import { AddMealComponent } from './add-meal/add-meal.component';
-import { ScanFoodComponent } from './scan-food/scan-food.component';
-import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-import { EditFoodDialogueComponent } from './add-meal/edit-food-dialogue/edit-food-dialogue.component';
-import { MealHistoryComponent } from './meal-history/meal-history.component';
-import { IntakeHistoryComponent } from './intake-history/intake-history.component';
 // Authentication:
 import { AuthComponent } from './auth/auth.component';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { UserService } from './auth/user.service';
+// App components:
 import { HeaderComponent } from './header/header.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { IntakesComponent } from './intakes/intakes.component';
+import { AddMealComponent } from './add-meal/add-meal.component';
+import { ScanFoodComponent } from './scan-food/scan-food.component';
+import { EditFoodDialogueComponent } from './add-meal/edit-food-dialogue/edit-food-dialogue.component';
+import { IntakeHistoryComponent } from './intake-history/intake-history.component';
 import { HistoryComponent } from './history/history.component';
+import { FoodItemComponent } from './intake-history/food-item/food-item.component';
+import { MealItemComponent } from './intake-history/meal-item/meal-item.component';
+import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -46,11 +45,12 @@ import { HistoryComponent } from './history/history.component';
     AuthComponent,
     LoadingSpinnerComponent,
     EditFoodDialogueComponent,
-    MealHistoryComponent,
     IntakeHistoryComponent,
     HeaderComponent,
     IntakesComponent,
-    HistoryComponent
+    HistoryComponent,
+    FoodItemComponent,
+    MealItemComponent
   ],
   imports: [
     BrowserModule,
