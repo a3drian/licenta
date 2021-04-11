@@ -135,6 +135,35 @@ namespace FoodSpyAPI.Services
 			return intakesList;
 		}
 
-		// TO DO: search intakes by owner
+		public async Task<Intake> SearchIntakeByEmailAndDate(
+			string email,
+			DateTime createdAt,
+			SortOrder sortOrder = SortOrder.Descending
+		)
+		{
+			DateTime beginDate = createdAt.Date;
+			DateTime endDate = beginDate.AddDays(1);
+
+			string sortOrderName = Enum.GetName(typeof(SortOrder), sortOrder);
+			_logger.LogInformation($"Searching by email of '{email}', created at of '{createdAt}' and sort order '{sortOrderName}' ...");
+
+			string SORT_BY_DATE = nameof(Intake.CreatedAt);
+			SortDefinition<Intake> sortDefinition = sortOrder == SortOrder.Descending ?
+				new SortDefinitionBuilder<Intake>().Descending(SORT_BY_DATE) :
+				new SortDefinitionBuilder<Intake>().Ascending(SORT_BY_DATE);
+
+			FindOptions<Intake> findOptions = new FindOptions<Intake>() { Sort = sortDefinition };
+
+			IAsyncCursor<Intake> findResult = await _intakes
+				.FindAsync<Intake>(
+					filter: i => i.Email.Equals(email) && i.CreatedAt >= beginDate && i.CreatedAt <= endDate,
+					findOptions
+				);
+
+			Task<Intake> intakeSingleOrDefault = findResult.SingleOrDefaultAsync();
+			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt}'...");
+			Intake intake = intakeSingleOrDefault.Result;
+			return intake;
+		}
 	}
 }

@@ -175,7 +175,40 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
-		// TO DO: search intakes by "owner"
+		[HttpPost("searchByEmailAndCreatedAt")]
+		public async Task<ActionResult<IntakeModel>> SearchIntakesByEmailAndDate([FromBody] SearchByEmailAndDateOptions searchQuery)
+		{
+			try {
+
+				string email = searchQuery.Email;
+				DateTime createdAt = searchQuery.CreatedAt;
+				SortOrder sortOrder = searchQuery.SortOrder;
+
+				Intake intake = await _intakeService.SearchIntakeByEmailAndDate(email, createdAt, sortOrder);
+
+				if (intake == null) {
+
+					return NotFound($"Intake with e-mail '{email}' and created at '{createdAt}' was not found!");
+
+					/*
+					Task<ActionResult<IntakeModel>> newIntake = AddIntake(new Intake
+					{
+						CreatedAt = createdAt,
+						Email = email,
+						Meals = new List<Meal>()
+					});
+					IntakeModel mappedNewIntake = _mapper.Map<IntakeModel>(newIntake);
+					return mappedNewIntake;
+					*/
+				}
+
+				IntakeModel mappedExistingIntake = _mapper.Map<IntakeModel>(intake);
+				return mappedExistingIntake;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
 
 		private ObjectResult LogDatabaseException(Exception e)
 		{

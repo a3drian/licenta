@@ -26,7 +26,7 @@ export class IntakesComponent implements OnInit {
   intakesColumns: string[] = [
     'id',
     'email',
-    'foods',
+    'meals',
     'createdAt',
     'details'
   ];
@@ -75,11 +75,16 @@ export class IntakesComponent implements OnInit {
     }
   }
 
-  scanBarcode(): void {
-    if (this.isAuthenticated) {
-      this.router.navigate(['dashboard/scan']);
+  canShowIntakesTable(): boolean {
+    /*
+    if (!this.intakes) {
+      return false;
+    } else if (this.intakes.length === 0) {
+      return false;
     } else {
-      log('intakes.ts', this.scanBarcode.name, 'User is not authenticated!');
+      return false;
     }
+    */
+    return true;
   }
 }

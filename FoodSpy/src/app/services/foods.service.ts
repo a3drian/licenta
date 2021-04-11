@@ -52,7 +52,7 @@ export class FoodsService {
    // FILTER
    search(term: string): Observable<IFood[]> {
 
-      log('foods.service.ts', 'search(term: string)', '');
+      log('foods.service.ts', this.search.name, '');
 
       return this.http
          .get<IFood[]>(`${this.SEARCH_BY_NAME_URL}${term}`)
@@ -60,8 +60,8 @@ export class FoodsService {
             tap(
                (searchResults) => {
                   searchResults.length ?
-                     log('foods.service.ts', 'search(term: string)', `Found ${searchResults.length} items matching: `, term) :
-                     log('foods.service.ts', 'search(term: string)', 'No items matching: ', term);
+                     log('foods.service.ts', this.search.name, `Found ${searchResults.length} items matching: `, term) :
+                     log('foods.service.ts', this.search.name, 'No items matching: ', term);
                }
             )
          );

@@ -1,21 +1,27 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FoodsService } from '../services/foods.service';
-import { switchMap, tap } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { IFood } from '../interfaces/IFood';
-import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
-import { IMeal } from '../interfaces/IMeal';
-import { IIntake } from '../interfaces/IIntake';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Constants } from '../shared/Constants';
-import { MealsService } from '../services/meals.service';
-import { IUser } from '../interfaces/IUser';
-import { UserService } from '../auth/user.service';
-import { log } from '../shared/Logger';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 // Item filtering:
 import { Observable, pipe, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+// Services:
+import { FoodsService } from '../services/foods.service';
+import { MealsService } from '../services/meals.service';
+import { IntakesService } from '../services/intakes.service';
+import { UserService } from '../auth/user.service';
+// rxjs:
+import { switchMap, tap } from 'rxjs/operators';
+// Interfaces:
+import { IFood } from '../interfaces/IFood';
+import { IMeal } from '../interfaces/IMeal';
+import { IIntake } from '../interfaces/IIntake';
+import { IUser } from '../interfaces/IUser';
+// Components:
+import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
+// Shared:
+import { Constants } from '../shared/Constants';
+import { log } from '../shared/Logger';
 
 @Component({
   selector: 'app-add-meal',
@@ -29,11 +35,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
 
-  public user: IUser | null = null;
+  user: IUser | null = null;
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
-  day: IIntake = <IIntake>{};
+  intake: IIntake = <IIntake>{};
+  intakeId: string = '';
 
   databaseFoods: IFood[] = [];
   addedFoods: IFood[] = [];
@@ -51,6 +58,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   constructor(
     private foodsService: FoodsService,
     private mealsService: MealsService,
+    private intakesService: IntakesService,
     private formBuilder: FormBuilder,
     public dialog: MatDialog,
     private userService: UserService,
@@ -62,8 +70,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
           mealType: ['', Validators.required]
         }
       );
+
     const initialFoods: IFood[] = [];
     this.meal.foods = initialFoods;
+    const initalMeals: IMeal[] = [];
+    this.intake.meals = initalMeals;
+
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
       this.foodsColumns = this.foodsColumns.slice(1);
     }
@@ -76,6 +88,23 @@ export class AddMealComponent implements OnInit, OnDestroy {
       this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
       log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
+
+    /*
+    this.intakesService
+      .getIntakesByEmailAndCreatedAt(this.authenticatedUserEmail, new Date())
+      .subscribe(
+        (intake) => {
+          if (intake) {
+            log('add-meal.ts', this.ngOnInit.name, '(intake: IIntake)', intake);
+            this.intake = intake;
+          }
+        },
+        (error) => {
+          log('add-meal.ts', this.ngOnInit.name, 'Error:', error);
+        }
+      );
+    */
+
     // Search:
     this.searchTerms
       .pipe(
@@ -163,6 +192,17 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.mealsService
       .addMeal(this.meal)
       .subscribe();
+
+    // TO DO: fix this, check for existing intake in this date or create new one
+    /*
+    this.intake.email = this.authenticatedUserEmail;
+    this.intake.createdAt = new Date();
+    this.meal.createdAt = new Date();
+    this.intake.meals.push(this.meal);
+    this.intakesService
+      .addIntake(this.intake)
+      .subscribe();
+    */
   }
 
   // Item filtering:
