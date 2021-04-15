@@ -1,6 +1,7 @@
 <p *ngIf="isInDebugMode"><b>add-meal</b> works!</p>
 
-<h1>{{ authenticatedUserEmail }}</h1>
+<h2>{{ authenticatedUserEmail }}</h2>
+<h3 *ngIf="canShowIntake">{{ intake }} </h3>
 
 <form [formGroup]="addMealForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">

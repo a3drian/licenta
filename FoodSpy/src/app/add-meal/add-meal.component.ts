@@ -16,6 +16,7 @@ import { switchMap, tap } from 'rxjs/operators';
 import { IFood } from '../interfaces/IFood';
 import { IMeal } from '../interfaces/IMeal';
 import { IIntake } from '../interfaces/IIntake';
+import { Intake } from '../models/Intake';
 import { IUser } from '../interfaces/IUser';
 // Components:
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
@@ -30,7 +31,7 @@ import { log } from '../shared/Logger';
 })
 export class AddMealComponent implements OnInit, OnDestroy {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
@@ -54,6 +55,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
   mealTypes: string[] = [];
 
   dialogueSubscription: any;
+  today: Date = new Date();
+  canShowIntake: boolean = false;
 
   constructor(
     private foodsService: FoodsService,
@@ -89,21 +92,31 @@ export class AddMealComponent implements OnInit, OnDestroy {
       log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
 
-    /*
     this.intakesService
-      .getIntakesByEmailAndCreatedAt(this.authenticatedUserEmail, new Date())
+      .getIntakeByEmailAndCreatedAt(this.authenticatedUserEmail, this.today)
       .subscribe(
-        (intake) => {
+        (intake: IIntake) => {
           if (intake) {
-            log('add-meal.ts', this.ngOnInit.name, '(intake: IIntake)', intake);
+            log('add-meal.ts', this.ngOnInit.name, '(intake) intake', intake);
             this.intake = intake;
+            setTimeout(
+              () => {
+                this.canShowIntake = true;
+                log('add-meal.ts', this.ngOnInit.name, '(intake) this.intake', this.intake);
+              },
+              1000
+            );
+          } else {
+            this.initializeIntake();
+            log('add-meal.ts', this.ngOnInit.name, '(!intake) this.intake', this.intake);
           }
         },
         (error) => {
           log('add-meal.ts', this.ngOnInit.name, 'Error:', error);
+          this.initializeIntake();
+          log('add-meal.ts', this.ngOnInit.name, '(error) this.intake', this.intake);
         }
       );
-    */
 
     // Search:
     this.searchTerms
@@ -137,6 +150,15 @@ export class AddMealComponent implements OnInit, OnDestroy {
           return meals.type
         }
       );
+  }
+
+  private initializeIntake() {
+    const initalMeals: IMeal[] = [];
+    this.intake = new Intake({
+      email: this.authenticatedUserEmail,
+      meals: initalMeals,
+      createdAt: this.today,
+    });
   }
 
   ngOnDestroy(): void {
@@ -177,12 +199,16 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.populateMeal();
   }
 
-  private populateMeal() {
+  private populateMeal(): void {
     const mealFromForm = this.addMealForm.value;
     this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
     this.meal.foods = this.addedFoods;
     log('add-meal.component.ts', this.populateMeal.name, 'mealFromForm:', mealFromForm);
     log('add-meal.component.ts', this.populateMeal.name, 'this.meal', this.meal);
+  }
+
+  private populateIntake(): void {
+    this.intake.meals.push(this.meal);
   }
 
   onSubmit(): void {

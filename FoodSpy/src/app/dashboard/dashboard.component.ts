@@ -8,7 +8,7 @@ import { Constants } from '../shared/Constants';
 })
 export class DashboardComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   constructor() { }
 

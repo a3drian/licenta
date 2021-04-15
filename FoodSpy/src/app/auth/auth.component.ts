@@ -12,7 +12,7 @@ import { log } from "../shared/Logger";
 })
 export class AuthComponent {
 
-    isInDebugMode: boolean = Constants.isInDebugMode;
+    isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
     DASHBOARD_URL: string = '';
 

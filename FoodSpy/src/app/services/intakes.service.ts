@@ -14,6 +14,7 @@ export class IntakesService {
 
    readonly BASE_URL: string = '/api/intakes';
    readonly SEARCH_URL: string = '/api/intakes/search/';
+   readonly SEARCH_BY_EMAIL_AND_DATE: string = '/api/intakes/searchByEmailAndCreatedAt';
 
    constructor(private http: HttpClient) { }
 
@@ -74,18 +75,18 @@ export class IntakesService {
       return request;
    }
 
-   // Get intakes by e-mail and createdAt
-   getIntakesByEmailAndCreatedAt(
+   // Get intake by e-mail and createdAt
+   getIntakeByEmailAndCreatedAt(
       email: string,
-      createdAt: Date
+      today: Date
    ): Observable<IIntake> {
       const request = this.http
          .post<IIntake>(
-            this.SEARCH_URL,
+            this.SEARCH_BY_EMAIL_AND_DATE,
             new SearchByEmailAndDate(
                {
                   email: email,
-                  createdAt: createdAt
+                  createdAt: today
                }
             )
          )
@@ -93,14 +94,14 @@ export class IntakesService {
             tap(
                () => { },
                (error: HttpErrorResponse) => {
-                  log('intakes.service.ts', this.getIntakesByEmailAndCreatedAt.name, 'Error:', error);
+                  log('intakes.service.ts', this.getIntakeByEmailAndCreatedAt.name, 'Error:', error);
                   if (error.status === 404) { }
                }
             )
          );
 
 
-      log('intakes.service.ts', this.getIntakesByEmailAndCreatedAt.name, 'request:', request);
+      log('intakes.service.ts', this.getIntakeByEmailAndCreatedAt.name, 'request:', request);
 
       return request;
    }

@@ -19,7 +19,7 @@ export interface AuthResponseData {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-    isInDebugMode: boolean = Constants.isInDebugMode;
+    isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
     REGISTER_URL: string = Constants.APIEndpoints.REGISTER_URL;
     LOGIN_URL: string = Constants.APIEndpoints.LOGIN_URL;

@@ -14,7 +14,7 @@ import { Constants } from '../../shared/Constants';
 })
 export class EditFoodDialogueComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   editFoodForm: FormGroup;
 

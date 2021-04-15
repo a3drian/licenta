@@ -15,7 +15,7 @@ import { log } from '../shared/Logger';
 })
 export class IntakeHistoryComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   intake: IIntake = <IIntake>{};
   intakeId: string = '';

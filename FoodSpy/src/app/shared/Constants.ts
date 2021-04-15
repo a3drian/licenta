@@ -1,7 +1,7 @@
 export { Constants }
 
 class Constants {
-   static isInDebugMode: boolean = true;
+   static IN_DEBUG_MODE: boolean = true;
    static APIEndpoints =
       {
          REGISTER_URL: '/auth/register',

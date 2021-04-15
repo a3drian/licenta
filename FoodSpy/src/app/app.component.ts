@@ -11,7 +11,7 @@ import { Constants } from './shared/Constants';
 })
 export class AppComponent {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   title = 'FoodSpy';
 

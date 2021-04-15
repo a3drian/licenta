@@ -187,19 +187,7 @@ namespace FoodSpyAPI.Controllers
 				Intake intake = await _intakeService.SearchIntakeByEmailAndDate(email, createdAt, sortOrder);
 
 				if (intake == null) {
-
-					return NotFound($"Intake with e-mail '{email}' and created at '{createdAt}' was not found!");
-
-					/*
-					Task<ActionResult<IntakeModel>> newIntake = AddIntake(new Intake
-					{
-						CreatedAt = createdAt,
-						Email = email,
-						Meals = new List<Meal>()
-					});
-					IntakeModel mappedNewIntake = _mapper.Map<IntakeModel>(newIntake);
-					return mappedNewIntake;
-					*/
+					return NoContent();
 				}
 
 				IntakeModel mappedExistingIntake = _mapper.Map<IntakeModel>(intake);

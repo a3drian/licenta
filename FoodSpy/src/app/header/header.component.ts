@@ -14,7 +14,7 @@ import { IUser } from '../interfaces/IUser';
 })
 export class HeaderComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';

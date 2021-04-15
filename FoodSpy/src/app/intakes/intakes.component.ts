@@ -13,7 +13,7 @@ import { IUser } from '../interfaces/IUser';
 })
 export class IntakesComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   user: IUser | null = null;
   isAuthenticated: boolean = false;

@@ -9,7 +9,7 @@ import { IMeal } from '../../interfaces/IMeal';
 })
 export class MealItemComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   @Input()
   public meal!: IMeal;

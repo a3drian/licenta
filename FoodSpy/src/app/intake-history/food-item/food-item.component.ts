@@ -9,7 +9,7 @@ import { IFood } from '../../interfaces/IFood';
 })
 export class FoodItemComponent implements OnInit {
 
-  isInDebugMode: boolean = Constants.isInDebugMode;
+  isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   @Input()
   public food!: IFood;
