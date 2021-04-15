@@ -37,6 +37,23 @@ export class IntakesService {
       return request;
    }
 
+   // EDIT (PUT)
+   editIntake(intake: IIntake): Observable<IIntake> {
+      const url = `${this.BASE_URL}/${intake.id}`;
+      log('intake.service.ts', this.editIntake.name, 'url:', url);
+
+      const request = this.http.put<IIntake>(url, intake)
+         .pipe(
+            tap(
+               () => {
+                  log('intake.service.ts', this.editIntake.name, `Intake '${intake.id}' was edited!`);
+               }
+            )
+         );
+
+      return request;
+   }
+
    // Get intake by ID
    getIntakeById(id: string): Observable<IIntake> {
       const url = `${this.BASE_URL}/${id}`;

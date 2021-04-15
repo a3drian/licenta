@@ -21,6 +21,7 @@ export class IntakeHistoryComponent implements OnInit {
   intakeId: string = '';
   intakeWasFound: boolean = false;
   idNotFound: boolean = false;
+  isLoading: boolean = true;
 
   user: IUser | null = null;
   authenticatedUserEmail: string = '';
@@ -71,6 +72,7 @@ export class IntakeHistoryComponent implements OnInit {
         (data) => {
           this.intake = new Intake(data);
           this.intakeWasFound = this.intake ? true : false;
+          this.isLoading = false;
         }
       );
   }

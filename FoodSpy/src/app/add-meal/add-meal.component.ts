@@ -42,6 +42,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
   meal: IMeal = <IMeal>{};
   intake: IIntake = <IIntake>{};
   intakeId: string = '';
+  canShowIntake: boolean = false;
+  existingIntake: boolean = false;
+  intakeText: string = '';
 
   databaseFoods: IFood[] = [];
   addedFoods: IFood[] = [];
@@ -56,7 +59,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   dialogueSubscription: any;
   today: Date = new Date();
-  canShowIntake: boolean = false;
 
   constructor(
     private foodsService: FoodsService,
@@ -76,8 +78,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
     const initialFoods: IFood[] = [];
     this.meal.foods = initialFoods;
-    const initalMeals: IMeal[] = [];
-    this.intake.meals = initalMeals;
 
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
       this.foodsColumns = this.foodsColumns.slice(1);
@@ -99,13 +99,13 @@ export class AddMealComponent implements OnInit, OnDestroy {
           if (intake) {
             log('add-meal.ts', this.ngOnInit.name, '(intake) intake', intake);
             this.intake = intake;
+            this.existingIntake = true;
+            this.intakeId = intake.id;
             setTimeout(
-              () => {
-                this.canShowIntake = true;
-                log('add-meal.ts', this.ngOnInit.name, '(intake) this.intake', this.intake);
-              },
+              () => { this.canShowIntake = true; },
               1000
             );
+            this.changeIntakeText();
           } else {
             this.initializeIntake();
             log('add-meal.ts', this.ngOnInit.name, '(!intake) this.intake', this.intake);
@@ -159,6 +159,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
       meals: initalMeals,
       createdAt: this.today,
     });
+    this.canShowIntake = true;
   }
 
   ngOnDestroy(): void {
@@ -207,28 +208,62 @@ export class AddMealComponent implements OnInit, OnDestroy {
     log('add-meal.component.ts', this.populateMeal.name, 'this.meal', this.meal);
   }
 
-  private populateIntake(): void {
-    this.intake.meals.push(this.meal);
-  }
-
   onSubmit(): void {
     this.populateMeal();
-    // this.meal.email = 'add-meal@email.com';
-    this.meal.createdAt = new Date();
+    /*
+    this.meal.createdAt = this.today;
     this.mealsService
       .addMeal(this.meal)
       .subscribe();
-
-    // TO DO: fix this, check for existing intake in this date or create new one
-    /*
-    this.intake.email = this.authenticatedUserEmail;
-    this.intake.createdAt = new Date();
-    this.meal.createdAt = new Date();
-    this.intake.meals.push(this.meal);
-    this.intakesService
-      .addIntake(this.intake)
-      .subscribe();
     */
+
+    this.meal.createdAt = this.today;
+    this.intake.meals.push(this.meal);
+
+    if (this.existingIntake) {
+      log('add-meal.component.ts', this.onSubmit.name, 'Editing existing intake, this.intake:', this.intake);
+      this.intakesService
+        .editIntake(this.intake)
+        .subscribe();
+    } else {
+      log('add-meal.component.ts', this.onSubmit.name, 'Adding new intake, this.intake:', this.intake);
+      this.intakesService
+        .addIntake(this.intake)
+        .subscribe();
+    }
+  }
+
+  canShowIntakeHistoryButton(): boolean {
+    if (this.canShowIntake) {
+      if (this.intake.meals.length === 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  changeIntakeText(): void {
+    if (this.intake.meals.length === 0) {
+      this.intakeText = 'No meals added today.';
+    } else {
+      const meals: string = this.intake.meals.length === 1 ? 'one meal' : `${this.intake.meals.length} meals`;
+      console.log('this.intake.meals:', this.intake.meals);
+      this.intake.meals.forEach(element => {
+        console.log('element:', element);
+      });
+      this.intakeText = `Today you had ${meals}.`;
+    }
+  }
+
+  viewIntakeDetails(): void {
+    if (this.isAuthenticated) {
+      if (this.intakeId) {
+        log('add-meal.ts', this.viewIntakeDetails.name, `Attempting to access intake with id: '${this.intakeId}'`);
+        this.router.navigate([`/history/${this.intakeId}`]);
+      }
+    } else {
+      log('add-meal.ts', this.viewIntakeDetails.name, 'User is not authenticated!');
+    }
   }
 
   // Item filtering:

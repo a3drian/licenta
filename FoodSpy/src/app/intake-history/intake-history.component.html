@@ -8,28 +8,30 @@
    {{ authenticatedUserEmail }}
 </h2>
 
-<div *ngIf="intakeWasFound">
+<div *ngIf="intakeWasFound && !isLoading">
 
    <div *ngIf="isInDebugMode">
-      <label>Intake email:</label>
-      <label>{{ intake.email }}</label>
+      <p>
+         Intake email: {{ intake.email }}.
+      </p>
+   </div>
+
+   <div>
+      <p>
+         Created at: {{ intake.createdAt | date: 'short' }}.
+      </p>
    </div>
 
    <div>
       <label>Meals:</label>
       <app-meal-item *ngFor="let food of intake.meals" [meal]="food">
-
       </app-meal-item>
    </div>
 
-   <div>
-      <label>Created at:</label>
-      <label>{{ intake.createdAt | date }}</label>
-   </div>
 
 </div>
 
-<div *ngIf="!intakeWasFound">
+<div *ngIf="!intakeWasFound && !isLoading">
    <p>
       Intake was not found!
    </p>

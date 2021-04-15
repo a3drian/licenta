@@ -1,7 +1,14 @@
 <p *ngIf="isInDebugMode"><b>add-meal</b> works!</p>
 
-<h2>{{ authenticatedUserEmail }}</h2>
-<h3 *ngIf="canShowIntake">{{ intake }} </h3>
+<p *ngIf="isInDebugMode">{{ intake.createdAt | date: 'short' }}</p>
+
+<div *ngIf="canShowIntake">
+    {{ intakeText }}
+    <button *ngIf="canShowIntakeHistoryButton()" class="button" mat-stroked-button color="primary"
+        (click)="viewIntakeDetails()">
+        View
+    </button>
+</div>
 
 <form [formGroup]="addMealForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
