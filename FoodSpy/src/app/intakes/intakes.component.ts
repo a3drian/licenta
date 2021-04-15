@@ -14,13 +14,13 @@ import { IUser } from '../interfaces/IUser';
 export class IntakesComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
+  isLoading: boolean = true;
 
   user: IUser | null = null;
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
 
   currentTime: Date = new Date();
-  currentDate: string;
 
   intakes: any;
   intakesColumns: string[] = [
@@ -35,22 +35,25 @@ export class IntakesComponent implements OnInit {
     private intakesService: IntakesService,
     private router: Router,
     private userService: UserService
-  ) {
-    this.currentDate = this.currentTime.toISOString().split("T")[0];
-  }
+  ) { }
 
   ngOnInit(): void {
     this.user = this.userService.user;
     if (this.user) {
       this.isAuthenticated = this.userService.isAuthenticated;
       this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
-      log('intakes.ts', 'constructor()', 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+      log('intakes.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
     this.intakesService
       .getIntakesByEmail(this.authenticatedUserEmail)
       .subscribe(
         (intakes) => {
           this.intakes = intakes;
+          this.isLoading = false;
+        },
+        (error) => {
+          log('intakes.ts', this.ngOnInit.name, '(error) error:', error);
+          this.isLoading = false;
         }
       )
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode

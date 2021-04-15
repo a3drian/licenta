@@ -2,7 +2,11 @@
 
 <p *ngIf="isInDebugMode">{{ intake.createdAt | date: 'short' }}</p>
 
-<div *ngIf="canShowIntake">
+<div *ngIf="isLoading" class="loading-spinner">
+    <app-loading-spinner></app-loading-spinner>
+</div>
+
+<div *ngIf="!isLoading">
     {{ intakeText }}
     <button *ngIf="canShowIntakeHistoryButton()" class="button" mat-stroked-button color="primary"
         (click)="viewIntakeDetails()">
@@ -34,7 +38,7 @@
     </button>
 </div>
 
-<table mat-table [dataSource]="databaseFoods">
+<table mat-table [dataSource]="databaseFoods" *ngIf="!isLoading">
 
     <!-- ID -->
     <ng-container matColumnDef="id" *ngIf="isInDebugMode">

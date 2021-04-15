@@ -8,6 +8,10 @@
    {{ authenticatedUserEmail }}
 </h2>
 
+<div *ngIf="isLoading" class="loading-spinner">
+   <app-loading-spinner></app-loading-spinner>
+</div>
+
 <div *ngIf="intakeWasFound && !isLoading">
 
    <div *ngIf="isInDebugMode">

@@ -3,10 +3,14 @@
 <!-- TO DO -->
 <!-- Calendar -->
 
-<h2>{{ currentDate | date: 'short' }}</h2>
+<h2>{{ currentTime | date: 'short' }}</h2>
+
+<div *ngIf="isLoading" class="loading-spinner">
+   <app-loading-spinner></app-loading-spinner>
+</div>
 
 <!-- Intake history -->
-<div *ngIf="canShowIntakesTable()">
+<div *ngIf="canShowIntakesTable() && !isLoading">
    <table mat-table [dataSource]="intakes">
 
       <!-- ID -->

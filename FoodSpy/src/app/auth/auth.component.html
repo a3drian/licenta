@@ -2,10 +2,10 @@
     <div *ngIf="error">
         <p>{{ error }}</p>
     </div>
-    <div *ngIf="isLoading()" style="text-align: center;">
+    <div *ngIf="isLoading" class="loading-spinner">
         <app-loading-spinner></app-loading-spinner>
     </div>
-    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading()">
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
         <div>
             <label for="email">E-Mail</label>
             <input formControlName="email" type="email" id="email" required email />

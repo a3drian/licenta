@@ -32,6 +32,7 @@ import { log } from '../shared/Logger';
 export class AddMealComponent implements OnInit, OnDestroy {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
+  isLoading: boolean = true;
 
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
@@ -42,7 +43,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
   meal: IMeal = <IMeal>{};
   intake: IIntake = <IIntake>{};
   intakeId: string = '';
-  canShowIntake: boolean = false;
   existingIntake: boolean = false;
   intakeText: string = '';
 
@@ -97,24 +97,20 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .subscribe(
         (intake: IIntake) => {
           if (intake) {
-            log('add-meal.ts', this.ngOnInit.name, '(intake) intake', intake);
+            log('add-meal.ts', this.ngOnInit.name, '(intake) intake:', intake);
             this.intake = intake;
             this.existingIntake = true;
             this.intakeId = intake.id;
-            setTimeout(
-              () => { this.canShowIntake = true; },
-              1000
-            );
             this.changeIntakeText();
           } else {
             this.initializeIntake();
-            log('add-meal.ts', this.ngOnInit.name, '(!intake) this.intake', this.intake);
+            log('add-meal.ts', this.ngOnInit.name, '(!intake) this.intake:', this.intake);
           }
         },
         (error) => {
-          log('add-meal.ts', this.ngOnInit.name, 'Error:', error);
+          log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error):', error);
           this.initializeIntake();
-          log('add-meal.ts', this.ngOnInit.name, '(error) this.intake', this.intake);
+          log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error) this.intake:', this.intake);
         }
       );
 
@@ -130,6 +126,11 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.databaseFoods = data;
+          this.isLoading = false;
+        },
+        (error) => {
+          log('add-meal.ts', this.ngOnInit.name, 'this.searchTerms.subscribe(error) error:', error);
+          this.isLoading = false;
         }
       );
     // Foods
@@ -139,7 +140,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
         (data) => {
           if (data) {
             this.databaseFoods = data;
+            this.isLoading = false;
           }
+        },
+        (error) => {
+          log('add-meal.ts', this.ngOnInit.name, 'this.foodsService.subscribe(error) error:', error);
+          this.isLoading = false;
         }
       );
     // Meals:
@@ -147,7 +153,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .getMealTypes()
       .map(
         (meals) => {
-          return meals.type
+          return meals.type;
         }
       );
   }
@@ -159,7 +165,6 @@ export class AddMealComponent implements OnInit, OnDestroy {
       meals: initalMeals,
       createdAt: this.today,
     });
-    this.canShowIntake = true;
   }
 
   ngOnDestroy(): void {
@@ -234,7 +239,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   canShowIntakeHistoryButton(): boolean {
-    if (this.canShowIntake) {
+    if (!this.isLoading) {
       if (this.intake.meals.length === 0) {
         return false;
       }

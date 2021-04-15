@@ -8,7 +8,8 @@ import { log } from "../shared/Logger";
 
 @Component({
     selector: 'app-auth',
-    templateUrl: './auth.component.html'
+    templateUrl: './auth.component.html',
+    styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent {
 
@@ -18,7 +19,7 @@ export class AuthComponent {
 
     authForm: FormGroup;
 
-    isInLoadingMode: boolean = false;
+    isLoading: boolean = false;
     isInLoginMode: boolean = false;
 
     loginButtonText: string = 'Log in';
@@ -34,10 +35,6 @@ export class AuthComponent {
 
     isFormValid(): boolean {
         return this.authForm.valid;
-    }
-
-    isLoading(): boolean {
-        return this.isInLoadingMode;
     }
 
     constructor(
@@ -66,7 +63,7 @@ export class AuthComponent {
         const email = form.email;
         const password = form.password;
 
-        this.isInLoadingMode = true;
+        this.isLoading = true;
 
         // allows us to change what observable it holds based on the request,
         // if it's a log in or a sign up one
@@ -81,7 +78,7 @@ export class AuthComponent {
             .subscribe(
                 (responseData) => {
                     log('auth.component', this.onSubmit.name, 'Response data for log in / sign up request:', responseData);
-                    this.isInLoadingMode = false;
+                    this.isLoading = false;
                     // navigation from inside the code, not from inside the template
                     this.router.navigate([this.DASHBOARD_URL]);
                 },
@@ -90,7 +87,7 @@ export class AuthComponent {
                     log('auth.component', this.onSubmit.name, 'Error when trying to log in / sign up:', errorMessage);
 
                     this.error = errorMessage;
-                    this.isInLoadingMode = false;
+                    this.isLoading = false;
                 }
             );
 
