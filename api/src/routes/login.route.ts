@@ -5,7 +5,7 @@ import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
 import { decryptPassword } from '../services/password.service';
 import { ERROR_CODES, STATUS_CODES } from '../common';
-import { IAuthResponseData } from '../interfaces/IAuthResponseData';
+import { IAuthResponseData } from 'foodspy-shared';
 import { AuthResponseData } from '../models/AuthResponseData';
 
 export { setLoginRoute };
@@ -66,7 +66,7 @@ async function loginUser(
                 console.log('Passwords match! Signing user in...');
                 let authResponseData: IAuthResponseData = new AuthResponseData;
                 authResponseData.email = response.email;
-                authResponseData.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+                authResponseData.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
                 authResponseData.id = response.id;
                 authResponseData.expiresIn = FIFTEEN_MINUTES;
                 return res.status(200).json(authResponseData);
