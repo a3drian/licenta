@@ -17,7 +17,7 @@ import { IFood } from '../interfaces/IFood';
 import { IMeal } from '../interfaces/IMeal';
 import { IIntake } from '../interfaces/IIntake';
 import { Intake } from '../models/Intake';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from 'foodspy-shared';
 // Components:
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
 // Shared:

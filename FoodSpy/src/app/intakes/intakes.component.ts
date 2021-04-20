@@ -4,7 +4,7 @@ import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
 import { Router } from '@angular/router';
 import { UserService } from '../auth/user.service';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from 'foodspy-shared';
 
 @Component({
   selector: 'app-intakes',

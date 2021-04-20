@@ -5,7 +5,7 @@ import { IIntake } from '../interfaces/IIntake';
 import { Intake } from '../models/Intake';
 import { Constants } from '../shared/Constants';
 import { UserService } from '../auth/user.service';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from 'foodspy-shared';
 import { log } from '../shared/Logger';
 
 @Component({

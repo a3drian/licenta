@@ -7,7 +7,7 @@ import {
 } from '@mikro-orm/core';
 import { ObjectId } from 'mongodb';
 
-import { IUser } from '../interfaces/IUser';
+import { IUser } from 'foodspy-shared';
 
 @Entity()
 export class User implements IUser {

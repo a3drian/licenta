@@ -1,6 +1,7 @@
-import { IUser } from "../interfaces/IUser";
+import { IUser } from 'foodspy-shared';
 
 export class User implements IUser {
+   id!: string;
    email!: string;
    password!: string;
 

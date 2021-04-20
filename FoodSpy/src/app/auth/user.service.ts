@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from 'foodspy-shared';
 import { log } from '../shared/Logger';
 import { AuthService } from './auth.service';
 

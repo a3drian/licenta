@@ -1,1 +1,1 @@
-npm run proxy
+start cmd.exe /k "npm run proxy"

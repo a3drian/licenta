@@ -4,7 +4,7 @@ import { log } from '../shared/Logger';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from '../auth/user.service';
 import { Router } from '@angular/router';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from 'foodspy-shared';
 
 
 @Component({
