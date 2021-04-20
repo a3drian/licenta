@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Constants } from '../../shared/Constants';
-import { IMeal } from '../../interfaces/IMeal';
+import { IMeal } from 'foodspy-shared';
 
 @Component({
   selector: 'app-meal-item',

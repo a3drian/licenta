@@ -1,5 +1,5 @@
-import { IMeal } from '../interfaces/IMeal';
-import { IIntake } from '../interfaces/IIntake';
+import { IMeal } from 'foodspy-shared';
+import { IIntake } from 'foodspy-shared';
 
 export class Intake implements IIntake {
    id!: string;

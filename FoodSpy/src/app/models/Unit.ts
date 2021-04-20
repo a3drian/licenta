@@ -1,4 +1,4 @@
-import { IUnit } from '../interfaces/IUnit';
+import { IUnit } from 'foodspy-shared';
 
 export class Unit implements IUnit {
    unit!: string;

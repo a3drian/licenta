@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { IMeal } from '../interfaces/IMeal';
+import { IMeal } from 'foodspy-shared';
 import { ISearchOptions } from '../interfaces/searchOptions/ISearchOptions';
 import { Meal } from '../models/Meal';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';

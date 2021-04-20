@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { IFood } from '../interfaces/IFood';
+import { IFood } from 'foodspy-shared';
 import { AuthService } from '../auth/auth.service';
 import { log } from '../shared/Logger';
 import { Constants } from '../shared/Constants';

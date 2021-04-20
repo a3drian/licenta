@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IFood } from '../../interfaces/IFood';
+import { IFood } from 'foodspy-shared';
 import { UnitsService } from 'src/app/services/units.service';
 import { Food } from 'src/app/models/Food';
 import { positiveIntegerValidator } from 'src/app/shared/validators/positiveIntegerValidator';

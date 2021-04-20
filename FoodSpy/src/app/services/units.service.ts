@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IUnit } from '../interfaces/IUnit';
+import { IUnit } from 'foodspy-shared';
 import { Unit } from '../models/Unit';
 
 @Injectable({

@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { IIntake } from '../interfaces/IIntake';
+import { IIntake } from 'foodspy-shared';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
 import { SearchByEmailAndDate } from '../models/searchOptions/SearchByEmailAndDate';
 import { log } from '../shared/Logger';

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IntakesService } from '../services/intakes.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IIntake } from '../interfaces/IIntake';
+import { IIntake } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
 import { Constants } from '../shared/Constants';
 import { UserService } from '../auth/user.service';

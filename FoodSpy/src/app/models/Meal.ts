@@ -1,5 +1,5 @@
-import { IFood } from '../interfaces/IFood';
-import { IMeal } from '../interfaces/IMeal';
+import { IFood } from 'foodspy-shared';
+import { IMeal } from 'foodspy-shared';
 
 export class Meal implements IMeal {
 

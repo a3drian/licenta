@@ -13,9 +13,9 @@ import { UserService } from '../auth/user.service';
 // rxjs:
 import { switchMap, tap } from 'rxjs/operators';
 // Interfaces:
-import { IFood } from '../interfaces/IFood';
-import { IMeal } from '../interfaces/IMeal';
-import { IIntake } from '../interfaces/IIntake';
+import { IFood } from 'foodspy-shared';
+import { IMeal } from 'foodspy-shared';
+import { IIntake } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
 import { IUser } from 'foodspy-shared';
 // Components:
