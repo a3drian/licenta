@@ -4,7 +4,8 @@ import { User } from '../entities/user.entity';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
 import { encryptPassword } from '../services/password.service';
-import { ERROR_CODES, STATUS_CODES } from '../common';
+import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
+import { log } from '../shared/Logger';
 
 export { setRegisterRoute };
 
@@ -20,7 +21,7 @@ async function registerUser(
     next: NextFunction
 ) {
     if (!req.em || !(req.em instanceof EntityManager)) {
-        console.log(`ERROR: register.route.ts, registerUser(): req.em is not instanceof EntityManager`);
+        log('register.route.ts', registerUser.name, 'req.em is not instanceof EntityManager');
         return next(Error('EntityManager not available'));
     }
 
@@ -48,7 +49,7 @@ async function registerUser(
 
         if (response instanceof User) {
             const conflictError: Error = new Error;
-            conflictError.name = ERROR_CODES.EMAIL_EXISTS;
+            conflictError.name = ERROR_MESSAGES.EMAIL_EXISTS;
             conflictError.message = 'E-mail already exists!';
             return res.status(STATUS_CODES.CONFLICT).json(conflictError);
         }

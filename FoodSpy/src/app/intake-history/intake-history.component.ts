@@ -7,6 +7,7 @@ import { Constants } from '../shared/Constants';
 import { UserService } from '../auth/user.service';
 import { IUser } from 'foodspy-shared';
 import { log } from '../shared/Logger';
+import { STATUS_CODES } from 'foodspy-shared';
 
 @Component({
   selector: 'app-intake-history',
@@ -51,7 +52,7 @@ export class IntakeHistoryComponent implements OnInit {
           },
           (error) => {
             log('intake-history.ts', 'constructor()', '(error), error:', error);
-            if (error.status === 404) {
+            if (error.status === STATUS_CODES.NOT_FOUND) {
               this.idNotFound = true;
             }
             log('intake-history.ts', 'constructor()', '(error) this.idNotFound:', this.idNotFound);

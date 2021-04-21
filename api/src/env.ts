@@ -1,5 +1,9 @@
 require('dotenv').config();
-console.log(require('dotenv').config());
+
+import { log } from './shared/Logger';
+log('env.ts', 'global call', `require('dotenv').config():`, require('dotenv').config());
+
+import { Constants } from './shared/Constants';
 
 const CLUSTER_URI = process.env.ENV_MONGO_URI;
 
@@ -14,7 +18,7 @@ export const env = Object.freeze(
 
 		USERS_ROUTE: '/db/users',
 
-		REGISTER_ROUTE: '/auth/register',
-		LOGIN_ROUTE: '/auth/login'
+		REGISTER_ROUTE: Constants.APIEndpoints.REGISTER_URL,
+		LOGIN_ROUTE: Constants.APIEndpoints.LOGIN_URL
 	}
 );

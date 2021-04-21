@@ -6,6 +6,7 @@ import { IIntake } from 'foodspy-shared';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
 import { SearchByEmailAndDate } from '../models/searchOptions/SearchByEmailAndDate';
 import { log } from '../shared/Logger';
+import { STATUS_CODES } from 'foodspy-shared';
 
 @Injectable({
    providedIn: 'root'
@@ -112,7 +113,7 @@ export class IntakesService {
                () => { },
                (error: HttpErrorResponse) => {
                   log('intakes.service.ts', this.getIntakeByEmailAndCreatedAt.name, 'Error:', error);
-                  if (error.status === 404) { }
+                  if (error.status === STATUS_CODES.NOT_FOUND) { }
                }
             )
          );

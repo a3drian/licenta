@@ -1,6 +1,9 @@
 import { EntityManager } from '@mikro-orm/core';
 
 import { User } from '../entities/user.entity';
+import { log } from '../shared/Logger';
+
+const CLASS_NAME = 'users.service.ts';
 
 export {
    registerUser,
@@ -18,7 +21,7 @@ async function getUsers(
    em: EntityManager
 ): Promise<Error | User[]> {
    if (!(em instanceof EntityManager)) {
-      console.log(`ERROR: users.service.ts, getUsers(): em is not instanceof EntityManager`);
+      log(CLASS_NAME, getUsers.name, 'req.em is not instanceof EntityManager');
       return Error('invalid request');
    }
 
@@ -51,7 +54,7 @@ async function getUserByEmail(
    email: string
 ): Promise<Error | User | null> {
    if (!(em instanceof EntityManager)) {
-      console.log(`ERROR: users.service.ts, getUserByEmail(): em is not instanceof EntityManager`);
+      log(CLASS_NAME, getUserByEmail.name, 'req.em is not instanceof EntityManager');
       return Error('invalid request');
    }
 
@@ -87,26 +90,26 @@ async function registerUser(
    user: Partial<User>
 ): Promise<Error | User> {
    if (!(em instanceof EntityManager)) {
-       console.log(`ERROR: register.service.ts, registerUser(): em is not instanceof EntityManager`);
-       return Error('invalid request');
+      log(CLASS_NAME, registerUser.name, 'req.em is not instanceof EntityManager');
+      return Error('invalid request');
    }
 
    if (!user || typeof user !== 'object' || user.id) {
-       return Error('invalid params');
+      return Error('invalid params');
    }
 
    try {
-       const registeredUser = new User(user);
+      const registeredUser = new User(user);
 
-       console.log('');
-       console.log('register.service.ts, registerUser():');
-       console.log('registeredUser:', registeredUser);
-       console.log('register.service.ts, registerUser()^');
-       console.log('');
+      console.log('');
+      console.log('register.service.ts, registerUser():');
+      console.log('registeredUser:', registeredUser);
+      console.log('register.service.ts, registerUser()^');
+      console.log('');
 
-       await em.persistAndFlush(registeredUser);
-       return registeredUser;
+      await em.persistAndFlush(registeredUser);
+      return registeredUser;
    } catch (ex) {
-       return ex;
+      return ex;
    }
 }

@@ -8,13 +8,5 @@ class Constants {
       {
          REGISTER_URL: environment.REGISTER_URL,
          LOGIN_URL: environment.LOGIN_URL,
-         AUTH_URL: '/auth',
-         LOGOUT_REDIRECT_URL: '/auth',
-
-         FOODS_BASE_URL: '/api/foods',
-         FOODS_SERACH_URL: '/search?name=',
-
-         MEALS_BASE_URL: '/api/meals',
-         MEALS_SEARCH_URL: '/api/meals/search/'
       };
 }

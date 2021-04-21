@@ -13,12 +13,13 @@ import { IExpressRequest } from './interfaces/IExpressRequest';
 import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
 import entities from './entities';
 
-import { ERROR_CODES, STATUS_CODES } from './common';
+import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
 
 import { setUserRoute } from './routes/users.route';
 // Authentication:
 import { setRegisterRoute } from './routes/register.route';
 import { setLoginRoute } from './routes/login.route';
+import { log } from './shared/Logger';
 
 let app: Application;
 
@@ -47,7 +48,7 @@ async function makeApp(): Promise<Application> {
     }
   );
 
-  console.log('env:', env);
+  log('app.ts', makeApp.name, 'env:', env);
 
   // middleware
   app.use(express.urlencoded({ extended: false }));
@@ -61,7 +62,7 @@ async function makeApp(): Promise<Application> {
   // 404
   app.use(
     (_req: Request, _res: Response, next: NextFunction) => {
-      const err = new Error(ERROR_CODES.NOT_FOUND) as IExpressError;
+      const err = new Error(ERROR_MESSAGES.NOT_FOUND) as IExpressError;
       err.status = STATUS_CODES.NOT_FOUND;
       next(err);
     }

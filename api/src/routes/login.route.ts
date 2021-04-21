@@ -4,9 +4,10 @@ import { User } from '../entities/user.entity';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
 import { decryptPassword } from '../services/password.service';
-import { ERROR_CODES, STATUS_CODES } from '../common';
 import { IAuthResponseData } from 'foodspy-shared';
 import { AuthResponseData } from '../models/AuthResponseData';
+import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
+import { log } from '../shared/Logger';
 
 export { setLoginRoute };
 
@@ -26,7 +27,7 @@ async function loginUser(
     next: NextFunction
 ) {
     if (!req.em || !(req.em instanceof EntityManager)) {
-        console.log(`ERROR: login.route.ts, loginUser(): req.em is not instanceof EntityManager`);
+        log('login.route.ts', loginUser.name, 'req.em is not instanceof EntityManager');
         return next(Error('EntityManager not available'));
     }
 
@@ -48,8 +49,9 @@ async function loginUser(
 
         if (!response) {
             const userDoesNotExistError: Error = new Error;
-            userDoesNotExistError.name = ERROR_CODES.NO_ACCOUNT;
+            userDoesNotExistError.name = ERROR_MESSAGES.NO_ACCOUNT;
             userDoesNotExistError.message = 'No account found!';
+
             return res.status(STATUS_CODES.NOT_FOUND).json(userDoesNotExistError);
         }
 
@@ -72,7 +74,7 @@ async function loginUser(
                 return res.status(200).json(authResponseData);
             } else {
                 const wrongPasswordError: Error = new Error;
-                wrongPasswordError.name = ERROR_CODES.WRONG_PASSWORD;
+                wrongPasswordError.name = ERROR_MESSAGES.WRONG_PASSWORD;
                 wrongPasswordError.message = 'Wrong e-mail or password!';
                 return res.status(STATUS_CODES.UNAUTHORIZED).json(wrongPasswordError);
             }

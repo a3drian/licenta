@@ -3,7 +3,10 @@ import { EntityManager } from '@mikro-orm/core';
 import { User } from '../entities/user.entity';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
 import * as userService from '../services/users.service';
-import { STATUS_CODES } from '../common';
+import { STATUS_CODES } from 'foodspy-shared';
+import { log } from '../shared/Logger';
+
+const CLASS_NAME = 'users.route.ts';
 
 export { setUserRoute };
 
@@ -25,7 +28,7 @@ async function getUsers(
    next: NextFunction
 ) {
    if (!req.em || !(req.em instanceof EntityManager)) {
-      console.log(`ERROR: users.route.ts, postUser(): req.em is not instanceof EntityManager`);
+      log(CLASS_NAME, getUsers.name, 'req.em is not instanceof EntityManager');
       return next(Error('EntityManager not available'));
    }
 
@@ -58,7 +61,7 @@ async function postUser(
    next: NextFunction
 ) {
    if (!req.em || !(req.em instanceof EntityManager)) {
-      console.log(`ERROR: users.route.ts, postUser(): req.em is not instanceof EntityManager`);
+      log(CLASS_NAME, postUser.name, 'req.em is not instanceof EntityManager');
       return next(Error('EntityManager not available'));
    }
 

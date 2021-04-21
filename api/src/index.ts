@@ -1,8 +1,8 @@
 import { env } from './env';
 import { makeApp } from './app';
-import { log } from './log';
 
 import { Application } from 'express';
+import { log } from './shared/Logger';
 
 makeApp()
 	.then(
@@ -10,15 +10,15 @@ makeApp()
 			app.listen(
 				env.PORT,
 				() => {
-					console.log('connected to MongoDB');
-					log(`${env.NODE_ENV} server listening on port ${env.PORT}`);
+					log('index.ts', 'makeApp().then().app.listen', 'connected to MongoDB');
+					log('index.ts', 'makeApp().then().app.listen', `${env.NODE_ENV} server listening on port ${env.PORT}`);
 				}
 			)
 	)
 	.catch(
 		(error: any) => {
-			log(`(index.ts) error: ${error}`);
+			log('index.ts', 'makeApp().catch()', `(index.ts) error: ${error}`);
 		}
 	);
 
-log('');
+log('index.ts', 'global call', '');
