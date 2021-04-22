@@ -215,16 +215,66 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.populateMeal();
-    /*
+
+    let mealId: string = '';
     this.meal.createdAt = this.today;
+
+    // TO DO: existing meal
+
     this.mealsService
       .addMeal(this.meal)
-      .subscribe();
-    */
+      .subscribe(
+        (addedMeal) => {
+          log('add-meal.component.ts', this.onSubmit.name, 'addedMeal:', addedMeal);
+          log('add-meal.component.ts', this.onSubmit.name, 'addedMeal.id:', addedMeal.id);
+          mealId = addedMeal.id;
+        },
+        (error) => {
+          log('add-meal.component.ts', this.onSubmit.name, 'this.mealsService.addMeal.subscribe(error) error:', error);
+        }
+      );
 
-    this.meal.createdAt = this.today;
-    this.intake.meals.push(this.meal);
+    setTimeout(() => {
+      if (!mealId) {
+        log('add-meal.component.ts', this.onSubmit.name, '!mealId, mealId:', mealId);
+        return;
+      }
+    }, 500);
 
+    let mealFromDb: IMeal = <IMeal>{};
+    setTimeout(() => {
+
+      this.mealsService
+        .getMealById(mealId)
+        .subscribe(
+          (mealById) => {
+            log('add-meal.component.ts', this.onSubmit.name, 'mealById:', mealById);
+            mealFromDb = mealById;
+          },
+          (error) => {
+            log('add-meal.component.ts', this.onSubmit.name, 'this.mealsService.getMealById.subscribe(error) error:', error);
+          }
+        );
+
+    }, 1000);
+
+    setTimeout(() => {
+      if (!mealFromDb.id) {
+        log('add-meal.component.ts', this.onSubmit.name, '!mealFromDb, mealFromDb:', mealFromDb);
+        log('add-meal.component.ts', this.onSubmit.name, '!mealFromDb.id, mealFromDb.id:', mealFromDb.id);
+        // return;
+      }
+    }, 1500);
+
+    setTimeout(() => {
+      this.meal = mealFromDb;
+      this.intake.meals.push(this.meal);
+
+      log('add-meal.component.ts', this.onSubmit.name, 'Adding mealFromDb to this.intake, mealFromDb:', mealFromDb);
+
+    }, 3000);
+
+    /*
     if (this.existingIntake) {
       log('add-meal.component.ts', this.onSubmit.name, 'Editing existing intake, this.intake:', this.intake);
       this.intakesService
@@ -236,6 +286,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
         .addIntake(this.intake)
         .subscribe();
     }
+    */
   }
 
   canShowIntakeHistoryButton(): boolean {

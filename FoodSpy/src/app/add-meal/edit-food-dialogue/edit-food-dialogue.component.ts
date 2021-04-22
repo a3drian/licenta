@@ -16,6 +16,9 @@ export class EditFoodDialogueComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
+  defaultQuantity: number = 100;
+  defaultUnit: string = 'grams';
+
   editFoodForm: FormGroup;
 
   units: string[] = [];
@@ -30,10 +33,10 @@ export class EditFoodDialogueComponent implements OnInit {
       .group(
         {
           quantity: [
-            100,
+            this.defaultQuantity,
             [Validators.required, positiveIntegerValidator()]
           ],
-          unit: ['', Validators.required]
+          unit: [this.defaultUnit, Validators.required]
         }
       );
   }

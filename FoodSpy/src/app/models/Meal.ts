@@ -3,6 +3,7 @@ import { IMeal } from 'foodspy-shared';
 
 export class Meal implements IMeal {
 
+   id!: string;
    type!: string;
    foods!: IFood[];
    createdAt?: Date | undefined;

@@ -43,7 +43,7 @@ export class MealsService {
          .pipe(
             tap(
                () => {
-                  log('meals.service.ts', 'addMeal(meal: IMeal)', `Item '${meal.type}' was created!`);
+                  log('meals.service.ts', 'addMeal(meal: IMeal)', `Meal of type '${meal.type}' was created!`);
                }
             )
          );

@@ -145,7 +145,7 @@ namespace FoodSpyAPI.Services
 			DateTime endDate = beginDate.AddDays(1);
 
 			string sortOrderName = Enum.GetName(typeof(SortOrder), sortOrder);
-			_logger.LogInformation($"Searching by email of '{email}', created at of '{createdAt}' and sort order '{sortOrderName}' ...");
+			_logger.LogInformation($"Searching by email of '{email}', created at '{createdAt}' and sort order '{sortOrderName}' ...");
 
 			string SORT_BY_DATE = nameof(Intake.CreatedAt);
 			SortDefinition<Intake> sortDefinition = sortOrder == SortOrder.Descending ?

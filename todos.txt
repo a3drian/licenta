@@ -1,0 +1,12 @@
+-salvez mai intai un meal
+-iau id-ul acelui meal
+-ii fac embed in intake-ul in care am nevoie de el
+
+1. trebuie avut grija sa se faca ori "add" ori "update" pe meal
+	a. trebuie avut grija sa se faca "add" daca schimba "type"-ul meal-ului
+	b. trebuie avut grija sa se faca "update" daca ramane in acelasi "type", lunch, snack, etc.
+
+-update with Intake on the frontend so that a new Intake is added from "/add"
+-(?) do I need "authService" everywhere I need the authenticated user?
+-add AuthGuards from tutorial
+-fix "meals" with "email" property (cred ca sunt intrari in db cu "email" si de aia da fail)
