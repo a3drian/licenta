@@ -33,8 +33,7 @@ export class MealsService {
 
    // ADD
    addMeal(meal: IMeal): Observable<IMeal> {
-      log('meals.service.ts', 'addMeal(meal: IMeal)', '');
-
+      
       const request = this.http
          .post<IMeal>(
             this.BASE_URL,

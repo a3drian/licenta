@@ -1,6 +1,6 @@
 import { Constants } from './Constants';
 
-export { log }
+export { log };
 const log = function (
    className: string,
    caller: string,
@@ -8,6 +8,9 @@ const log = function (
    object?: any
 ) {
    if (Constants.IN_DEBUG_MODE) {
+      if (!(caller.includes('(') || caller.includes(')'))) {
+         caller = caller + '()';
+      }
       if (object) {
          console.log(`${className}.${caller}: ${message}`, object);
       } else {
