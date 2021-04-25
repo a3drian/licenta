@@ -31,9 +31,9 @@ export class MealsService {
       return this.meals;
    }
 
-   // ADD
+   // ADD (POST)
    addMeal(meal: IMeal): Observable<IMeal> {
-      
+
       const request = this.http
          .post<IMeal>(
             this.BASE_URL,
@@ -66,4 +66,20 @@ export class MealsService {
       return request;
    }
 
+   // EDIT (PUT)
+   editMeal(meal: IMeal): Observable<IMeal> {
+      const url = `${this.BASE_URL}/${meal.id}`;
+      log('meal.service.ts', this.editMeal.name, 'url:', url);
+
+      const request = this.http.put<IMeal>(url, meal)
+         .pipe(
+            tap(
+               () => {
+                  log('meal.service.ts', this.editMeal.name, `Meal '${meal.id}' was edited!`);
+               }
+            )
+         );
+
+      return request;
+   }
 }

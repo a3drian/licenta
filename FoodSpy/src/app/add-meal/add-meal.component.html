@@ -17,7 +17,7 @@
 <form [formGroup]="addMealForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
         <mat-label>Select meal type</mat-label>
-        <mat-select formControlName="mealType">
+        <mat-select formControlName="mealType" (selectionChange)="onSelectedMealType($event)">
             <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
                 {{ mealType }}
             </mat-option>
