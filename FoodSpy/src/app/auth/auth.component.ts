@@ -80,7 +80,13 @@ export class AuthComponent {
                     log('auth.component', this.onSubmit.name, 'Response data for log in / sign up request:', responseData);
                     this.isLoading = false;
                     // navigation from inside the code, not from inside the template
-                    this.router.navigate([this.DASHBOARD_URL]);
+                    this.router
+                        .navigate([this.DASHBOARD_URL])
+                        .catch(
+                            (error) => {
+                                log('add-meal.component.ts', this.onSubmit.name, `Could not navigate to: ${this.DASHBOARD_URL}`, error);
+                            }
+                        );
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
                 (errorMessage) => {

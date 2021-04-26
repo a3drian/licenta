@@ -64,7 +64,14 @@ export class IntakesComponent implements OnInit {
   viewIntakeDetails(intakeId: string): void {
     log('intakes.ts', this.viewIntakeDetails.name, `Attempting to access intake with id: '${intakeId}'`);
     if (this.isAuthenticated) {
-      this.router.navigate([`/history/${intakeId}`]);
+      const url: string = `/history/${intakeId}`;
+      this.router
+        .navigate([url])
+        .catch(
+          (error) => {
+            log('add-meal.component.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}`, error);
+          }
+        );
     } else {
       log('intakes.ts', this.viewIntakeDetails.name, 'User is not authenticated!');
     }
@@ -72,7 +79,14 @@ export class IntakesComponent implements OnInit {
 
   addNewMeal(): void {
     if (this.isAuthenticated) {
-      this.router.navigate(['dashboard/add']);
+      const url: string = 'dashboard/add';
+      this.router
+        .navigate([url])
+        .catch(
+          (error) => {
+            log('add-meal.component.ts', this.addNewMeal.name, `Could not navigate to: ${url}`, error);
+          }
+        );
     } else {
       log('intakes.ts', this.addNewMeal.name, 'User is not authenticated!');
     }

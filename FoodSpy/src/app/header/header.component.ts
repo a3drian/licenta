@@ -41,7 +41,13 @@ export class HeaderComponent implements OnInit {
   }
 
   logIn(): void {
-    this.router.navigate([Constants.APIEndpoints.AUTH_URL])
+    this.router
+      .navigate([Constants.APIEndpoints.AUTH_URL])
+      .catch(
+        (error) => {
+          log('add-meal.component.ts', this.logIn.name, `Could not navigate to: ${Constants.APIEndpoints.AUTH_URL}`, error);
+        }
+      );
   }
 
 }

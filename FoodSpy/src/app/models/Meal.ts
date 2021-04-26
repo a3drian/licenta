@@ -7,6 +7,7 @@ export class Meal implements IMeal {
    type!: string;
    foods!: IFood[];
    createdAt?: Date | undefined;
+   modifiedAt?: Date | undefined;
 
    public constructor(partial?: Partial<Meal>) {
       Object.assign(this, partial);

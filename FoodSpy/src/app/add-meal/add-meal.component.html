@@ -102,5 +102,10 @@
 <div *ngIf="isInDebugMode">
     <p>Form value:<br>{{ addMealForm.value | json }}</p>
     <p>Form status:<br>{{ addMealForm.status }}</p>
-    <p>{{ meal | json }}</p>
+    <p><b>meal</b>: {{ meal | json }}</p>
+    <p><b>addedFoods</b>: {{ addedFoods | json }}</p>
+    <p><b>existingMealInIntake</b>: {{ existingMealInIntake | json }}</p>
+    <p><b>existingMealTypes</b>: {{ existingMealTypes | json }}</p>
+    <p><b>selectedMealType</b>: {{ selectedMealType | json }}</p>
+    <p><b>intakeText</b>: {{ intakeText | json }}</p>
 </div>
