@@ -47,6 +47,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
   existingIntake: boolean = false;
   intakeText: string = '';
 
+  existingMealInIntake: boolean = false;
+  existingMealTypes: string[] = [];
+  selectedMealType: string = '';
+
   databaseFoods: IFood[] = [];
   addedFoods: IFood[] = [];
   foodsColumns: string[] = [
@@ -101,6 +105,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
             log('add-meal.ts', this.ngOnInit.name, '(intake) intake:', intake);
             this.intake = intake;
             this.existingIntake = true;
+            this.existingMealInIntake = true;
+            this.intake.meals.forEach((existingMeal: IMeal) => { this.existingMealTypes.push(existingMeal.type) });
+            log('add-meal.ts', this.ngOnInit.name, '(intake) this.existingMealTypes:', this.existingMealTypes);
             this.intakeId = intake.id;
             this.changeIntakeText();
           } else {
@@ -177,13 +184,14 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   isFormValid(): boolean {
     const validForm = this.addMealForm.valid;
-    const validFoods = this.meal.foods.length !== 0;
+    const validFoods = this.addedFoods.length !== 0;
     return validForm && validFoods;
   }
 
   onSelectedMealType(event: MatSelectChange) {
     const mealType: string = event.value;
     log('add-meal.component.ts', this.onSelectedMealType.name, 'mealType:', mealType);
+    this.selectedMealType = mealType;
     this.meal.type = mealType;
   }
 
@@ -202,36 +210,110 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .subscribe(
         (food: IFood) => {
           if (food) {
-            this.addFoodFromDialogueToMeal(food);
+            this.addFoodFromDialogueToFoodsArray(food);
           }
         }
       )
   }
 
-  addFoodFromDialogueToMeal(food: IFood): void {
-    log('add-meal.component.ts', this.addFoodFromDialogueToMeal.name, 'Food from dialogue:', food);
+  addFoodFromDialogueToFoodsArray(food: IFood): void {
+    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'Food from dialogue:', food);
     this.addedFoods.push(food);
-    log('add-meal.component.ts', this.addFoodFromDialogueToMeal.name, 'Added foods []:', this.addedFoods);
-    this.populateMeal();
+    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added foods []:', this.addedFoods);
   }
 
   private populateMeal(): void {
     const mealFromForm = this.addMealForm.value;
-    // this.meal.type = mealFromForm.mealType ? mealFromForm.mealType : '';
-    this.addedFoods.forEach(
-      (addedFood: IFood) => {
-        this.meal.foods.push(addedFood);
-      }
-    );
+    this.meal.foods = this.addedFoods;
     this.meal.createdAt = this.today;
     log('add-meal.component.ts', this.populateMeal.name, 'mealFromForm:', mealFromForm);
-    log('add-meal.component.ts', this.populateMeal.name, 'this.meal', this.meal);
+    log('add-meal.component.ts', this.populateMeal.name, 'this.meal:', this.meal);
+  }
+
+  private async getMealById(mealId: string): Promise<IMeal> {
+    const mealById = await this.mealsService
+      .getMealById(mealId)
+      .toPromise()
+      .catch(
+        (error) => {
+          log('add-meal.component.ts', this.onSubmit.name, 'this.mealsService.getMealById.catch(error) error:', error);
+        }
+      );
+
+    if (!mealById) {
+      log('add-meal.component.ts', this.onSubmit.name, '!mealById');
+      return <IMeal>{};
+    }
+
+    return mealById;
+  }
+
+  private async editMealById(meal: IMeal): Promise<IMeal> {
+    const editedMeal = await this.mealsService
+      .editMeal(meal)
+      .toPromise()
+      .catch(
+        (error) => {
+          log('add-meal.component.ts', this.editMealById.name, 'this.mealsService.addMeal.catch(error) error:', error);
+        }
+      );
+
+    if (!editedMeal) {
+      log('add-meal.component.ts', this.editMealById.name, '!editedMeal');
+      return <IMeal>{};
+    }
+
+    const mealId: string = editedMeal.id;
+    if (!mealId) {
+      log('add-meal.component.ts', this.editMealById.name, '!mealId');
+      return <IMeal>{};
+    }
+
+    return await this.getMealById(mealId);
   }
 
   async onSubmit(): Promise<void> {
     this.populateMeal();
 
     // TO DO: existing meal
+    if (this.existingMealInIntake) {
+      // need to check against meal types => edit Meal
+      if (this.existingMealTypes.includes(this.selectedMealType)) {
+
+        // same meal type => edit Meal => embed in Intake => edit Intake
+        log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with the same meal type, this.selectedMealType:', this.selectedMealType);
+
+        // need to loop through all existing meals to find the one which matches our soon to be added new meal
+        let mealToBeEdited: IMeal = <IMeal>{};
+        const existingMeals: IMeal[] = this.intake.meals;
+        existingMeals.forEach(
+          (existingMeal) => {
+            if (existingMeal.type === this.selectedMealType) {
+              mealToBeEdited = existingMeal;
+            }
+          }
+        );
+
+        // concatenate the two foods arrays
+        mealToBeEdited.foods = [...mealToBeEdited.foods, ...this.meal.foods];
+        log('add-meal.component.ts', this.onSubmit.name, 'Concatenation, mealToBeEdited.foods:', mealToBeEdited.foods);
+
+        const mealFromDb: IMeal = await this.getMealById(mealToBeEdited.id);
+        log('add-meal.component.ts', this.onSubmit.name, 'Before, mealById:', mealFromDb);
+
+        const editedMealFromDb: IMeal = await this.editMealById(mealToBeEdited);
+        log('add-meal.component.ts', this.onSubmit.name, 'After, editedMealById:', editedMealFromDb);
+
+        this.meal.foods = editedMealFromDb.foods;
+      } else {
+        log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a different meal type, this.selectedMealType:', this.selectedMealType);
+        // different meal type => new Meal => embed in Intake => edit Intake
+      }
+    } else {
+      // need to add a new meal type
+    }
+
+    /*
     const addedMeal = await this.mealsService
       .addMeal(this.meal)
       .toPromise()
@@ -266,16 +348,17 @@ export class AddMealComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const mealFromDb: IMeal = mealById;
     if (!mealFromDb.id) {
       log('add-meal.component.ts', this.onSubmit.name, '!mealFromDb.id');
       return;
     }
+    */
 
-    this.meal = mealFromDb;
+    //  const mealFromDb: IMeal = mealById;
+    // this.meal = mealFromDb;
     this.intake.meals.push(this.meal);
 
-    log('add-meal.component.ts', this.onSubmit.name, 'Adding mealFromDb to this.intake, mealFromDb:', mealFromDb);
+    // log('add-meal.component.ts', this.onSubmit.name, 'Adding mealFromDb to this.intake, mealFromDb:', mealFromDb);
 
     /*
     if (this.existingIntake) {
@@ -290,6 +373,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
         .subscribe();
     }
     */
+    this.router.navigate(['/dashboard']);
   }
 
   canShowIntakeHistoryButton(): boolean {
@@ -306,7 +390,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
       this.intakeText = 'No meals added today.';
     } else {
       const meals: string = this.intake.meals.length === 1 ? 'one meal' : `${this.intake.meals.length} meals`;
-      console.log('this.intake.meals:', this.intake.meals);
+      log('add-meal.component.ts', this.changeIntakeText.name, 'this.intake.meals:', this.intake.meals);
       this.intake.meals.forEach(element => {
         log('add-meal.component.ts', this.changeIntakeText.name, 'element:', element);
       });

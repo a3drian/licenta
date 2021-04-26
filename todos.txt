@@ -8,7 +8,7 @@
 -daca nu ai Intake pe ziua respectiva => existingMeal = false
 -daca ai Intake => daca ai acelasi "type" => existingMeal = true
 		   daca nu ai acelasi type => existingMeal = false
--sa se faca un refresh pe pagina dupa "Edit qty and add to meal" =>
+-sa se faca un refresh pe pagina dupa "Add meal" =>
 	1. se creeaza un nou Intake => ai deja un Meal sub Intake =>
 	   cand dai "Add new meal" a doua oara:
 		a. daca ai acelasi "type" cand dai "onSubmit()"  => existingMeal = true
@@ -20,6 +20,7 @@
 -cazul 	1. nu ai Intake => nu ai niciun Meal => un nou Meal => embed in Intake => un nou Intake
 	2. ai Intake, dar nu exista acelasi Meal.type => un nou Meal => embed in Intake => editezi Intake existent
 	3. ai Intake, dar exista acelasi Meal.type => editezi Meal existent => embed in Intake => editezi Intake existent
+-need to fix "intakeText" and "canShowIntakeHistoryButton()" (?)
 
 -update with Intake on the frontend so that a new Intake is added from "/add"
 -(?) do I need "authService" everywhere I need the authenticated user?
