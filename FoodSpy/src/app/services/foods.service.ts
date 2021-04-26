@@ -25,7 +25,7 @@ export class FoodsService {
       foodName = ''
    ): Observable<IFood[] | null> {
 
-      let params = new HttpParams()
+      const params = new HttpParams()
          .set('name', foodName.toString());
 
       return this.http

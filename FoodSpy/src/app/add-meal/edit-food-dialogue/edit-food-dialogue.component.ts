@@ -54,7 +54,7 @@ export class EditFoodDialogueComponent implements OnInit {
 
   saveEditedFood(): void {
     if (this.isFormValid()) {
-      const editedFood = new Food(this.food);
+      const editedFood: IFood = new Food(this.food);
       // need an auxiliary variable to not modify the entry in the table
       const foodFromForm = this.editFoodForm.value;
       editedFood.quantity = foodFromForm.quantity;

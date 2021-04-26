@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IntakesService } from '../services/intakes.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { IIntake } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
 import { Constants } from '../shared/Constants';
@@ -8,6 +8,7 @@ import { UserService } from '../auth/user.service';
 import { IUser } from 'foodspy-shared';
 import { log } from '../shared/Logger';
 import { STATUS_CODES } from 'foodspy-shared';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-intake-history',
@@ -34,13 +35,14 @@ export class IntakeHistoryComponent implements OnInit {
     private userService: UserService
   ) {
     this.activatedRoute.params.subscribe(
-      (params) => {
+      (params: Params) => {
         log('intake-history.ts', 'constructor()', 'params:', params);
         this.intakeId = params.id ? params.id : '0';
       }
     );
 
     if (this.intakeId === '0') {
+      log('intake-history.ts', 'constructor()', 'this.intakeId === 0');
     } else {
       this.intakesService
         .getIntakeById(this.intakeId)
@@ -50,7 +52,7 @@ export class IntakeHistoryComponent implements OnInit {
             this.idNotFound = false;
             log('intake-history.ts', 'constructor()', '(data), this.idNotFound:', this.idNotFound);
           },
-          (error) => {
+          (error: HttpErrorResponse) => {
             log('intake-history.ts', 'constructor()', '(error), error:', error);
             if (error.status === STATUS_CODES.NOT_FOUND) {
               this.idNotFound = true;
