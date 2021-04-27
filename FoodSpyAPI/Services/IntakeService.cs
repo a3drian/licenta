@@ -56,7 +56,7 @@ namespace FoodSpyAPI.Services
 		/// </returns>
 		public async Task<Intake> AddIntake(Intake intake)
 		{
-			_logger.LogInformation($"Adding new intake...\n{intake}");
+			_logger.LogInformation($"Adding new intake...\n\t{intake}");
 
 			await _intakes.InsertOneAsync(intake);
 			return intake;
@@ -129,7 +129,7 @@ namespace FoodSpyAPI.Services
 
 			_logger.LogInformation($"Intakes with email: '{email}' ...");
 			foreach (Intake intake in intakesList) {
-				_logger.LogInformation($"Intake: {intake}\n");
+				_logger.LogInformation($"Intake: \t{intake}\n");
 			}
 
 			return intakesList;

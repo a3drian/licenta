@@ -1,8 +1,13 @@
 <p *ngIf="isInDebugMode"><b>meal-item</b> works!</p>
 
+<p *ngIf="isInDebugMode">
+   Meal ID:
+   {{ meal.id }}
+</p>
+
 <p>
    Meal type:
-   {{ meal.type }}
+   <b>{{ meal.type }}</b>
 </p>
 
 <p>

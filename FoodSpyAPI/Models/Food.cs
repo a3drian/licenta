@@ -33,14 +33,14 @@ namespace FoodSpyAPI.Models
 		}
 		public override string ToString()
 		{
-			string output = "{" + "\n";
+			string output = "{";
 
-			output += $"\t Id: {Id} \n";
-			output += $"\t Name: {Name} \n";
-			output += $"\t Quantity: {Quantity} \n";
-			output += $"\t Unit: {Unit} \n";
+			output += $" Id: {Id}" + ",";
+			output += $" Name: {Name}" + ",";
+			output += $" Quantity: {Quantity}" + ",";
+			output += $" Unit: {Unit}" + " ";
 
-			output += "}" + "\n";
+			output += "}";
 
 			return output;
 		}

@@ -35,17 +35,17 @@ namespace FoodSpyAPI.Models
 		}
 		public override string ToString()
 		{
-			string output = "{" + "\n";
+			string output = "{" + " ";
 
-			output += $"\t Id: {Id} \n";
-			output += $"\t Email: {Email} \n";
-			output += $"\t CreatedAt: {CreatedAt} \n";
-			output += $"\t Meals: \n";
+			output += $" Id: {Id}" + ",";
+			output += $" Email: {Email}" + ",";
+			output += $" CreatedAt: {CreatedAt}" + ",";
+			output += $" Meals:" + "\n";
 			foreach (Meal meal in Meals) {
-				output += $"\t Meal: {meal} \n";
+				output += $"\t\t Meal: {meal} \n";
 			}
 
-			output += "}" + "\n";
+			output += "\t" + "} :Intake" + "\n";
 
 			return output;
 		}
