@@ -14,7 +14,11 @@
             "/src/*": "${webRoot}/*",
             "/*": "*",
             "/./~/*": "${webRoot}/node_modules/*"
-         }
+         },
+         "skipFiles": [
+            "${workspaceRoot}/node_modules/**/*.js",
+            "<node_internals>/**/*.js"
+         ]
       },
       {
          "name": "ng test",

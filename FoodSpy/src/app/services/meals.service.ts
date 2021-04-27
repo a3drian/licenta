@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+// rxjs:
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+// Interfaces:
 import { IMeal } from 'foodspy-shared';
-import { ISearchOptions } from '../interfaces/searchOptions/ISearchOptions';
 import { Meal } from '../models/Meal';
-import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
-import { log } from '../shared/Logger';
+// Shared:
 import { Constants } from '../shared/Constants';
+import { log } from '../shared/Logger';
 
 @Injectable({
    providedIn: 'root'
@@ -17,15 +18,16 @@ export class MealsService {
    readonly BASE_URL: string = Constants.APIEndpoints.MEALS_BASE_URL;
    readonly SEARCH_URL: string = Constants.APIEndpoints.MEALS_SEARCH_URL;
 
-   meals: IMeal[] =
-      [
+   meals: IMeal[] = [];
+
+   constructor(private http: HttpClient) {
+      this.meals = [
          new Meal({ type: 'Breakfast' }),
          new Meal({ type: 'Lunch' }),
          new Meal({ type: 'Dinner' }),
          new Meal({ type: 'Snack' })
       ];
-
-   constructor(private http: HttpClient) { }
+   }
 
    getMealTypes(): IMeal[] {
       return this.meals;

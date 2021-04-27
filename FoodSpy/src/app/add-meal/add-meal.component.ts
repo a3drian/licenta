@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
 // Item filtering:
-import { Observable, pipe, Subject } from 'rxjs';
+import { Observable, pipe, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 // Services:
 import { FoodsService } from '../services/foods.service';
@@ -52,6 +52,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   selectedMealType: string = '';
 
   DASHBOARD_URL: string = '/dashboard';
+  ADD_MEAL_URL: string = this.DASHBOARD_URL + '/add';
 
   databaseFoods: IFood[] = [];
   addedFoods: IFood[] = [];
@@ -64,7 +65,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   ];
   mealTypes: string[] = [];
 
-  dialogueSubscription: any;
+  dialogueSubscription: Subscription = new Subscription();
   today: Date = new Date();
 
   constructor(
@@ -111,16 +112,16 @@ export class AddMealComponent implements OnInit, OnDestroy {
             this.intake.meals.forEach((existingMeal: IMeal) => { this.existingMealTypes.push(existingMeal.type) });
             log('add-meal.ts', this.ngOnInit.name, '(intake) this.existingMealTypes:', this.existingMealTypes);
             this.intakeId = intake.id;
-            this.changeIntakeText();
           } else {
             this.initializeIntake();
             log('add-meal.ts', this.ngOnInit.name, '(!intake) this.intake:', this.intake);
           }
+          this.changeIntakeText();
         },
         (error) => {
-          log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error):', error);
+          log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error), error:', error);
           this.initializeIntake();
-          log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error) this.intake:', this.intake);
+          log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error), this.intake:', this.intake);
         }
       );
 
@@ -185,8 +186,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   isFormValid(): boolean {
-    const validForm = this.addMealForm.valid;
-    const validFoods = this.addedFoods.length !== 0;
+    const validForm: boolean = this.addMealForm.valid;
+    const validFoods: boolean = this.addedFoods.length !== 0;
     return validForm && validFoods;
   }
 
@@ -214,7 +215,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
             this.addFoodFromDialogueToFoodsArray(food);
           }
         }
-      )
+      );
   }
 
   addFoodFromDialogueToFoodsArray(food: IFood): void {
@@ -236,12 +237,22 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.meal.foods = mealFromDb.foods;
   }
 
-  private navigateToDashboard(caller: string): void {
+  private reloadPage(caller: string): void {
+    // reloads the page by navigating silently to 'dashboard'
     this.router
-      .navigate([this.DASHBOARD_URL])
+      .navigateByUrl(this.DASHBOARD_URL, { skipLocationChange: true })
+      .then(() => {
+        this.router
+          .navigate([this.ADD_MEAL_URL])
+          .catch(
+            (error) => {
+              log('add-meal.component.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.ADD_MEAL_URL}`, error);
+            }
+          );
+      })
       .catch(
         (error) => {
-          log('add-meal.component.ts', this.navigateToDashboard.name, `Called from '${caller}'. Could not navigate to: ${this.DASHBOARD_URL}`, error);
+          log('add-meal.component.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.DASHBOARD_URL}`, error);
         }
       );
   }
@@ -302,9 +313,49 @@ export class AddMealComponent implements OnInit, OnDestroy {
     return await this.getMealById(mealId);
   }
 
+  private async editMealFromIntake(): Promise<void> {
+    // need to loop through all existing meals to find the one which matches our (soon to be added) new meal
+    let mealToBeEdited: IMeal = <IMeal>{};
+    const existingMeals: IMeal[] = this.intake.meals;
+    existingMeals.forEach(
+      (existingMeal) => {
+        if (existingMeal.type === this.selectedMealType) {
+          mealToBeEdited = existingMeal;
+        }
+      }
+    );
+
+    // concatenate the two Foods[]
+    mealToBeEdited.foods = [...mealToBeEdited.foods, ...this.addedFoods];
+    log('add-meal.component.ts', this.editMealFromIntake.name, 'Concatenation, mealToBeEdited.foods:', mealToBeEdited.foods);
+
+    // get the original Meal from the db using meal.id
+    const mealFromDb: IMeal = await this.getMealById(mealToBeEdited.id);
+    log('add-meal.component.ts', this.editMealFromIntake.name, 'Before, mealById:', mealFromDb);
+
+    // add the concatenated Foods[] to the original Meal
+    const editedMealFromDb: IMeal = await this.editMealAndReturnItFromDb(mealToBeEdited);
+    log('add-meal.component.ts', this.editMealFromIntake.name, 'After, editedMealById:', editedMealFromDb);
+
+    // prepare this.meal to be embedded in the existing Intake
+    this.addIdAndFoods(editedMealFromDb);
+  }
+
+  private async addNewMealToIntake(): Promise<void> {
+    const mealToBeAdded: IMeal = <IMeal>{ type: this.selectedMealType, foods: this.addedFoods, createdAt: this.today };
+    const addedMealFromDb: IMeal = await this.addMealAndReturnItFromDb(mealToBeAdded);
+
+    // prepare this.meal to be embedded in the existing Intake
+    this.addIdAndFoods(addedMealFromDb);
+
+    // add 'Snack' alongside 'Lunch', etc. OR add 'Snack' as the first Meal of a new Intake
+    this.intake.meals.push(this.meal);
+  }
+
   async onSubmit(): Promise<void> {
     this.addTypeAndCreatedAt();
 
+    let editMeal: boolean = false;
     if (this.existingMealInIntake) {
 
       // need to check against meal types => edit Meal
@@ -339,8 +390,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
         // prepare this.meal to be embedded in the existing Intake
         this.addIdAndFoods(editedMealFromDb);
 
-        // no need to modify the existing Intake because it already contains a reference to the edited Meal
-        this.navigateToDashboard(this.onSubmit.name);
+        editMeal = true;
 
       } else {
 
@@ -358,34 +408,51 @@ export class AddMealComponent implements OnInit, OnDestroy {
       }
 
     } else {
+
       // need to add a new meal type => new Meal => embed in Intake => new Intake
-      // this.intake.meals.push(this.meal);
+      log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a different meal type, this.selectedMealType:', this.selectedMealType);
+
+      const mealToBeAdded: IMeal = <IMeal>{ type: this.selectedMealType, foods: this.addedFoods, createdAt: this.today };
+      const addedMealFromDb: IMeal = await this.addMealAndReturnItFromDb(mealToBeAdded);
+
+      // prepare this.meal to be embedded in the existing Intake
+      this.addIdAndFoods(addedMealFromDb);
+
+      // add 'Snack' alongside 'Lunch', etc.
+      this.intake.meals.push(this.meal);
     }
 
     log('add-meal.component.ts', this.onSubmit.name, 'Adding this.meal to this.intake, this.meal:', this.meal);
 
-    if (this.existingIntake) {
-      log('add-meal.component.ts', this.onSubmit.name, 'Editing existing intake, this.intake:', this.intake);
-      this.intakesService
-        .editIntake(this.intake)
-        .subscribe();
+    if (editMeal) {
+      // no need to modify the existing Intake because it already contains a reference to the edited Meal => reload page
+      this.reloadPage(this.onSubmit.name);
     } else {
-      log('add-meal.component.ts', this.onSubmit.name, 'Adding new intake, this.intake:', this.intake);
-      this.intakesService
-        .addIntake(this.intake)
-        .subscribe();
-    }
+      if (this.existingIntake) {
+        log('add-meal.component.ts', this.onSubmit.name, 'Editing existing intake, this.intake:', this.intake);
+        this.intakesService
+          .editIntake(this.intake)
+          .subscribe();
+      } else {
+        log('add-meal.component.ts', this.onSubmit.name, 'Adding new intake, this.intake:', this.intake);
+        this.intakesService
+          .addIntake(this.intake)
+          .subscribe();
+      }
 
-    this.navigateToDashboard(this.onSubmit.name);
+      this.reloadPage(this.onSubmit.name);
+    }
   }
 
   canShowIntakeHistoryButton(): boolean {
     if (!this.isLoading) {
-      // if (this.intake.meals.length === 0) {
-      return false;
-      // }
+      if (this.intake) {  // sometimes this check is made before the intake has been loaded from the db
+        if (this.intake.meals.length !== 0) {
+          return true;
+        }
+      }
     }
-    return true;
+    return false;
   }
 
   changeIntakeText(): void {

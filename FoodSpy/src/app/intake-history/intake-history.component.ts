@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { IntakesService } from '../services/intakes.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+// Interfaces:
 import { IIntake } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
-import { Constants } from '../shared/Constants';
-import { UserService } from '../auth/user.service';
 import { IUser } from 'foodspy-shared';
+// Services:
+import { IntakesService } from '../services/intakes.service';
+import { UserService } from '../auth/user.service';
+// Shared:
 import { log } from '../shared/Logger';
+import { Constants } from '../shared/Constants';
 import { STATUS_CODES } from 'foodspy-shared';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-intake-history',
@@ -58,6 +61,7 @@ export class IntakeHistoryComponent implements OnInit {
               this.idNotFound = true;
             }
             log('intake-history.ts', 'constructor()', '(error) this.idNotFound:', this.idNotFound);
+            this.isLoading = false;
           }
         );
     }

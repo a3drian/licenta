@@ -1,10 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+// rxjs:
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+// Interfaces:
 import { IIntake } from 'foodspy-shared';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
 import { SearchByEmailAndDate } from '../models/searchOptions/SearchByEmailAndDate';
+// Shared:
 import { log } from '../shared/Logger';
 import { STATUS_CODES } from 'foodspy-shared';
 
@@ -74,9 +77,9 @@ export class IntakesService {
    // Get intakes by e-mail
    getIntakesByEmail(
       email: string
-   ) {
+   ): Observable<IIntake> {
       const request = this.http
-         .post(
+         .post<IIntake>(
             this.SEARCH_URL,
             new SearchByEmail(
                {
