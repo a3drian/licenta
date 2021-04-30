@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using FoodSpyAPI.Interfaces;
 
-namespace FoodSpyAPI.Models
+namespace FoodSpyAPI.DTOs.Models
 {
 	public class FoodModel : IFood
 	{

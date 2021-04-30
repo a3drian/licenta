@@ -2,16 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using FoodSpyAPI.Common;
-using FoodSpyAPI.DTOs;
-using FoodSpyAPI.Helpers;
-using FoodSpyAPI.Interfaces.Services;
-using FoodSpyAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.DTOs;
+using FoodSpyAPI.DTOs.Models;
+using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Interfaces.Services;
+using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Controllers
 {
@@ -19,12 +20,6 @@ namespace FoodSpyAPI.Controllers
 	[Route("api/[controller]")]
 	public class IntakesController : ControllerBase
 	{
-		#region Constants
-
-		private const string OK_RESULT = "OK";
-
-		#endregion
-
 		private readonly IIntakeService _intakeService;
 		private readonly IMapper _mapper;
 		private readonly LinkGenerator _linkGenerator;
@@ -46,7 +41,6 @@ namespace FoodSpyAPI.Controllers
 			try {
 
 				List<Intake> intakes = await _intakeService.GetIntakes();
-
 				List<IntakeModel> mappedIntakes = _mapper.Map<List<IntakeModel>>(intakes);
 				return mappedIntakes;
 
@@ -64,9 +58,9 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				ObjectResult validationResult = ValidateID(id);
-				if (!validationResult.Value.Equals(OK_RESULT)) {
-					return validationResult;
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
 				Intake intake = await _intakeService.GetIntakeById(id);
@@ -93,7 +87,7 @@ namespace FoodSpyAPI.Controllers
 			try {
 
 				ObjectResult validationResult = ValidateIntake(intake);
-				if (!validationResult.Value.Equals(OK_RESULT)) {
+				if (!validationResult.Value.Equals(ControllerValidator.OK_RESULT)) {
 					return validationResult;
 				}
 
@@ -129,14 +123,14 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				ObjectResult validationIDResult = ValidateID(id);
-				if (!validationIDResult.Value.Equals(OK_RESULT)) {
-					return validationIDResult;
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
-				ObjectResult validationResult = ValidateIntake(intake);
-				if (!validationResult.Value.Equals(OK_RESULT)) {
-					return validationResult;
+				ObjectResult validateIntake = ValidateIntake(intake);
+				if (!validateIntake.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateIntake;
 				}
 
 				Intake oldIntake = await _intakeService.GetIntakeById(id);
@@ -172,9 +166,9 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				ObjectResult validationResult = ValidateID(id);
-				if (!validationResult.Value.Equals(OK_RESULT)) {
-					return validationResult;
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
 				Intake intake = await _intakeService.GetIntakeById(id);
@@ -211,7 +205,6 @@ namespace FoodSpyAPI.Controllers
 				SortOrder sortOrder = searchQuery.SortOrder;
 
 				List<Intake> searchResults = await _intakeService.SearchIntakesByEmail(email, sortOrder);
-
 				List<IntakeModel> mappedIntakes = _mapper.Map<List<IntakeModel>>(searchResults);
 				return mappedIntakes;
 
@@ -248,11 +241,11 @@ namespace FoodSpyAPI.Controllers
 
 		#endregion
 
-		#region Private methods
+		#region Validator methods
 
 		private ObjectResult ValidateID(string id)
 		{
-			ObjectResult result = new ObjectResult(OK_RESULT);
+			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
 
 			if (!Validator.IsValidId(id)) {
 				return BadRequest($"'{nameof(id)}' parameter: '{id}' is invalid!");
@@ -266,7 +259,7 @@ namespace FoodSpyAPI.Controllers
 
 		private ObjectResult ValidateIntake(IntakeModel intake)
 		{
-			ObjectResult result = new ObjectResult(OK_RESULT);
+			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
 			if (!Validator.IsValidEmail(intake.Email)) {
 				return BadRequest($"'{nameof(intake.Email)}' is missing or is invalid!");
 			}
@@ -289,6 +282,10 @@ namespace FoodSpyAPI.Controllers
 
 			return result;
 		}
+
+		#endregion
+
+		#region Private methods
 
 		private ObjectResult LogDatabaseException(Exception e)
 		{

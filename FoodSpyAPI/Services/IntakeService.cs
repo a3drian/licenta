@@ -46,7 +46,6 @@ namespace FoodSpyAPI.Services
 
 		#region GET
 
-		// GET
 		public async Task<List<Intake>> GetIntakes()
 		{
 			_logger.LogInformation($"Fetching intakes...");
@@ -72,7 +71,6 @@ namespace FoodSpyAPI.Services
 
 		#region GET/:id
 
-		// GET/:id
 		public async Task<Intake> GetIntakeById(string id)
 		{
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
@@ -232,6 +230,7 @@ namespace FoodSpyAPI.Services
 
 			if (intake == null) {
 				// If there is no intake on the given "createdAt" date
+				_logger.LogInformation($"There are no intakes on date '{createdAt}' ...");
 				return null;
 			}
 

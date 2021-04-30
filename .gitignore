@@ -5,9 +5,19 @@ api/node_modules
 
 token.txt
 
-# foods / meals backend
+# foods / meals / intakes backend
 
 FoodSpyAPI/.vs
 FoodSpyAPI/bin
 FoodSpyAPI/obj
 FoodSpyAPI/appsettings.json
+
+FoodSpyAPIUnitTests/.vs
+FoodSpyAPIUnitTests/bin
+FoodSpyAPIUnitTests/obj
+FoodSpyAPIUnitTests/appsettings.json
+
+FoodSpyAPIIntegrationTests/.vs
+FoodSpyAPIIntegrationTests/bin
+FoodSpyAPIIntegrationTests/obj
+FoodSpyAPIIntegrationTests/appsettings.json

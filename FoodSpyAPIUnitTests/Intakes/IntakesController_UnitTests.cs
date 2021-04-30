@@ -11,6 +11,7 @@ using MongoDB.Bson;
 using Moq;
 using NUnit.Framework;
 using FoodSpyAPI.Controllers;
+using FoodSpyAPI.DTOs.Models;
 using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
 

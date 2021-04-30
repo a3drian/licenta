@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using FoodSpyAPI.DTOs.Models;
 using FoodSpyAPI.Helpers;
 using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;

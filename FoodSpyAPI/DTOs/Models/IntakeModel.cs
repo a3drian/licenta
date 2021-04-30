@@ -1,11 +1,12 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using FoodSpyAPI.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using FoodSpyAPI.Interfaces;
+using FoodSpyAPI.Models;
 
-namespace FoodSpyAPI.Models
+namespace FoodSpyAPI.DTOs.Models
 {
 	public class IntakeModel : IIntake
 	{

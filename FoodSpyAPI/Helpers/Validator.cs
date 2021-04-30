@@ -31,19 +31,42 @@ namespace FoodSpyAPI.Helpers
 			return true;
 		}
 
-		public static bool IsEmptySearchTerm(string searchTerm)
+		public static bool IsEmptyString(string str)
 		{
 			if (
-				 searchTerm == null ||
-				 string.IsNullOrWhiteSpace(searchTerm) ||
-				 searchTerm.Length == 0 ||
-				 searchTerm.All(char.IsWhiteSpace)
+				 str == null ||
+				 string.IsNullOrWhiteSpace(str) ||
+				 str.Length == 0 ||
+				 str.All(char.IsWhiteSpace)
 			) {
 				return false;
 			}
 
 			return true;
 		}
+
+		public static bool IsEmptySearchTerm(string searchTerm)
+		{
+			if (!IsEmptyString(searchTerm)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		public static bool IsValidSearchTerm(string searchTerm)
+		{
+			if (!IsEmptySearchTerm(searchTerm)) {
+				return false;
+			}
+
+			if (!(searchTerm.GetType() == typeof(string))) {
+				return false;
+			}
+
+			return true;
+		}
+
 
 		internal static bool IsValid24DigitHexString(string id)
 		{
@@ -168,6 +191,24 @@ namespace FoodSpyAPI.Helpers
 
 			DateTime createdAt = searchQuery.CreatedAt;
 			if (!IsValidDate(createdAt)) { return false; }
+
+			return true;
+		}
+
+		internal static bool IsValidMealType(string type)
+		{
+			if (!IsEmptySearchTerm(type)) {
+				return false;
+			}
+
+			if (!(type.GetType() == typeof(string))) {
+				return false;
+			}
+
+			string firstLetterUppercased = type.First().ToString().ToUpper() + type[1..].ToLower();
+
+			bool valid = Enum.IsDefined(typeof(MealType), firstLetterUppercased);
+			if (!valid) { return false; }
 
 			return true;
 		}

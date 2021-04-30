@@ -1,8 +1,9 @@
 ﻿
-using FoodSpyAPI.Models;
-using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using MongoDB.Bson;
+using FoodSpyAPI.DTOs.Models;
+using FoodSpyAPI.Models;
 
 namespace FoodSpyAPIUnitTests
 {

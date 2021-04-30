@@ -18,34 +18,43 @@ namespace FoodSpyAPI.Models
 		[Required]
 		public string Type { get; set; }
 
-		[BsonElement("foods")]
-		[Required]
-		public List<Food> Foods { get; set; }
-
 		[BsonElement("createdAt")]
 		[Required]
 		public DateTime CreatedAt { get; set; }
+
+		[BsonElement("foodIDs")]
+		[Required]
+		public List<ObjectId> FoodIDs { get; set; }
+
+		[BsonElement("foods")]
+		public List<Food> Foods { get; set; }
 
 		public Meal() { }
 		public Meal(Meal meal)
 		{
 			this.Type = meal.Type;
-			this.Foods = meal.Foods;
 			this.CreatedAt = meal.CreatedAt;
+			this.FoodIDs = meal.FoodIDs;
+			this.Foods = new List<Food>();
 		}
 		public override string ToString()
 		{
-			string output = "{";
+			string blank = "";
+			char space = ' ';
+
+			string output = $"{blank.PadLeft(5, space)} Meal: " + "{ " + "\n";
+			output += $"{blank.PadLeft(10, space)}";
 
 			output += $" Id: {Id}" + ",";
 			output += $" Type: {Type}" + ",";
-			output += $" Foods:" + "\n";
-			foreach (Food food in Foods) {
-				output += $"\t\t\t Food: {food} \n";
-			}
-			output += $"\t\t CreatedAt: {CreatedAt}" + " ";
+			output += $" CreatedAt: {CreatedAt}" + "\n";
 
-			output += "} :Meal" + "\n";
+			output += $"{blank.PadLeft(10, space)} Food IDs:" + "\n";
+			foreach (ObjectId id in FoodIDs) {
+				output += $"{blank.PadLeft(15, space)} Food ID: {id} \n";
+			}
+
+			output += $"{blank.PadLeft(5, space)}" + " } :Meal" + "\n";
 
 			return output;
 		}
