@@ -5,6 +5,13 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodSpyAPI", "FoodSpyAPI.csproj", "{861F3907-55EA-4528-8F1A-7F472DD275FC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodSpyAPIUnitTests", "..\FoodSpyAPIUnitTests\FoodSpyAPIUnitTests.csproj", "{571B8DEF-B184-4A41-87E8-85580FCDCBF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodSpyAPIIntegrationTests", "..\FoodSpyAPIIntegrationTests\FoodSpyAPIIntegrationTests.csproj", "{5FD71131-1D79-4800-9B76-22CB8D97589E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{861F3907-55EA-4528-8F1A-7F472DD275FC} = {861F3907-55EA-4528-8F1A-7F472DD275FC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +22,14 @@ Global
 		{861F3907-55EA-4528-8F1A-7F472DD275FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{861F3907-55EA-4528-8F1A-7F472DD275FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{861F3907-55EA-4528-8F1A-7F472DD275FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{571B8DEF-B184-4A41-87E8-85580FCDCBF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{571B8DEF-B184-4A41-87E8-85580FCDCBF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{571B8DEF-B184-4A41-87E8-85580FCDCBF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{571B8DEF-B184-4A41-87E8-85580FCDCBF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FD71131-1D79-4800-9B76-22CB8D97589E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FD71131-1D79-4800-9B76-22CB8D97589E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FD71131-1D79-4800-9B76-22CB8D97589E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FD71131-1D79-4800-9B76-22CB8D97589E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
