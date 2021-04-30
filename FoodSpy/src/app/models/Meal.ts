@@ -5,9 +5,10 @@ export class Meal implements IMeal {
 
    id!: string;
    type!: string;
-   foods!: IFood[];
    createdAt?: Date | undefined;
    modifiedAt?: Date | undefined;
+   foodIDs!: string[];
+   foods!: IFood[];
 
    public constructor(partial?: Partial<Meal>) {
       Object.assign(this, partial);
