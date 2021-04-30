@@ -18,22 +18,5 @@ namespace FoodSpyAPI.Models
 		[BsonElement("foods")] public List<Food> Foods { get; set; }
 
 		[BsonElement("createdAt")] public DateTime CreatedAt { get; set; }
-
-		public override string ToString()
-		{
-			string output = "{" + "\n";
-
-			output += $"\t Id: {Id} \n";
-			output += $"\t Type: {Type} \n";
-			output += $"\t Foods: \n";
-			foreach (Food food in Foods) {
-				output += $"\t Food: {food} \n";
-			}
-			output += $"\t CreatedAt: {CreatedAt} \n";
-
-			output += "}" + "\n";
-
-			return output;
-		}
 	}
 }

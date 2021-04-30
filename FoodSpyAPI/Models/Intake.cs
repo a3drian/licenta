@@ -22,30 +22,39 @@ namespace FoodSpyAPI.Models
 		[Required]
 		public DateTime CreatedAt { get; set; }
 
-		[BsonElement("meals")]
+		[BsonElement("mealIDs")]
 		[Required]
+		public List<ObjectId> MealIDs { get; set; }
+
+		[BsonElement("meals")]
 		public List<Meal> Meals { get; set; }
 
 		public Intake() { }
 		public Intake(Intake intake)
 		{
 			this.Email = intake.Email;
-			this.Meals = intake.Meals;
 			this.CreatedAt = intake.CreatedAt;
+			this.MealIDs = intake.MealIDs;
+			this.Meals = new List<Meal>();
 		}
 		public override string ToString()
 		{
-			string output = "{" + " ";
+			string blank = "";
+			char space = ' ';
+
+			string output = $"{blank.PadLeft(5, space)} Intake: " + "{ " + "\n";
+			output += $"{blank.PadLeft(10, space)}";
 
 			output += $" Id: {Id}" + ",";
 			output += $" Email: {Email}" + ",";
-			output += $" CreatedAt: {CreatedAt}" + ",";
-			output += $" Meals:" + "\n";
-			foreach (Meal meal in Meals) {
-				output += $"\t\t Meal: {meal} \n";
+			output += $" CreatedAt: {CreatedAt}" + "\n";
+
+			output += $"{blank.PadLeft(10, space)} Meal IDs:" + "\n";
+			foreach (ObjectId id in MealIDs) {
+				output += $"{blank.PadLeft(15, space)} Meal ID: {id} \n";
 			}
 
-			output += "\t" + "} :Intake" + "\n";
+			output += $"{blank.PadLeft(5, space)}" + " } :Intake" + "\n";
 
 			return output;
 		}

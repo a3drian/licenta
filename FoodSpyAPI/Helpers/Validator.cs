@@ -1,6 +1,11 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.DTOs;
 
 namespace FoodSpyAPI.Helpers
 {
@@ -49,6 +54,130 @@ namespace FoodSpyAPI.Helpers
 			}
 
 			return true;
+		}
+
+		internal static bool IsValidEmail(string email)
+		{
+			if (string.IsNullOrWhiteSpace(email)) {
+				return false;
+			}
+
+			try {
+				// Normalize the domain
+				email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
+											 RegexOptions.None, TimeSpan.FromMilliseconds(200));
+
+				// Examines the domain part of the email and normalizes it.
+				string DomainMapper(Match match)
+				{
+					// Use IdnMapping class to convert Unicode domain names.
+					var idn = new IdnMapping();
+
+					// Pull out and process domain name (throws ArgumentException on invalid)
+					string domainName = idn.GetAscii(match.Groups[2].Value);
+
+					return match.Groups[1].Value + domainName;
+				}
+			} catch (RegexMatchTimeoutException e) {
+				Console.WriteLine($"IsValidEmail.RegexMatchTimeoutException: {e}");
+				return false;
+			} catch (ArgumentException e) {
+				Console.WriteLine($"IsValidEmail.ArgumentException: {e}");
+				return false;
+			}
+
+			try {
+				return Regex.IsMatch(email,
+					 @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+					 RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+			} catch (RegexMatchTimeoutException) {
+				return false;
+			}
+		}
+
+		internal static bool IsValidDate(DateTime date)
+		{
+			if (date == null) {
+				return false;
+			}
+
+			if (date.Year == 1 &&
+				date.Month == 1 &&
+				date.Day == 1
+			) {
+				return false;
+			}
+
+			return true;
+		}
+
+		internal static bool IsValidIDArray(List<string> arrayOfIDs)
+		{
+			if (arrayOfIDs == null) {
+				return false;
+			}
+
+			if (arrayOfIDs.GetType().IsArrayOf<string>()) {
+				return false;
+			}
+
+			bool allUnique = arrayOfIDs.GroupBy(id => id).All(g => g.Count() == 1);
+			if (!allUnique) {
+				return false;
+			}
+
+			return true;
+		}
+
+		internal static bool IsValidIDArrayForPOSTRequest(List<string> arrayOfIDs)
+		{
+			if (!IsValidIDArray(arrayOfIDs)) {
+				return false;
+			}
+
+			if (arrayOfIDs.Count() == 0) {
+				return false;
+			}
+
+			return true;
+		}
+
+		internal static bool IsValidSortOrder(SortOrder sortOrder)
+		{
+			bool valid = Enum.IsDefined(typeof(SortOrder), sortOrder);
+			if (!valid) { return false; }
+
+			return true;
+		}
+
+		internal static bool IsValidSearchByEmailQuery(SearchByEmailOptions searchQuery)
+		{
+			string email = searchQuery.Email;
+			if (!IsValidEmail(email)) { return false; }
+
+			SortOrder sortOrder = searchQuery.SortOrder;
+			if (!IsValidSortOrder(sortOrder)) { return false; }
+
+			return true;
+		}
+
+		internal static bool IsValidSearchByEmailAndDateQuery(SearchByEmailAndDateOptions searchQuery)
+		{
+			string email = searchQuery.Email;
+			if (!IsValidEmail(email)) { return false; }
+
+			DateTime createdAt = searchQuery.CreatedAt;
+			if (!IsValidDate(createdAt)) { return false; }
+
+			return true;
+		}
+	}
+
+	internal static class TypeExtensions
+	{
+		internal static bool IsArrayOf<T>(this Type type)
+		{
+			return type == typeof(T[]);
 		}
 	}
 }
