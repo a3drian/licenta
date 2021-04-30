@@ -2,16 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FoodSpyAPI.Helpers;
-using FoodSpyAPI.Models;
-using FoodSpyAPI.Services;
-using AutoMapper;
-using FoodSpyAPI.Common;
-using FoodSpyAPI.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.DTOs;
+using FoodSpyAPI.Interfaces.Services;
+using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Models;
+using FoodSpyAPI.Services;
 
 namespace FoodSpyAPI.Controllers
 {
@@ -19,18 +20,17 @@ namespace FoodSpyAPI.Controllers
 	[Route("api/[controller]")]
 	public class MealsController : ControllerBase
 	{
-		private readonly MealService _mealService;
+		private readonly IMealService _mealService;
 		private readonly IMapper _mapper;
 		private readonly LinkGenerator _linkGenerator;
-		private readonly ILogger<MealService> _logger;
+		private readonly ILogger<IMealService> _logger;
 
-		public MealsController(MealService mealService, IMapper mapper, LinkGenerator linkGenerator,
-			 ILogger<MealService> logger)
+		public MealsController(IMealService mealService, IMapper mapper, LinkGenerator linkGenerator, ILogger<IMealService> logger)
 		{
-			_mealService = mealService;
-			_mapper = mapper;
-			_linkGenerator = linkGenerator;
-			_logger = logger;
+			_mealService = mealService ?? throw new ArgumentNullException(nameof(mealService));
+			_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+			_linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		[HttpGet]

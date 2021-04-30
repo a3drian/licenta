@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FoodSpyAPI.Helpers;
-using FoodSpyAPI.Models;
-using FoodSpyAPI.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Interfaces.Services;
+using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Controllers
 {
@@ -17,18 +17,17 @@ namespace FoodSpyAPI.Controllers
 	[Route("api/[controller]")]
 	public class FoodsController : ControllerBase
 	{
-		private readonly FoodService _mealService;
+		private readonly IFoodService _foodService;
 		private readonly IMapper _mapper;
 		private readonly LinkGenerator _linkGenerator;
-		private readonly ILogger<FoodService> _logger;
+		private readonly ILogger<IFoodService> _logger;
 
-		public FoodsController(FoodService mealService, IMapper mapper, LinkGenerator linkGenerator,
-			 ILogger<FoodService> logger)
+		public FoodsController(IFoodService foodService, IMapper mapper, LinkGenerator linkGenerator, ILogger<IFoodService> logger)
 		{
-			_mealService = mealService;
-			_mapper = mapper;
-			_linkGenerator = linkGenerator;
-			_logger = logger;
+			_foodService = foodService ?? throw new ArgumentNullException(nameof(foodService));
+			_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+			_linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		[HttpGet]
@@ -36,7 +35,7 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				List<Food> meals = await _mealService.GetFoods();
+				List<Food> meals = await _foodService.GetFoods();
 				List<FoodModel> mappedFoods = _mapper.Map<List<FoodModel>>(meals);
 				return mappedFoods;
 
@@ -58,7 +57,7 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest($"'id' parameter: '{id}' is not a valid 24 digit hex string!");
 				}
 
-				Food meal = await _mealService.GetFoodById(id);
+				Food meal = await _foodService.GetFoodById(id);
 
 				if (meal == null) {
 					return NotFound($"Food with id '{id}' was not found!");
@@ -77,7 +76,7 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				Food addedFood = await _mealService.AddFood(meal);
+				Food addedFood = await _foodService.AddFood(meal);
 
 				string location = _linkGenerator.GetPathByAction(
 					 "GetFoodById",
@@ -108,7 +107,7 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest($"'id' parameter: '{id}' is invalid!");
 				}
 
-				Food oldFood = await _mealService.GetFoodById(id);
+				Food oldFood = await _foodService.GetFoodById(id);
 				if (oldFood == null) {
 					return NotFound($"Food with id '{id}' was not found!");
 				}
@@ -118,7 +117,7 @@ namespace FoodSpyAPI.Controllers
 					Id = oldFood.Id
 				};
 
-				bool updated = await _mealService.UpdateFood(updatedFood);
+				bool updated = await _foodService.UpdateFood(updatedFood);
 				if (!updated) {
 					return BadRequest("Invalid parameters for 'PUT' request!");
 				}
@@ -139,12 +138,12 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest($"'id' parameter: '{id}' is invalid!");
 				}
 
-				Food meal = await _mealService.GetFoodById(id);
+				Food meal = await _foodService.GetFoodById(id);
 				if (meal == null) {
 					return NotFound($"Food with id '{id}' was not found!");
 				}
 
-				bool deleted = await _mealService.DeleteFood(meal);
+				bool deleted = await _foodService.DeleteFood(meal);
 				if (!deleted) {
 					return BadRequest("Invalid parameters for 'DELETE' request!");
 				}
@@ -165,7 +164,7 @@ namespace FoodSpyAPI.Controllers
 					return await GetFoods();
 				}
 
-				List<Food> searchResults = await _mealService.SearchFoodsByName(name);
+				List<Food> searchResults = await _foodService.SearchFoodsByName(name);
 				List<FoodModel> mappedFoods = _mapper.Map<List<FoodModel>>(searchResults);
 				return mappedFoods;
 

@@ -14,10 +14,12 @@
   <ItemGroup>
     <Compile Remove="Common\Constants.cs" />
     <Compile Remove="Common\FoodUnits.cs" />
+    <Compile Remove="Services\IIntakeService.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Common\FoodUnit" />
+    <None Remove="Interfaces\Services" />
     <None Remove="Settings" />
   </ItemGroup>
 

@@ -2,28 +2,32 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FoodSpyAPI.Common;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Settings;
+using FoodSpyAPI.Interfaces.Services;
 
 namespace FoodSpyAPI.Services
 {
-	public class MealService
+	public class MealService : IMealService
 	{
 		private readonly IMongoCollection<Meal> _meals;
-		private readonly ILogger<MealService> _logger;
+		private readonly ILogger<IMealService> _logger;
 
-		public MealService(IMealsDatabaseSettings settings, ILogger<MealService> logger)
+		public MealService(IMealsDatabaseSettings settings, ILogger<IMealService> logger)
 		{
+			if (settings == null) {
+				throw new ArgumentNullException(nameof(settings));
+			}
+
 			MongoClient client = new MongoClient(settings.ConnectionString);
 			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
 
 			_meals = database.GetCollection<Meal>(settings.MealsCollectionName);
 
-			_logger = logger;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		// GET

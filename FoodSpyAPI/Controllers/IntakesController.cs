@@ -6,8 +6,8 @@ using AutoMapper;
 using FoodSpyAPI.Common;
 using FoodSpyAPI.DTOs;
 using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
-using FoodSpyAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -25,18 +25,17 @@ namespace FoodSpyAPI.Controllers
 
 		#endregion
 
-		private readonly IntakeService _intakeService;
+		private readonly IIntakeService _intakeService;
 		private readonly IMapper _mapper;
 		private readonly LinkGenerator _linkGenerator;
-		private readonly ILogger<IntakeService> _logger;
+		private readonly ILogger<IIntakeService> _logger;
 
-		public IntakesController(IntakeService intakeService, IMapper mapper, LinkGenerator linkGenerator,
-			 ILogger<IntakeService> logger)
+		public IntakesController(IIntakeService intakeService, IMapper mapper, LinkGenerator linkGenerator, ILogger<IIntakeService> logger)
 		{
-			_intakeService = intakeService;
-			_mapper = mapper;
-			_linkGenerator = linkGenerator;
-			_logger = logger;
+			_intakeService = intakeService ?? throw new ArgumentNullException(nameof(intakeService));
+			_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+			_linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		#region GET
@@ -275,7 +274,7 @@ namespace FoodSpyAPI.Controllers
 				return BadRequest($"'{nameof(intake.CreatedAt)}' is missing or is invalid!");
 			}
 			if (!Validator.IsValidIDArray(intake.MealIDs)) {
-				return BadRequest($"'{nameof(intake.MealIDs)}' is missing or is invalid!");
+				return BadRequest($"'{nameof(intake.MealIDs)}' is missing, is invalid or contains duplicates!");
 			}
 
 			List<string> mealIDs = intake.MealIDs;

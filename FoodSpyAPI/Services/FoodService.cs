@@ -1,27 +1,33 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Settings;
 
 namespace FoodSpyAPI.Services
 {
-	public class FoodService
+	public class FoodService : IFoodService
 	{
 		private readonly IMongoCollection<Food> _foods;
-		private readonly ILogger<FoodService> _logger;
+		private readonly ILogger<IFoodService> _logger;
 
-		public FoodService(IFoodsDatabaseSettings settings, ILogger<FoodService> logger)
+		public FoodService(IFoodsDatabaseSettings settings, ILogger<IFoodService> logger)
 		{
+			if (settings == null) {
+				throw new ArgumentNullException(nameof(settings));
+			}
+
 			MongoClient client = new MongoClient(settings.ConnectionString);
 			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
 
 			_foods = database.GetCollection<Food>(settings.FoodsCollectionName);
 
-			_logger = logger;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		// GET

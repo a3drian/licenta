@@ -1,18 +1,13 @@
 ﻿
 using System.Collections.Generic;
+using FoodSpyAPI.Common;
 using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Comparators
 {
 	internal class MealTypeComparer : IComparer<Meal>
 	{
-		private readonly Dictionary<string, uint> order = new Dictionary<string, uint>()
-		{
-			{ "Breakfast", 1 },
-			{ "Lunch", 2 },
-			{ "Dinner", 3 },
-			{ "Snack", 4 },
-		};
+		private readonly Dictionary<string, uint> order = MealTypes.GetMealTypesOrder();
 
 		public int Compare(Meal x, Meal y)
 		{

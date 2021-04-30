@@ -10,12 +10,13 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using FoodSpyAPI.Common;
 using FoodSpyAPI.Comparators;
+using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Settings;
 
 namespace FoodSpyAPI.Services
 {
-	public class IntakeService
+	public class IntakeService : IIntakeService
 	{
 		#region Constants
 
@@ -27,16 +28,20 @@ namespace FoodSpyAPI.Services
 		#endregion
 
 		private readonly IMongoCollection<Intake> _intakes;
-		private readonly ILogger<IntakeService> _logger;
+		private readonly ILogger<IIntakeService> _logger;
 
-		public IntakeService(IIntakesDatabaseSettings settings, ILogger<IntakeService> logger)
+		public IntakeService(IIntakesDatabaseSettings settings, ILogger<IIntakeService> logger)
 		{
+			if (settings == null) {
+				throw new ArgumentNullException(nameof(settings));
+			}
+
 			MongoClient client = new MongoClient(settings.ConnectionString);
 			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
 
 			_intakes = database.GetCollection<Intake>(settings.IntakesCollectionName);
 
-			_logger = logger;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		#region GET
@@ -167,8 +172,8 @@ namespace FoodSpyAPI.Services
 
 		public async Task<List<Intake>> SearchIntakesByEmail(
 			string email,
-			SortOrder sortOrder = SortOrder.Descending
-		) {
+			SortOrder sortOrder = SortOrder.Descending)
+		{
 			string sortOrderName = Enum.GetName(typeof(SortOrder), sortOrder);
 			_logger.LogInformation($"Searching by email of '{email}' and sort order '{sortOrderName}' ...");
 
@@ -199,8 +204,8 @@ namespace FoodSpyAPI.Services
 
 		public async Task<Intake> SearchIntakeByEmailAndDate(
 			string email,
-			DateTime createdAt
-		) {
+			DateTime createdAt)
+		{
 			DateTime beginDate = createdAt.Date;
 			DateTime endDate = beginDate.AddDays(1);
 
