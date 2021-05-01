@@ -21,6 +21,11 @@
 	2. ai Intake, dar nu exista acelasi Meal.type => un nou Meal => embed in Intake => editezi Intake existent
 	3. ai Intake, dar exista acelasi Meal.type => editezi Meal existent => embed in Intake => editezi Intake existent
 -need to fix "intakeText" and "canShowIntakeHistoryButton()" (?)
+-trebuie odata cu stergerea unui Intake sa i se stearga si intrarile aferente de Meal (?)
+Fix:
+-push foods to foodIDs
+-push meals to mealIDs
+-fa sa se vada foods[] si meal[] in history
 
 -update with Intake on the frontend so that a new Intake is added from "/add"
 -(?) do I need "authService" everywhere I need the authenticated user?

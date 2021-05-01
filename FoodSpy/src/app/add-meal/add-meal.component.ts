@@ -447,8 +447,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
   canShowIntakeHistoryButton(): boolean {
     if (!this.isLoading) {
       if (this.intake) {  // sometimes this check is made before the intake has been loaded from the db
-        if (this.intake.meals.length !== 0) {
-          return true;
+        if (this.intake.mealIDs) {
+          if (this.intake.mealIDs.length !== 0) {
+            return true;
+          }
         }
       }
     }
@@ -456,12 +458,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   changeIntakeText(): void {
-    if (this.intake.meals.length === 0) {
+    if (this.intake.mealIDs.length === 0) {
       this.intakeText = 'No meals added today.';
     } else {
-      const meals: string = this.intake.meals.length === 1 ? 'one meal' : `${this.intake.meals.length} meals`;
-      log('add-meal.component.ts', this.changeIntakeText.name, 'this.intake.meals:', this.intake.meals);
-      this.intake.meals.forEach(element => {
+      const meals: string = this.intake.mealIDs.length === 1 ? 'one meal' : `${this.intake.mealIDs.length} meals`;
+      log('add-meal.component.ts', this.changeIntakeText.name, 'this.intake.mealIDs:', this.intake.mealIDs);
+      this.intake.mealIDs.forEach(element => {
         log('add-meal.component.ts', this.changeIntakeText.name, 'element:', element);
       });
       this.intakeText = `Today you had ${meals}.`;
