@@ -13,18 +13,18 @@ namespace FoodSpyAPI.DTOs.Models
 
 		[BsonElement(nameof(Name))] public string Name { get; set; }
 
-		[BsonElement(nameof(Energy))] public float Energy { get; set; }
+		[BsonElement(nameof(Energy))] public double Energy { get; set; }
 
-		[BsonElement(nameof(Fats))] public float Fats { get; set; }
+		[BsonElement(nameof(Fats))] public double Fats { get; set; }
 
-		[BsonElement(nameof(Saturates))] public float Saturates { get; set; }
+		[BsonElement(nameof(Saturates))] public double Saturates { get; set; }
 
-		[BsonElement(nameof(Carbohydrates))] public float Carbohydrates { get; set; }
+		[BsonElement(nameof(Carbohydrates))] public double Carbohydrates { get; set; }
 
-		[BsonElement(nameof(Sugars))] public float Sugars { get; set; }
+		[BsonElement(nameof(Sugars))] public double Sugars { get; set; }
 
-		[BsonElement(nameof(Proteins))] public float Proteins { get; set; }
+		[BsonElement(nameof(Proteins))] public double Proteins { get; set; }
 
-		[BsonElement(nameof(Salt))] public float Salt { get; set; }
+		[BsonElement(nameof(Salt))] public double Salt { get; set; }
 	}
 }

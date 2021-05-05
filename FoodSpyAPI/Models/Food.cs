@@ -17,25 +17,25 @@ namespace FoodSpyAPI.Models
 		public string Name { get; set; }
 
 		[BsonElement(nameof(Energy))]
-		public float Energy { get; set; }
+		public double Energy { get; set; }
 
 		[BsonElement(nameof(Fats))]
-		public float Fats { get; set; }
+		public double Fats { get; set; }
 
 		[BsonElement(nameof(Saturates))]
-		public float Saturates { get; set; }
+		public double Saturates { get; set; }
 
 		[BsonElement(nameof(Carbohydrates))]
-		public float Carbohydrates { get; set; }
+		public double Carbohydrates { get; set; }
 
 		[BsonElement(nameof(Sugars))]
-		public float Sugars { get; set; }
+		public double Sugars { get; set; }
 
 		[BsonElement(nameof(Proteins))]
-		public float Proteins { get; set; }
+		public double Proteins { get; set; }
 
 		[BsonElement(nameof(Salt))]
-		public float Salt { get; set; }
+		public double Salt { get; set; }
 
 		public Food() { }
 		public Food(Food food)
@@ -46,6 +46,7 @@ namespace FoodSpyAPI.Models
 			this.Saturates = food.Saturates;
 			this.Carbohydrates = food.Carbohydrates;
 			this.Sugars = food.Sugars;
+			this.Proteins = food.Proteins;
 			this.Salt = food.Salt;
 		}
 
@@ -64,6 +65,7 @@ namespace FoodSpyAPI.Models
 			output += $" {nameof(Saturates)}: {Saturates}" + "g,";
 			output += $" {nameof(Carbohydrates)}: {Carbohydrates}" + "g,";
 			output += $" {nameof(Sugars)}: {Sugars}" + "g,";
+			output += $" {nameof(Proteins)}: {Proteins}" + "g,";
 			output += $" {nameof(Salt)}: {Salt}" + "g" + "\n";
 
 			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(Food) + "\n";

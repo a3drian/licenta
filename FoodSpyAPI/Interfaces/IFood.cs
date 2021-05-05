@@ -5,18 +5,18 @@ namespace FoodSpyAPI.Interfaces
 	{
 		string Name { get; set; }
 
-		float Energy { get; set; }
+		double Energy { get; set; }
 
-		float Fats { get; set; }
+		double Fats { get; set; }
 
-		float Saturates { get; set; }
+		double Saturates { get; set; }
 
-		float Carbohydrates { get; set; }
+		double Carbohydrates { get; set; }
 
-		float Sugars { get; set; }
+		double Sugars { get; set; }
 
-		float Proteins { get; set; }
+		double Proteins { get; set; }
 
-		float Salt { get; set; }
+		double Salt { get; set; }
 	}
 }

@@ -8,7 +8,7 @@ namespace FoodSpyAPI.DTOs.Models
 	{
 		[BsonElement(nameof(Mfid))] public string Mfid { get; set; }
 
-		[BsonElement(nameof(Quantity))] public float Quantity { get; set; }
+		[BsonElement(nameof(Quantity))] public double Quantity { get; set; }
 
 		[BsonElement(nameof(Unit))] public string Unit { get; set; }
 	}
