@@ -16,9 +16,11 @@ import { switchMap, tap } from 'rxjs/operators';
 // Interfaces:
 import { IFood } from 'foodspy-shared';
 import { IMeal } from 'foodspy-shared';
+import { IMealFood } from 'foodspy-shared';
 import { IIntake } from 'foodspy-shared';
-import { Intake } from '../models/Intake';
 import { IUser } from 'foodspy-shared';
+// Models:
+import { Intake } from '../models/Intake';
 // Components:
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
 // Shared:
@@ -56,8 +58,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
   DASHBOARD_URL: string = '/dashboard';
   ADD_MEAL_URL: string = this.DASHBOARD_URL + '/add';
 
+  addedMealFoods: IMealFood[] = [];
+
   databaseFoods: IFood[] = [];
-  addedFoods: IFood[] = [];
   foodsColumns: string[] = [
     'id',
     'name',
@@ -86,6 +89,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
         }
       );
 
+    const intialMealFoods: IMealFood[] = [];
+    this.meal.mealFoods = intialMealFoods;
     const initialFoods: IFood[] = [];
     this.meal.foods = initialFoods;
 
@@ -114,6 +119,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
             this.intake.meals.forEach((existingMeal: IMeal) => { this.existingMealTypes.push(existingMeal.type) });
             log('add-meal.ts', this.ngOnInit.name, '(intake) this.existingMealTypes:', this.existingMealTypes);
             this.intakeId = intake.id;
+            this.intake.mealIDs = intake.mealIDs;
           } else {
             this.initializeIntake();
             log('add-meal.ts', this.ngOnInit.name, '(!intake) (intake should be initialized with defaults) this.intake:', this.intake);
@@ -181,9 +187,11 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   private initializeIntake() {
+    const initalMealIDs: string[] = [];
     const initalMeals: IMeal[] = [];
     this.intake = new Intake({
       email: this.authenticatedUserEmail,
+      mealIDs: initalMealIDs,
       meals: initalMeals,
       createdAt: this.today,
     });
@@ -191,7 +199,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   isFormValid(): boolean {
     const validForm: boolean = this.addMealForm.valid;
-    const validFoods: boolean = this.addedFoods.length !== 0;
+    const validFoods: boolean = this.addedMealFoods.length !== 0;
     return validForm && validFoods;
   }
 
@@ -214,18 +222,18 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.dialogueSubscription = dialogRef
       .afterClosed()
       .subscribe(
-        (food: IFood) => {
-          if (food) {
-            this.addFoodFromDialogueToFoodsArray(food);
+        (mealFood: IMealFood) => {
+          if (mealFood) {
+            this.addFoodFromDialogueToFoodsArray(mealFood);
           }
         }
       );
   }
 
-  addFoodFromDialogueToFoodsArray(food: IFood): void {
-    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'Food from dialogue:', food);
-    this.addedFoods.push(food);
-    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added foods []:', this.addedFoods);
+  addFoodFromDialogueToFoodsArray(food: IMealFood): void {
+    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', food);
+    this.addedMealFoods.push(food);
+    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added meal foods []:', this.addedMealFoods);
   }
 
   private addTypeAndCreatedAt(): void {
@@ -236,9 +244,16 @@ export class AddMealComponent implements OnInit, OnDestroy {
     log('add-meal.component.ts', this.addTypeAndCreatedAt.name, 'this.meal:', this.meal);
   }
 
-  private addIdAndFoods(mealFromDb: IMeal): void {
+  private addIdAndMealFoods(mealFromDb: IMeal): void {
     this.meal.id = mealFromDb.id;
-    this.meal.foods = mealFromDb.foods;
+    mealFromDb.mealFoods.forEach(
+      (mealFood) => {
+        log('add-meal.component.ts', this.addIdAndMealFoods.name, 'mealFood:', mealFood);
+        this.meal.mealFoods.push(mealFood);
+      }
+    );
+    log('add-meal.component.ts', this.addIdAndMealFoods.name, 'After adding mealFoods, this.meal.id:', this.meal.id);
+    log('add-meal.component.ts', this.addIdAndMealFoods.name, 'After adding mealFoods, this.meal.mealFoods:', this.meal.mealFoods);
   }
 
   private reloadPage(caller: string): void {
@@ -329,9 +344,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
       }
     );
 
-    // concatenate the two Foods[]
-    mealToBeEdited.foods = [...mealToBeEdited.foods, ...this.addedFoods];
-    log('add-meal.component.ts', this.editMealFromIntake.name, 'Concatenation, mealToBeEdited.foods:', mealToBeEdited.foods);
+    // concatenate the two MealFoods[]
+    mealToBeEdited.mealFoods = [...mealToBeEdited.mealFoods, ...this.addedMealFoods];
+    log('add-meal.component.ts', this.editMealFromIntake.name, 'Concatenation, mealToBeEdited.mealFoods:', mealToBeEdited.mealFoods);
 
     // get the original Meal from the db using meal.id
     const mealFromDb: IMeal = await this.getMealById(mealToBeEdited.id);
@@ -342,18 +357,18 @@ export class AddMealComponent implements OnInit, OnDestroy {
     log('add-meal.component.ts', this.editMealFromIntake.name, 'After, editedMealById:', editedMealFromDb);
 
     // prepare this.meal to be embedded in the existing Intake
-    this.addIdAndFoods(editedMealFromDb);
+    this.addIdAndMealFoods(editedMealFromDb);
   }
 
   private async addNewMealToIntake(): Promise<void> {
-    const mealToBeAdded: IMeal = <IMeal>{ type: this.selectedMealType, foods: this.addedFoods, createdAt: this.today };
+    const mealToBeAdded: IMeal = <IMeal>{ type: this.selectedMealType, mealFoods: this.addedMealFoods, createdAt: this.today };
     const addedMealFromDb: IMeal = await this.addMealAndReturnItFromDb(mealToBeAdded);
 
     // prepare this.meal to be embedded in the existing Intake
-    this.addIdAndFoods(addedMealFromDb);
+    this.addIdAndMealFoods(addedMealFromDb);
 
     // add 'Snack' alongside 'Lunch', etc. OR add 'Snack' as the first Meal of a new Intake
-    this.intake.meals.push(this.meal);
+    this.intake.mealIDs.push(this.meal.id);
   }
 
   async onSubmit(): Promise<void> {
@@ -369,7 +384,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
         log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with the same meal type, this.selectedMealType:', this.selectedMealType);
 
         // need to loop through all existing meals to find the one which matches our (soon to be added) new meal
-        this.editMealFromIntake();
+        await this.editMealFromIntake();
 
         editMeal = true;
 
@@ -378,15 +393,15 @@ export class AddMealComponent implements OnInit, OnDestroy {
         // different meal type => new Meal => embed in Intake => edit Intake
         log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a different meal type, this.selectedMealType:', this.selectedMealType);
 
-        this.addNewMealToIntake();
+        await this.addNewMealToIntake();
       }
 
     } else {
 
       // need to add a new meal type => new Meal => embed in Intake => new Intake
-      log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a different meal type, this.selectedMealType:', this.selectedMealType);
+      log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a new meal type, this.selectedMealType:', this.selectedMealType);
 
-      this.addNewMealToIntake();
+      await this.addNewMealToIntake();
     }
 
     log('add-meal.component.ts', this.onSubmit.name, 'Adding this.meal to this.intake, this.meal:', this.meal);
