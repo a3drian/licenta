@@ -103,11 +103,18 @@
     <p>Form value:<br>{{ addMealForm.value | json }}</p>
     <p>Form status:<br>{{ addMealForm.status }}</p>
     <p><b>meal</b>: {{ meal | json }}</p>
+    <p><b>addedMealFoods</b>: [</p>
+    <p *ngFor="let food of addedMealFoods">
+        {{ food | json }}
+    </p>
+    <p>] :<b>addedMealFoods</b></p>
+    <!--
     <p><b>addedFoods</b>: [</p>
     <p *ngFor="let food of addedFoods">
         {{ food | json }}
     </p>
     <p>] :<b>addedFoods</b></p>
+    -->
     <p><b>existingMealInIntake</b>: {{ existingMealInIntake | json }}</p>
     <p><b>existingMealTypes</b>: {{ existingMealTypes | json }}</p>
     <p><b>selectedMealType</b>: {{ selectedMealType | json }}</p>

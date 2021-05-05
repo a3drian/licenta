@@ -1,14 +1,16 @@
 import { IFood } from 'foodspy-shared';
 
 export class Food implements IFood {
+   
    id!: string;
    name!: string;
-   quantity!: number;
-   unit!: string;
-   calories!: number;
+   energy!: number;
    fats!: number;
-   carbs!: number;
+   saturates!: number;
+   carbohydrates!: number;
+   sugars!: number;
    proteins!: number;
+   salt!: number;
 
    public constructor(partial?: Partial<Food>) {
       Object.assign(this, partial);

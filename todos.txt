@@ -22,6 +22,7 @@
 	3. ai Intake, dar exista acelasi Meal.type => editezi Meal existent => embed in Intake => editezi Intake existent
 -need to fix "intakeText" and "canShowIntakeHistoryButton()" (?)
 -trebuie odata cu stergerea unui Intake sa i se stearga si intrarile aferente de Meal (?)
+-sa poti adauga mai multe "Snack" ca meals, deci sa ai mai mult de 4 maxim meals intr-o zi (?)
 Fix:
 -push foods to foodIDs
 -push meals to mealIDs

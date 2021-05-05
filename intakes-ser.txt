@@ -15,3 +15,5 @@ daca pun lista de ObjectId => merge GET => nu merge POST
 
 -la POST trebuie sa incluzi ceva in "mealIDs"; la PUT e posibil sa vrei sa se scoata toate din array, gen cand editezi un Intake din history (?)
 -ce se intampla daca ai id-uri in array-uri care nu sunt in baza de date (?)
+-ar trebui ca un Intake sa fie retinut sub forma de id intr-un Meal si atunci cand Meal are lista de id-uri de intake goala inseamna ca poate fi stearsa (?)
+-(!) ca sa mearga "lookup" acel "id" trebuie sa fie de tip "ObjectId"
