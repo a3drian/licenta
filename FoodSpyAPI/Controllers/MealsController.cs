@@ -239,6 +239,7 @@ namespace FoodSpyAPI.Controllers
 			if (!Validator.IsValidDate(meal.CreatedAt)) {
 				return BadRequest($"'{nameof(meal.CreatedAt)}' is missing or is invalid!");
 			}
+			/*
 			if (!Validator.IsValidIDArray(meal.FoodIDs)) {
 				return BadRequest($"'{nameof(meal.FoodIDs)}' is missing, is invalid or contains duplicates!");
 			}
@@ -250,6 +251,7 @@ namespace FoodSpyAPI.Controllers
 					return validateID;
 				}
 			}
+			*/
 
 			return result;
 		}

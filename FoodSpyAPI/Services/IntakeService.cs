@@ -10,6 +10,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using FoodSpyAPI.Common;
 using FoodSpyAPI.Comparators;
+using FoodSpyAPI.Helpers;
 using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Settings;
@@ -21,9 +22,9 @@ namespace FoodSpyAPI.Services
 		#region Constants
 
 		private const string MEALS_FOREIGN_COLLECTION_NAME = "Meals";
-		private const string INTAKE_LOCAL_FIELD = "MealIDs";
+		private const string INTAKE_LOCAL_FIELD = nameof(Intake.MealIDs);
 		private const string MEAL_FOREIGN_FIELD = "_id";
-		private const string MEALS_ARRAY = "meals";
+		private const string MEALS_ARRAY = nameof(Intake.Meals);
 
 		#endregion
 
@@ -207,7 +208,7 @@ namespace FoodSpyAPI.Services
 			DateTime beginDate = createdAt.Date;
 			DateTime endDate = beginDate.AddDays(1);
 
-			_logger.LogInformation($"Searching by email of '{email}' and created at '{createdAt}' ...");
+			_logger.LogInformation($"Searching by email of '{email}' and created at '{createdAt.Print()}' ...");
 
 			Expression<Func<Intake, bool>> filter =
 					i => i.Email.Equals(email) &&
@@ -230,7 +231,7 @@ namespace FoodSpyAPI.Services
 
 			if (intake == null) {
 				// If there is no intake on the given "createdAt" date
-				_logger.LogInformation($"There are no intakes on date '{createdAt}' ...");
+				_logger.LogInformation($"There are no intakes on date '{createdAt.Print()}' ...");
 				return null;
 			}
 
@@ -241,7 +242,9 @@ namespace FoodSpyAPI.Services
 
 			intake.Meals = orderedMeals;
 
-			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt}' ...\n{intake}");
+			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt.Print()}' ...");
+			Console.WriteLine(intake);
+
 			return intake;
 		}
 

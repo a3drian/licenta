@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using FoodSpyAPI.Helpers;
 using FoodSpyAPI.Interfaces;
 
 namespace FoodSpyAPI.Models
@@ -14,19 +15,19 @@ namespace FoodSpyAPI.Models
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("email")]
+		[BsonElement(nameof(Email))]
 		[Required]
 		public string Email { get; set; }
 
-		[BsonElement("createdAt")]
+		[BsonElement(nameof(CreatedAt))]
 		[Required]
 		public DateTime CreatedAt { get; set; }
 
-		[BsonElement("mealIDs")]
+		[BsonElement(nameof(MealIDs))]
 		[Required]
 		public List<ObjectId> MealIDs { get; set; }
 
-		[BsonElement("meals")]
+		[BsonElement(nameof(Meals))]
 		public List<Meal> Meals { get; set; }
 
 		public Intake() { }
@@ -37,24 +38,25 @@ namespace FoodSpyAPI.Models
 			this.MealIDs = intake.MealIDs;
 			this.Meals = new List<Meal>();
 		}
+
 		public override string ToString()
 		{
 			string blank = "";
 			char space = ' ';
 
-			string output = $"{blank.PadLeft(5, space)} Intake: " + "{ " + "\n";
+			string output = $"{blank.PadLeft(5, space)} {nameof(Intake)}: " + "{ " + "\n";
 			output += $"{blank.PadLeft(10, space)}";
 
 			output += $" Id: {Id}" + ",";
 			output += $" Email: {Email}" + ",";
-			output += $" CreatedAt: {CreatedAt}" + "\n";
+			output += $" CreatedAt: {CreatedAt.Print()}" + "\n";
 
-			output += $"{blank.PadLeft(10, space)} Meal IDs:" + "\n";
+			output += $"{blank.PadLeft(10, space)} {nameof(MealIDs)}:" + "\n";
 			foreach (ObjectId id in MealIDs) {
-				output += $"{blank.PadLeft(15, space)} Meal ID: {id} \n";
+				output += $"{blank.PadLeft(15, space)} ID: {id} \n";
 			}
 
-			output += $"{blank.PadLeft(5, space)}" + " } :Intake" + "\n";
+			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(Intake) + "\n";
 
 			return output;
 		}

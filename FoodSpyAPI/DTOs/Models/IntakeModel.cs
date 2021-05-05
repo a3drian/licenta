@@ -14,12 +14,12 @@ namespace FoodSpyAPI.DTOs.Models
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("email")] public string Email { get; set; }
+		[BsonElement(nameof(Email))] public string Email { get; set; }
 
-		[BsonElement("createdAt")] public DateTime CreatedAt { get; set; }
+		[BsonElement(nameof(CreatedAt))] public DateTime CreatedAt { get; set; }
 
-		[BsonElement("mealIDs")] public List<string> MealIDs { get; set; }
+		[BsonElement(nameof(MealIDs))] public List<string> MealIDs { get; set; }
 
-		[BsonElement("meals")] public List<Meal> Meals { get; set; }
+		[BsonElement(nameof(Meals))] public List<Meal> Meals { get; set; }
 	}
 }

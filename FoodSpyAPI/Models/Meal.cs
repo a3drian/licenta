@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using FoodSpyAPI.Helpers;
 using FoodSpyAPI.Interfaces;
 
 namespace FoodSpyAPI.Models
@@ -14,19 +15,19 @@ namespace FoodSpyAPI.Models
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("type")]
+		[BsonElement(nameof(Type))]
 		[Required]
 		public string Type { get; set; }
 
-		[BsonElement("createdAt")]
+		[BsonElement(nameof(CreatedAt))]
 		[Required]
 		public DateTime CreatedAt { get; set; }
 
-		[BsonElement("foodIDs")]
+		[BsonElement(nameof(MealFoods))]
 		[Required]
-		public List<ObjectId> FoodIDs { get; set; }
+		public List<MealFood> MealFoods { get; set; }
 
-		[BsonElement("foods")]
+		[BsonElement(nameof(Foods))]
 		public List<Food> Foods { get; set; }
 
 		public Meal() { }
@@ -34,27 +35,28 @@ namespace FoodSpyAPI.Models
 		{
 			this.Type = meal.Type;
 			this.CreatedAt = meal.CreatedAt;
-			this.FoodIDs = meal.FoodIDs;
+			this.MealFoods = meal.MealFoods;
 			this.Foods = new List<Food>();
 		}
+
 		public override string ToString()
 		{
 			string blank = "";
 			char space = ' ';
 
-			string output = $"{blank.PadLeft(5, space)} Meal: " + "{ " + "\n";
+			string output = $"{blank.PadLeft(5, space)} {nameof(Meal)}: " + "{ " + "\n";
 			output += $"{blank.PadLeft(10, space)}";
 
-			output += $" Id: {Id}" + ",";
-			output += $" Type: {Type}" + ",";
-			output += $" CreatedAt: {CreatedAt}" + "\n";
+			output += $" {nameof(Id)}: {Id}" + ",";
+			output += $" {nameof(Type)}: {Type}" + ",";
+			output += $" {nameof(CreatedAt)}: {CreatedAt.Print()}" + "\n";
 
-			output += $"{blank.PadLeft(10, space)} Food IDs:" + "\n";
-			foreach (ObjectId id in FoodIDs) {
-				output += $"{blank.PadLeft(15, space)} Food ID: {id} \n";
+			output += $"{blank.PadLeft(10, space)} {nameof(MealFood)}s:" + "\n";
+			foreach (MealFood mf in MealFoods) {
+				output += $"{blank.PadLeft(15, space)} {mf}" + "\n";
 			}
 
-			output += $"{blank.PadLeft(5, space)}" + " } :Meal" + "\n";
+			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(Meal) + "\n";
 
 			return output;
 		}

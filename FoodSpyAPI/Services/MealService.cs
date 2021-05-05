@@ -23,7 +23,7 @@ namespace FoodSpyAPI.Services
 		private const string FOODS_FOREIGN_COLLECTION_NAME = "Foods";
 		private const string MEAL_LOCAL_FIELD = "FoodIDs";
 		private const string FOOD_FOREIGN_FIELD = "_id";
-		private const string FOODS_ARRAY = "foods";
+		private const string FOODS_ARRAY = nameof(Meal.Foods);
 
 		#endregion
 
@@ -50,20 +50,8 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching meals...");
 
-			IAggregateFluent<Meal> aggregationMatch = _meals
-				.Aggregate()
-				.Match<Meal>(meal => true);
-
-			List<Meal> mealsList = await aggregationMatch
-				.Lookup(
-					FOODS_FOREIGN_COLLECTION_NAME,
-					MEAL_LOCAL_FIELD,
-					FOOD_FOREIGN_FIELD,
-					FOODS_ARRAY
-				)
-				.As<Meal>()
-				.ToListAsync();
-
+			IAsyncCursor<Meal> meals = await _meals.FindAsync<Meal>(meal => true);
+			List<Meal> mealsList = meals.ToList();
 			return mealsList;
 		}
 
@@ -75,19 +63,9 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
 
-			IAggregateFluent<Meal> aggregationMatch = _meals
-				.Aggregate()
-				.Match<Meal>(meal => meal.Id == id);
-
-			Meal meal = await aggregationMatch
-				.Lookup(
-					FOODS_FOREIGN_COLLECTION_NAME,
-					MEAL_LOCAL_FIELD,
-					FOOD_FOREIGN_FIELD,
-					FOODS_ARRAY
-				)
-				.As<Meal>()
-				.SingleOrDefaultAsync();
+			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
+			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
+			Meal meal = mealSingleOrDefault.Result;
 
 			_logger.LogInformation($"Meal with id '{id}' ...\n{meal}");
 
@@ -172,26 +150,17 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Searching by type of '{type}' ...");
 
-			IAggregateFluent<Meal> aggregationMatch = _meals
-				.Aggregate()
-				.Match<Meal>(meal => meal.Type.Equals(type));
+			IAsyncCursor<Meal> meals = await _meals
+				 .FindAsync<Meal>(
+					  filter: meal => meal.Type.Equals(type)
+				 );
 
-			List<Meal> meals = await aggregationMatch
-				.Lookup(
-					FOODS_FOREIGN_COLLECTION_NAME,
-					MEAL_LOCAL_FIELD,
-					FOOD_FOREIGN_FIELD,
-					FOODS_ARRAY
-				)
-				.As<Meal>()
-				.ToListAsync();
-
-			if (meals == null || meals.Count == 0) {
+			if (meals == null) {
 				_logger.LogInformation($"There are no meals matching type '{type}' ...");
 				return null;
 			}
 
-			List<Meal> mealsList = meals;
+			List<Meal> mealsList = meals.ToList();
 
 			_logger.LogInformation($"Meals of type: '{type}' ...");
 			foreach (Meal meal in mealsList) {

@@ -12,35 +12,61 @@ namespace FoodSpyAPI.Models
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("name")]
+		[BsonElement(nameof(Name))]
 		[Required]
 		public string Name { get; set; }
 
-		[BsonElement("quantity")]
-		[Required]
-		public int Quantity { get; set; }
+		[BsonElement(nameof(Energy))]
+		public float Energy { get; set; }
 
-		[BsonElement("unit")]
-		[Required]
-		public string Unit { get; set; }
+		[BsonElement(nameof(Fats))]
+		public float Fats { get; set; }
+
+		[BsonElement(nameof(Saturates))]
+		public float Saturates { get; set; }
+
+		[BsonElement(nameof(Carbohydrates))]
+		public float Carbohydrates { get; set; }
+
+		[BsonElement(nameof(Sugars))]
+		public float Sugars { get; set; }
+
+		[BsonElement(nameof(Proteins))]
+		public float Proteins { get; set; }
+
+		[BsonElement(nameof(Salt))]
+		public float Salt { get; set; }
 
 		public Food() { }
 		public Food(Food food)
 		{
 			this.Name = food.Name;
-			this.Quantity = food.Quantity;
-			this.Unit = food.Unit;
+			this.Energy = food.Energy;
+			this.Fats = food.Fats;
+			this.Saturates = food.Saturates;
+			this.Carbohydrates = food.Carbohydrates;
+			this.Sugars = food.Sugars;
+			this.Salt = food.Salt;
 		}
+
 		public override string ToString()
 		{
-			string output = "{";
+			string blank = "";
+			char space = ' ';
 
-			output += $" Id: {Id}" + ",";
-			output += $" Name: {Name}" + ",";
-			output += $" Quantity: {Quantity}" + ",";
-			output += $" Unit: {Unit}" + " ";
+			string output = $"{blank.PadLeft(5, space)} {nameof(Food)}: " + "{ " + "\n";
+			output += $"{blank.PadLeft(10, space)}";
 
-			output += "}";
+			output += $" {nameof(Id)}: {Id}" + ",";
+			output += $" {nameof(Name)}: {Name}" + ",";
+			output += $" {nameof(Energy)}: {Energy}" + "kcal,";
+			output += $" {nameof(Fats)}: {Fats}" + "g,";
+			output += $" {nameof(Saturates)}: {Saturates}" + "g,";
+			output += $" {nameof(Carbohydrates)}: {Carbohydrates}" + "g,";
+			output += $" {nameof(Sugars)}: {Sugars}" + "g,";
+			output += $" {nameof(Salt)}: {Salt}" + "g" + "\n";
+
+			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(Food) + "\n";
 
 			return output;
 		}

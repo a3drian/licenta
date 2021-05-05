@@ -11,10 +11,20 @@ namespace FoodSpyAPI.DTOs.Models
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
-		[BsonElement("name")] public string Name { get; set; }
+		[BsonElement(nameof(Name))] public string Name { get; set; }
 
-		[BsonElement("quantity")] public int Quantity { get; set; }
+		[BsonElement(nameof(Energy))] public float Energy { get; set; }
 
-		[BsonElement("unit")] public string Unit { get; set; }
+		[BsonElement(nameof(Fats))] public float Fats { get; set; }
+
+		[BsonElement(nameof(Saturates))] public float Saturates { get; set; }
+
+		[BsonElement(nameof(Carbohydrates))] public float Carbohydrates { get; set; }
+
+		[BsonElement(nameof(Sugars))] public float Sugars { get; set; }
+
+		[BsonElement(nameof(Proteins))] public float Proteins { get; set; }
+
+		[BsonElement(nameof(Salt))] public float Salt { get; set; }
 	}
 }

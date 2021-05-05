@@ -6,14 +6,14 @@ using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Profiles
 {
-	public class IntakeProfile : Profile
+	public class MealFoodProfile : Profile
 	{
-		public IntakeProfile()
+		public MealFoodProfile()
 		{
 			this.CreateMap<ObjectId, string>().ConvertUsing(id => id.ToString());
-			this.CreateMap<Intake, IntakeModel>();
+			this.CreateMap<MealFood, MealFoodModel>();
 			this.CreateMap<string, ObjectId>().ConvertUsing(id => new ObjectId(id));
-			this.CreateMap<IntakeModel, Intake>();
+			this.CreateMap<MealFoodModel, MealFood>();
 		}
 	}
 }
