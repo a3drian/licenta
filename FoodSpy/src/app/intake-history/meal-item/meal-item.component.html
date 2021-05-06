@@ -5,18 +5,31 @@
    {{ meal.id }}
 </p>
 
-<p>
-   Meal type:
-   <b>{{ meal.type }}</b>
-</p>
+<div *ngIf="isLoading" class="loading-spinner">
+   <app-loading-spinner></app-loading-spinner>
+</div>
 
-<p>
-   Created at:
-   {{ meal.createdAt | date: 'short' }}
-</p>
+<div *ngIf="!isLoading">
+   <p>
+      Meal type:
+      <b>{{ meal.type }}</b>
+   </p>
 
-<p>
-   Foods:
-   <app-food-item *ngFor="let food of meal.foods" [food]="food">
-   </app-food-item>
-</p>
+   <p>
+      Created at:
+      {{ meal.createdAt | date: 'short' }}
+   </p>
+
+   <!--
+   <p>
+      Foods:
+      <app-food-item *ngFor="let food of foods" [food]="food">
+      </app-food-item>
+   </p>
+   -->
+
+   <div *ngFor="let mealFood of meal.mealFoods">
+      {{ mealFood.mfid }}, {{ mealFood.quantity }} {{ mealFood.unit }}
+   </div>
+
+</div>

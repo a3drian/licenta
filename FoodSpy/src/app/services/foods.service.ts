@@ -49,6 +49,22 @@ export class FoodsService {
          );
    }
 
+   // Get food by ID
+   getFoodById(id: string): Observable<IFood> {
+      const url = `${this.BASE_URL}/${id}`;
+      log('foods.service.ts', this.getFoodById.name, 'URL:', url);
+
+      const request = this.http.get<IFood>(url)
+         .pipe(
+            tap(
+               (response) => {
+                  log('foods.service.ts', this.getFoodById.name, 'Food fetched:', response);
+               }
+            )
+         );
+      return request;
+   }
+
    // FILTER
    search(term: string): Observable<IFood[]> {
 

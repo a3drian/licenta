@@ -8,6 +8,10 @@
    {{ authenticatedUserEmail }}
 </h2>
 
+<div *ngIf="errorResponse">
+   <app-error-response [errorResponse]="errorResponse"></app-error-response>
+</div>
+
 <div *ngIf="isLoading" class="loading-spinner">
    <app-loading-spinner></app-loading-spinner>
 </div>

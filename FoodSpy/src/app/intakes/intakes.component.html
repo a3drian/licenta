@@ -11,6 +11,10 @@
 
 <h2>Daily intake goal: 2000 calories</h2>
 
+<div *ngIf="errorResponse">
+   <app-error-response [errorResponse]="errorResponse"></app-error-response>
+</div>
+
 <!-- Intake history -->
 <div *ngIf="canShowIntakesTable() && !isLoading">
    <table mat-table [dataSource]="intakes">

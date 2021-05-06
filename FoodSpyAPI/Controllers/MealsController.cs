@@ -47,6 +47,20 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		[HttpGet("withFoods")]
+		public async Task<ActionResult<List<MealModel>>> GetMealsWithFoods()
+		{
+			try {
+
+				List<Meal> meals = await _mealService.GetMealsWithFoods();
+				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(meals);
+				return mappedMeals;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
+
 		#endregion
 
 		#region GET/:id

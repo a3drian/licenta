@@ -21,12 +21,14 @@ import { STATUS_CODES } from 'foodspy-shared';
 export class IntakeHistoryComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
-
-  intake: IIntake = <IIntake>{};
-  intakeId: string = '';
   intakeWasFound: boolean = false;
   idNotFound: boolean = false;
   isLoading: boolean = true;
+
+  errorResponse: HttpErrorResponse | null = null;
+
+  intake: IIntake = <IIntake>{};
+  intakeId: string = '';
 
   user: IUser | null = null;
   authenticatedUserEmail: string = '';
@@ -62,6 +64,7 @@ export class IntakeHistoryComponent implements OnInit {
             }
             log('intake-history.ts', 'constructor()', '(error) this.idNotFound:', this.idNotFound);
             this.isLoading = false;
+            this.errorResponse = error;
           }
         );
     }
@@ -80,6 +83,10 @@ export class IntakeHistoryComponent implements OnInit {
           this.intake = new Intake(data);
           this.intakeWasFound = this.intake ? true : false;
           this.isLoading = false;
+        },
+        (error: HttpErrorResponse) => {
+          log('intake-history.ts', this.ngOnInit.name, 'error:', error);
+          this.errorResponse = error;
         }
       );
   }

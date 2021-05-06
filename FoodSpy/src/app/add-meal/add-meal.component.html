@@ -6,6 +6,10 @@
     <app-loading-spinner></app-loading-spinner>
 </div>
 
+<div *ngIf="errorResponse">
+    <app-error-response [errorResponse]="errorResponse"></app-error-response>
+</div>
+
 <div *ngIf="!isLoading">
     {{ intakeText }}
     <button *ngIf="canShowIntakeHistoryButton()" class="button" mat-stroked-button color="primary"
@@ -14,7 +18,7 @@
     </button>
 </div>
 
-<form [formGroup]="addMealForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
         <mat-label>Select meal type</mat-label>
         <mat-select formControlName="mealType" (selectionChange)="onSelectedMealType($event)">
@@ -31,14 +35,14 @@
     </button>
 </form>
 
-<div class="search">
+<div class="search" *ngIf="canSearch()">
     <input #searchBox type="text" id="search-box" (input)="search(searchBox.value)" placeholder="Look for food..." />
     <button type="submit" class="searchButton">
         Search
     </button>
 </div>
 
-<table mat-table [dataSource]="databaseFoods" *ngIf="!isLoading">
+<table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading">
 
     <!-- ID -->
     <ng-container matColumnDef="id" *ngIf="isInDebugMode">
@@ -84,7 +88,7 @@
 
 </table>
 
-<div>
+<div *ngIf="canScanBarcode()">
     <button (click)="scanBarcode()">
         Scan barcode
     </button>

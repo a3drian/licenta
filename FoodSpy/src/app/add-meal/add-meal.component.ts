@@ -26,6 +26,7 @@ import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialog
 // Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-add-meal',
@@ -38,6 +39,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   areFoodsLoading: boolean = true;
   isSearchLoading: boolean = true;
+  foodsLoaded: boolean = false;
+
+  errorResponse: HttpErrorResponse | null = null;
 
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
@@ -127,10 +131,11 @@ export class AddMealComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           this.changeIntakeText();
         },
-        (error) => {
+        (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error), error:', error);
           this.isLoading = false;
           this.initializeIntake();
+          this.errorResponse = error;
           log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error), this.intake:', this.intake);
         }
       );
@@ -149,9 +154,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
           this.databaseFoods = data;
           this.areFoodsLoading = false;
         },
-        (error) => {
+        (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.searchTerms.subscribe(error) error:', error);
           this.areFoodsLoading = false;
+          this.errorResponse = error;
         }
       );
     // Foods
@@ -161,12 +167,15 @@ export class AddMealComponent implements OnInit, OnDestroy {
         (data) => {
           if (data) {
             this.databaseFoods = data;
+            this.foodsLoaded = true;
             this.isSearchLoading = false;
           }
         },
-        (error) => {
+        (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.foodsService.subscribe(error) error:', error);
+          this.foodsLoaded = false;
           this.isSearchLoading = false;
+          this.errorResponse = error;
         }
       );
     // Meals:
@@ -475,6 +484,31 @@ export class AddMealComponent implements OnInit, OnDestroy {
     } else {
       log('add-meal.ts', this.viewIntakeDetails.name, 'User is not authenticated!');
     }
+  }
+
+  canShowFoodsTable(): boolean {
+
+    if (this.foodsLoaded) {
+      if (this.databaseFoods) {
+        if (this.databaseFoods.length !== 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  canSearch(): boolean {
+    return this.canShowFoodsTable();
+  }
+
+  canSelectMealType(): boolean {
+    return this.canShowFoodsTable();
+  }
+
+  canScanBarcode(): boolean {
+    return this.canShowFoodsTable();
   }
 
   // Item filtering:

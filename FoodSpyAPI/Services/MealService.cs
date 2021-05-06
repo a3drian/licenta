@@ -21,7 +21,7 @@ namespace FoodSpyAPI.Services
 		#region Constants
 
 		private const string FOODS_FOREIGN_COLLECTION_NAME = "Foods";
-		private const string MEAL_LOCAL_FIELD = "FoodIDs";
+		private const string MEAL_LOCAL_FIELD = "MealFoods.Mfid";
 		private const string FOOD_FOREIGN_FIELD = "_id";
 		private const string FOODS_ARRAY = nameof(Meal.Foods);
 
@@ -52,6 +52,27 @@ namespace FoodSpyAPI.Services
 
 			IAsyncCursor<Meal> meals = await _meals.FindAsync<Meal>(meal => true);
 			List<Meal> mealsList = meals.ToList();
+			return mealsList;
+		}
+
+		public async Task<List<Meal>> GetMealsWithFoods()
+		{
+			_logger.LogInformation($"Fetching meals...");
+
+			IAggregateFluent<Meal> aggregationMatch = _meals
+				.Aggregate()
+				.Match<Meal>(meal => true);
+
+			List<Meal> mealsList = await aggregationMatch
+				.Lookup(
+					FOODS_FOREIGN_COLLECTION_NAME,
+					MEAL_LOCAL_FIELD,
+					FOOD_FOREIGN_FIELD,
+					FOODS_ARRAY
+				)
+				.As<Meal>()
+				.ToListAsync();
+
 			return mealsList;
 		}
 

@@ -18,5 +18,7 @@ namespace FoodSpyAPI.Interfaces.Services
 		public Task<bool> DeleteMeal(Meal meal);
 
 		public Task<List<Meal>> SearchMealsByType(string type);
+
+		public Task<List<Meal>> GetMealsWithFoods();
 	}
 }
