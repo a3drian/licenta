@@ -68,8 +68,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
   foodsColumns: string[] = [
     'id',
     'name',
-    'qty',
-    'unit',
+    'energy',
+    'fats',
+    'carbs',
+    'proteins',
     'select'
   ];
   mealTypes: string[] = [];

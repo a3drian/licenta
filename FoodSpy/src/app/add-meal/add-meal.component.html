@@ -56,16 +56,28 @@
         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
     </ng-container>
 
-    <!-- Qty -->
-    <ng-container matColumnDef="qty">
-        <th mat-header-cell *matHeaderCellDef> Quantity </th>
-        <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+    <!-- Energy -->
+    <ng-container matColumnDef="energy">
+        <th mat-header-cell *matHeaderCellDef> Energy (kcal) </th>
+        <td mat-cell *matCellDef="let element"> {{element.energy}} </td>
     </ng-container>
 
-    <!-- Unit -->
-    <ng-container matColumnDef="unit">
-        <th mat-header-cell *matHeaderCellDef> Unit </th>
-        <td mat-cell *matCellDef="let element"> {{element.unit}} </td>
+    <!-- Fats -->
+    <ng-container matColumnDef="fats">
+        <th mat-header-cell *matHeaderCellDef> Fats (g) </th>
+        <td mat-cell *matCellDef="let element"> {{element.fats}} </td>
+    </ng-container>
+
+    <!-- Carbs -->
+    <ng-container matColumnDef="carbs">
+        <th mat-header-cell *matHeaderCellDef> Carbs (g) </th>
+        <td mat-cell *matCellDef="let element"> {{element.carbohydrates}} </td>
+    </ng-container>
+
+    <!-- Proteins -->
+    <ng-container matColumnDef="proteins">
+        <th mat-header-cell *matHeaderCellDef> Proteins (g) </th>
+        <td mat-cell *matCellDef="let element"> {{element.proteins}} </td>
     </ng-container>
 
     <!-- Selection checkbox -->
@@ -75,7 +87,7 @@
             <!-- <mat-checkbox (change)="selectRow(food)" [checked]="checkIsRowSelected(food)"></mat-checkbox> -->
             <!--  routerLink="/edit/{{ food }}" -->
             <button class="button" mat-stroked-button color="accent" (click)="openDialog(food)">
-                Edit qty and add to meal
+                Add to meal
             </button>
         </td>
     </ng-container>
