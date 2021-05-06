@@ -75,7 +75,7 @@ export class IntakesComponent implements OnInit {
       this.router
         .navigate([url])
         .catch(
-          (error: object) => {
+          (error) => {
             log('add-meal.component.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}, error:`, error);
           }
         );
@@ -90,7 +90,7 @@ export class IntakesComponent implements OnInit {
       this.router
         .navigate([url])
         .catch(
-          (error: object) => {
+          (error) => {
             log('add-meal.component.ts', this.addNewMeal.name, `Could not navigate to: ${url}, error:`, error);
           }
         );
