@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 // Interfaces:
 import { IFood, IMeal } from 'foodspy-shared';
 // Services:
@@ -35,28 +36,36 @@ export class MealItemComponent implements OnInit {
       }
     );
 
-    this.initializeFoods(this.foodIDs);
-    setTimeout(
-      () => {
-        this.isLoading = false;
-      }, 1000);
+    this.initializeFoods(this.foodIDs)
+      .then(
+        () => {
+          this.isLoading = false;
+        }
+      );
   }
 
-  initializeFoods(foodIDs: string[]): void {
-    foodIDs.forEach(
-      (id) => {
-        this.foodService
-          .getFoodById(id)
-          .subscribe(
-            (food: IFood) => {
-              if (food) {
-                this.foods.push(food);
-              }
-            }
-          );
-
-      }
+  async initializeFoods(foodIDs: string[]): Promise<void> {
+    await Promise.all(
+      foodIDs.map(
+        (
+          async (id) => {
+            this.foodService
+              .getFoodById(id)
+              .subscribe(
+                (food: IFood) => {
+                  if (food) {
+                    this.foods.push(food);
+                  }
+                },
+                (error: HttpErrorResponse) => {
+                  log('meal-item.ts', this.initializeFoods.name, 'error:', error);
+                }
+              )
+          }
+        )
+      )
     );
+
   }
 
 }
