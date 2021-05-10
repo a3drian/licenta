@@ -36,6 +36,7 @@ import { FoodItemComponent } from './intake-history/food-item/food-item.componen
 import { MealItemComponent } from './intake-history/meal-item/meal-item.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { ErrorResponseComponent } from './shared/error-response/error-response.component';
+import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { ErrorResponseComponent } from './shared/error-response/error-response.c
     HistoryComponent,
     FoodItemComponent,
     MealItemComponent,
-    ErrorResponseComponent
+    ErrorResponseComponent,
+    NotFoundPageComponent
   ],
   imports: [
     BrowserModule,
