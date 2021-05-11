@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
-
+// Models:
 import { User } from '../entities/user.entity';
+// Shared:
 import { log } from '../shared/Logger';
 
 const CLASS_NAME = 'users.service.ts';
@@ -38,10 +39,11 @@ async function getUsers(
       );
 
       console.log('');
-      console.log('user.service.ts, getUsers():');
-      console.log('existingUsers:', existingUsers);
-      console.log('existingUsers.length:', existingUsers.length);
-      console.log('user.service.ts, getUsers()^');
+      log(CLASS_NAME, getUsers.name, '');
+      log(CLASS_NAME, getUsers.name, 'existingUsers:', existingUsers);
+      log(CLASS_NAME, getUsers.name, 'existingUsers.length:', existingUsers.length);
+      log(CLASS_NAME, `${getUsers.name}^`, '');
+      console.log('');
 
       return existingUsers;
    } catch (ex) {
@@ -63,8 +65,8 @@ async function getUserByEmail(
    }
 
    console.log('');
-   console.log('user.service.ts, getUserByEmail():');
-   console.log('email:', email);
+   log(CLASS_NAME, getUserByEmail.name, '');
+   log(CLASS_NAME, getUserByEmail.name, 'email:', email);
 
    try {
 
@@ -74,8 +76,8 @@ async function getUserByEmail(
             { email: email }
          );
 
-      console.log('user:', user);
-      console.log('user.service.ts, getUserByEmail()^');
+      log(CLASS_NAME, getUserByEmail.name, 'user:', user);
+      log(CLASS_NAME, `${getUserByEmail.name}^`, '');
       console.log('');
 
       return user;
@@ -102,9 +104,9 @@ async function registerUser(
       const registeredUser = new User(user);
 
       console.log('');
-      console.log('register.service.ts, registerUser():');
-      console.log('registeredUser:', registeredUser);
-      console.log('register.service.ts, registerUser()^');
+      log(CLASS_NAME, registerUser.name, '');
+      log(CLASS_NAME, registerUser.name, 'registeredUser:', registeredUser);
+      log(CLASS_NAME, `${registerUser.name}^`, '');
       console.log('');
 
       await em.persistAndFlush(registeredUser);

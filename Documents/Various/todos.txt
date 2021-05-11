@@ -28,6 +28,8 @@ Fix:
 -push meals to mealIDs
 -fa sa se vada foods[] si meal[] in history
 
+caÃmaraÛ Ñnoastra_=+Ã 
+
 -update with Intake on the frontend so that a new Intake is added from "/add"
 -(?) do I need "authService" everywhere I need the authenticated user?
 -add AuthGuards from tutorial
