@@ -1,13 +1,17 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { BehaviorSubject, Observable } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
-import { throwError } from "rxjs";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+// rxjs:
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+// Interfaces:
+import { IAuthResponseData } from 'foodspy-shared';
+// Models:
 import { User } from '../models/User';
+// Shared:
 import { Constants } from '../shared/Constants';
-import { log } from "../shared/Logger";
-import { IAuthResponseData } from "foodspy-shared";
+import { log } from '../shared/Logger';
 
 export interface AuthResponseData {
     email: string;
@@ -119,7 +123,7 @@ export class AuthService {
             .navigate([this.LOGOUT_REDIRECT_URL])
             .catch(
                 (error) => {
-                    log('add-meal.component.ts', this.logout.name, `Could not navigate to: ${this.LOGOUT_REDIRECT_URL}`, error);
+                    log('auth.service.ts', this.logout.name, `Could not navigate to: ${this.LOGOUT_REDIRECT_URL}`, error);
                 }
             );
     }

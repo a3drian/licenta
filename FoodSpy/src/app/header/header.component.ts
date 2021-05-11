@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Constants } from '../shared/Constants';
-import { log } from '../shared/Logger';
+import { Router } from '@angular/router';
+// Interfaces:
+import { IUser } from 'foodspy-shared';
+// Services:
 import { AuthService } from '../auth/auth.service';
 import { UserService } from '../auth/user.service';
-import { Router } from '@angular/router';
-import { IUser } from 'foodspy-shared';
-
-
+// Shared:
+import { Constants } from '../shared/Constants';
+import { log } from '../shared/Logger';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -32,8 +33,9 @@ export class HeaderComponent implements OnInit {
     if (this.user) {
       this.authenticatedUserEmail = this.user.email;
       this.isAuthenticated = this.userService.isAuthenticated;
+      log('header.ts', this.ngOnInit.name, 'this.user, this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
-    log('dashboard.ts', this.ngOnInit.name, 'this.authenticatedUserEmail', this.authenticatedUserEmail);
+    log('header.ts', this.ngOnInit.name, '!this.user, this.authenticatedUserEmail is empty!');
   }
 
   onLogout(): void {
@@ -45,7 +47,7 @@ export class HeaderComponent implements OnInit {
       .navigate([Constants.APIEndpoints.AUTH_URL])
       .catch(
         (error) => {
-          log('add-meal.component.ts', this.logIn.name, `Could not navigate to: ${Constants.APIEndpoints.AUTH_URL}`, error);
+          log('header.ts', this.logIn.name, `Could not navigate to: ${Constants.APIEndpoints.AUTH_URL}`, error);
         }
       );
   }

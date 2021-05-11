@@ -1,9 +1,9 @@
-import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpParams, HttpRequest } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { exhaustMap, take } from "rxjs/operators";
-import { log } from "../shared/Logger";
-import { AuthService } from "./auth.service";
+import { HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpParams, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { exhaustMap, take } from 'rxjs/operators';
+import { log } from '../shared/Logger';
+import { AuthService } from './auth.service';
 
 
 @Injectable()

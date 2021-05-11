@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
@@ -25,8 +26,8 @@ import { Intake } from '../models/Intake';
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
 // Shared:
 import { Constants } from '../shared/Constants';
+import { isValidSearchTerm } from '../shared/validators/searchTermValidator';
 import { log } from '../shared/Logger';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-add-meal',
@@ -192,7 +193,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.dialogueSubscription) {
-      log('add-meal.component.ts', this.ngOnDestroy.name, 'Unsubscribing from dialogue subscription...');
+      log('add-meal.ts', this.ngOnDestroy.name, 'Unsubscribing from dialogue subscription...');
       this.dialogueSubscription.unsubscribe();
     }
   }
@@ -216,12 +217,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   onSelectedMealType(event: MatSelectChange): void {
     const mealType: string = event.value;
-    log('add-meal.component.ts', this.onSelectedMealType.name, 'mealType:', mealType);
+    log('add-meal.ts', this.onSelectedMealType.name, 'mealType:', mealType);
     this.selectedMealType = mealType;
   }
 
   openDialog(food: IFood): void {
-    log('add-meal.component.ts', this.openDialog.name, 'Selected food:', food);
+    log('add-meal.ts', this.openDialog.name, 'Selected food:', food);
 
     const dialogRef = this.dialog
       .open(
@@ -242,29 +243,29 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   addFoodFromDialogueToFoodsArray(food: IMealFood): void {
-    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', food);
+    log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', food);
     this.addedMealFoods.push(food);
-    log('add-meal.component.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added meal foods []:', this.addedMealFoods);
+    log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added meal foods []:', this.addedMealFoods);
   }
 
   private addTypeAndCreatedAt(): void {
     const mealFromForm = this.addMealForm.value;
     this.meal.type = this.selectedMealType;
     this.meal.createdAt = this.today;
-    log('add-meal.component.ts', this.addTypeAndCreatedAt.name, 'mealFromForm:', mealFromForm);
-    log('add-meal.component.ts', this.addTypeAndCreatedAt.name, 'this.meal:', this.meal);
+    log('add-meal.ts', this.addTypeAndCreatedAt.name, 'mealFromForm:', mealFromForm);
+    log('add-meal.ts', this.addTypeAndCreatedAt.name, 'this.meal:', this.meal);
   }
 
   private addIdAndMealFoods(mealFromDb: IMeal): void {
     this.meal.id = mealFromDb.id;
     mealFromDb.mealFoods.forEach(
       (mealFood) => {
-        log('add-meal.component.ts', this.addIdAndMealFoods.name, 'mealFood:', mealFood);
+        log('add-meal.ts', this.addIdAndMealFoods.name, 'mealFood:', mealFood);
         this.meal.mealFoods.push(mealFood);
       }
     );
-    log('add-meal.component.ts', this.addIdAndMealFoods.name, 'After adding mealFoods, this.meal.id:', this.meal.id);
-    log('add-meal.component.ts', this.addIdAndMealFoods.name, 'After adding mealFoods, this.meal.mealFoods:', this.meal.mealFoods);
+    log('add-meal.ts', this.addIdAndMealFoods.name, 'After adding mealFoods, this.meal.id:', this.meal.id);
+    log('add-meal.ts', this.addIdAndMealFoods.name, 'After adding mealFoods, this.meal.mealFoods:', this.meal.mealFoods);
   }
 
   private reloadPage(caller: string): void {
@@ -276,13 +277,13 @@ export class AddMealComponent implements OnInit, OnDestroy {
           .navigate([this.ADD_MEAL_URL])
           .catch(
             (error) => {
-              log('add-meal.component.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.ADD_MEAL_URL}`, error);
+              log('add-meal.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.ADD_MEAL_URL}`, error);
             }
           );
       })
       .catch(
         (error) => {
-          log('add-meal.component.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.DASHBOARD_URL}`, error);
+          log('add-meal.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.DASHBOARD_URL}`, error);
         }
       );
   }
@@ -293,12 +294,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .toPromise()
       .catch(
         (error) => {
-          log('add-meal.component.ts', this.onSubmit.name, 'this.mealsService.getMealById.catch(error) error:', error);
+          log('add-meal.ts', this.onSubmit.name, 'this.mealsService.getMealById.catch(error) error:', error);
         }
       );
 
     if (!mealById) {
-      log('add-meal.component.ts', this.onSubmit.name, '!mealById');
+      log('add-meal.ts', this.onSubmit.name, '!mealById');
       return <IMeal>{};
     }
 
@@ -311,12 +312,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .toPromise()
       .catch(
         (error) => {
-          log('add-meal.component.ts', this.editMealAndReturnItFromDb.name, 'this.mealsService.editMeal.catch(error) error:', error);
+          log('add-meal.ts', this.editMealAndReturnItFromDb.name, 'this.mealsService.editMeal.catch(error) error:', error);
         }
       );
 
     if (!editedMeal) {
-      log('add-meal.component.ts', this.editMealAndReturnItFromDb.name, '!editedMeal');
+      log('add-meal.ts', this.editMealAndReturnItFromDb.name, '!editedMeal');
       return <IMeal>{};
     }
 
@@ -330,12 +331,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .toPromise()
       .catch(
         (error) => {
-          log('add-meal.component.ts', this.addMealAndReturnItFromDb.name, 'this.mealsService.addMeal.catch(error) error:', error);
+          log('add-meal.ts', this.addMealAndReturnItFromDb.name, 'this.mealsService.addMeal.catch(error) error:', error);
         }
       );
 
     if (!addedMeal) {
-      log('add-meal.component.ts', this.addMealAndReturnItFromDb.name, '!addedMeal');
+      log('add-meal.ts', this.addMealAndReturnItFromDb.name, '!addedMeal');
       return <IMeal>{};
     }
 
@@ -357,15 +358,15 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
     // concatenate the two MealFoods[]
     mealToBeEdited.mealFoods = [...mealToBeEdited.mealFoods, ...this.addedMealFoods];
-    log('add-meal.component.ts', this.editMealFromIntake.name, 'Concatenation, mealToBeEdited.mealFoods:', mealToBeEdited.mealFoods);
+    log('add-meal.ts', this.editMealFromIntake.name, 'Concatenation, mealToBeEdited.mealFoods:', mealToBeEdited.mealFoods);
 
     // get the original Meal from the db using meal.id
     const mealFromDb: IMeal = await this.getMealById(mealToBeEdited.id);
-    log('add-meal.component.ts', this.editMealFromIntake.name, 'Before, mealById:', mealFromDb);
+    log('add-meal.ts', this.editMealFromIntake.name, 'Before, mealById:', mealFromDb);
 
     // add the concatenated Foods[] to the original Meal
     const editedMealFromDb: IMeal = await this.editMealAndReturnItFromDb(mealToBeEdited);
-    log('add-meal.component.ts', this.editMealFromIntake.name, 'After, editedMealById:', editedMealFromDb);
+    log('add-meal.ts', this.editMealFromIntake.name, 'After, editedMealById:', editedMealFromDb);
 
     // prepare this.meal to be embedded in the existing Intake
     this.addIdAndMealFoods(editedMealFromDb);
@@ -392,7 +393,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
       if (this.existingMealTypes.includes(this.selectedMealType)) {
 
         // same meal type => edit Meal => embed in Intake => edit Intake
-        log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with the same meal type, this.selectedMealType:', this.selectedMealType);
+        log('add-meal.ts', this.onSubmit.name, 'Adding a meal with the same meal type, this.selectedMealType:', this.selectedMealType);
 
         // need to loop through all existing meals to find the one which matches our (soon to be added) new meal
         await this.editMealFromIntake();
@@ -402,7 +403,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
       } else {
 
         // different meal type => new Meal => embed in Intake => edit Intake
-        log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a different meal type, this.selectedMealType:', this.selectedMealType);
+        log('add-meal.ts', this.onSubmit.name, 'Adding a meal with a different meal type, this.selectedMealType:', this.selectedMealType);
 
         await this.addNewMealToIntake();
       }
@@ -410,24 +411,24 @@ export class AddMealComponent implements OnInit, OnDestroy {
     } else {
 
       // need to add a new meal type => new Meal => embed in Intake => new Intake
-      log('add-meal.component.ts', this.onSubmit.name, 'Adding a meal with a new meal type, this.selectedMealType:', this.selectedMealType);
+      log('add-meal.ts', this.onSubmit.name, 'Adding a meal with a new meal type, this.selectedMealType:', this.selectedMealType);
 
       await this.addNewMealToIntake();
     }
 
-    log('add-meal.component.ts', this.onSubmit.name, 'Adding this.meal to this.intake, this.meal:', this.meal);
+    log('add-meal.ts', this.onSubmit.name, 'Adding this.meal to this.intake, this.meal:', this.meal);
 
     if (editMeal) {
       // no need to modify the existing Intake because it already contains a reference to the edited Meal => reload page
       this.reloadPage(this.onSubmit.name);
     } else {
       if (this.existingIntake) {
-        log('add-meal.component.ts', this.onSubmit.name, 'Editing existing intake, this.intake:', this.intake);
+        log('add-meal.ts', this.onSubmit.name, 'Editing existing intake, this.intake:', this.intake);
         this.intakesService
           .editIntake(this.intake)
           .subscribe();
       } else {
-        log('add-meal.component.ts', this.onSubmit.name, 'Adding new intake, this.intake:', this.intake);
+        log('add-meal.ts', this.onSubmit.name, 'Adding new intake, this.intake:', this.intake);
         this.intakesService
           .addIntake(this.intake)
           .subscribe();
@@ -457,14 +458,14 @@ export class AddMealComponent implements OnInit, OnDestroy {
           this.intakeText = 'No meals added today.';
         } else {
           const meals: string = this.intake.mealIDs.length === 1 ? 'one meal' : `${this.intake.mealIDs.length} meals`;
-          log('add-meal.component.ts', this.changeIntakeText.name, 'this.intake.mealIDs:', this.intake.mealIDs);
+          log('add-meal.ts', this.changeIntakeText.name, 'this.intake.mealIDs:', this.intake.mealIDs);
           this.intake.mealIDs.forEach(element => {
-            log('add-meal.component.ts', this.changeIntakeText.name, 'element:', element);
+            log('add-meal.ts', this.changeIntakeText.name, 'element:', element);
           });
           this.intakeText = `Today you had ${meals}.`;
         }
       } else {
-        log('add-meal.component.ts', this.changeIntakeText.name, 'this.intake.mealIDs is not defined');
+        log('add-meal.ts', this.changeIntakeText.name, 'this.intake.mealIDs is not defined');
         this.intakeText = 'No meals added today.';
       }
     }
@@ -479,7 +480,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
           .navigate([url])
           .catch(
             (error) => {
-              log('add-meal.component.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}`, error);
+              log('add-meal.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}`, error);
             }
           );
       }
@@ -517,7 +518,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
   searchTerms = new Subject<string>();
   searchTerm: string = '';
   search(term: string): void {
-    log('add-meal.component.ts', this.search.name, 'Search term:', term);
+    log('add-meal.ts', this.search.name, 'Search term:', term);
+    if (!isValidSearchTerm(term)) {
+      return;
+    }
     this.searchTerm = term;
     this.searchTerms.next(term);
   }
@@ -529,7 +533,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
         .navigate([url])
         .catch(
           (error) => {
-            log('add-meal.component.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}`, error);
+            log('add-meal.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}`, error);
           }
         );
     } else {
