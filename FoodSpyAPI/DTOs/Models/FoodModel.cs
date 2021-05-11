@@ -13,6 +13,8 @@ namespace FoodSpyAPI.DTOs.Models
 
 		[BsonElement(nameof(Name))] public string Name { get; set; }
 
+		[BsonElement(nameof(DisplayName))] public string DisplayName { get; set; }
+
 		[BsonElement(nameof(Energy))] public double Energy { get; set; }
 
 		[BsonElement(nameof(Fats))] public double Fats { get; set; }

@@ -5,6 +5,8 @@ namespace FoodSpyAPI.Interfaces
 	{
 		string Name { get; set; }
 
+		string DisplayName { get; set; }
+
 		double Energy { get; set; }
 
 		double Fats { get; set; }

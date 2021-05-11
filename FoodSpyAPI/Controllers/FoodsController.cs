@@ -77,6 +77,15 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
+				string name = meal.Name;
+				if (!Validator.IsValidFoodName(name)) {
+					return BadRequest($"Name '{meal.Name}' is invalid or does not contain only allowed characters!");
+				}
+
+				string convertedName = CharacterConverter.ConvertDiacritics(name);
+				meal.Name = convertedName; // convert diacritics
+				meal.DisplayName = name;   // keep diacritics
+
 				Food addedFood = await _foodService.AddFood(meal);
 
 				string location = _linkGenerator.GetPathByAction(
@@ -161,11 +170,14 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				if (!Validator.IsEmptySearchTerm(name)) {
+				if (!Validator.IsValidFoodName(name)) {
+					// TO DO: return BAD REQUEST
 					return await GetFoods();
 				}
 
-				List<Food> searchResults = await _foodService.SearchFoodsByName(name);
+				string convertedName = CharacterConverter.ConvertDiacritics(name);
+
+				List<Food> searchResults = await _foodService.SearchFoodsByName(convertedName);
 				List<FoodModel> mappedFoods = _mapper.Map<List<FoodModel>>(searchResults);
 				return mappedFoods;
 

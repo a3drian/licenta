@@ -41,19 +41,18 @@ namespace FoodSpyAPI
 			// Foods database
 			services.Configure<FoodsDatabaseSettings>(
 				Configuration.GetSection(nameof(FoodsDatabaseSettings)));
-
 			services.AddSingleton<IFoodsDatabaseSettings>(sp =>
 				sp.GetRequiredService<IOptions<FoodsDatabaseSettings>>().Value);
+
 			// Meals database
 			services.Configure<MealsDatabaseSettings>(
 				 Configuration.GetSection(nameof(MealsDatabaseSettings)));
-
 			services.AddSingleton<IMealsDatabaseSettings>(sp =>
 				 sp.GetRequiredService<IOptions<MealsDatabaseSettings>>().Value);
+
 			// Intakes database
 			services.Configure<IntakesDatabaseSettings>(
 				Configuration.GetSection(nameof(IntakesDatabaseSettings)));
-
 			services.AddSingleton<IIntakesDatabaseSettings>(sp =>
 				sp.GetRequiredService<IOptions<IntakesDatabaseSettings>>().Value);
 

@@ -18,7 +18,7 @@ namespace FoodSpyAPI.Helpers
 		/// <returns>
 		///   <c>true</c> if id is of type string, is not null and does not contain whitespace; otherwise, <c>false</c>.
 		/// </returns>
-		public static bool IsValidId(string id)
+		internal static bool IsValidId(string id)
 		{
 			if (
 				 id.GetType() != typeof(string) ||
@@ -31,7 +31,7 @@ namespace FoodSpyAPI.Helpers
 			return true;
 		}
 
-		public static bool IsEmptyString(string str)
+		private static bool IsEmptyString(string str)
 		{
 			if (
 				 str == null ||
@@ -39,24 +39,24 @@ namespace FoodSpyAPI.Helpers
 				 str.Length == 0 ||
 				 str.All(char.IsWhiteSpace)
 			) {
-				return false;
+				return true;
 			}
 
-			return true;
+			return false;
 		}
 
-		public static bool IsEmptySearchTerm(string searchTerm)
+		private static bool IsEmptySearchTerm(string searchTerm)
 		{
-			if (!IsEmptyString(searchTerm)) {
-				return false;
+			if (IsEmptyString(searchTerm)) {
+				return true;
 			}
 
-			return true;
+			return false;
 		}
 
-		public static bool IsValidSearchTerm(string searchTerm)
+		internal static bool IsValidSearchTerm(string searchTerm)
 		{
-			if (!IsEmptySearchTerm(searchTerm)) {
+			if (IsEmptySearchTerm(searchTerm)) {
 				return false;
 			}
 
@@ -125,8 +125,8 @@ namespace FoodSpyAPI.Helpers
 			}
 
 			if (date.Year == 1 &&
-				date.Month == 1 &&
-				date.Day == 1
+				 date.Month == 1 &&
+				 date.Day == 1
 			) {
 				return false;
 			}
@@ -197,20 +197,27 @@ namespace FoodSpyAPI.Helpers
 
 		internal static bool IsValidMealType(string type)
 		{
-			if (!IsEmptySearchTerm(type)) {
+			if (!IsValidSearchTerm(type)) {
 				return false;
 			}
 
-			if (!(type.GetType() == typeof(string))) {
-				return false;
-			}
-
-			string firstLetterUppercased = type.First().ToString().ToUpper() + type[1..].ToLower();
+			string firstLetterUppercased = type.FirstLetterUppercased();
 
 			bool valid = Enum.IsDefined(typeof(MealType), firstLetterUppercased);
 			if (!valid) { return false; }
 
 			return true;
+		}
+
+		internal static bool IsValidFoodName(string name)
+		{
+			if (!IsValidSearchTerm(name)) {
+				return false;
+			}
+
+			bool valid = name.All(letter => Alphabet.ALLOWED_CHARACTERS.Contains(letter));
+
+			return valid;
 		}
 	}
 

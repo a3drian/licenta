@@ -217,7 +217,8 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest($"'{nameof(type)}' should be a valid meal type!");
 				}
 
-				List<Meal> searchResults = await _mealService.SearchMealsByType(type);
+				string firstLetterUppercased = type.FirstLetterUppercased();
+				List<Meal> searchResults = await _mealService.SearchMealsByType(firstLetterUppercased);
 				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(searchResults);
 				return mappedMeals;
 
