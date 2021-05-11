@@ -17,7 +17,7 @@ using FoodSpyAPI.Models;
 namespace FoodSpyAPI.Controllers
 {
 	[ApiController]
-	[Route("api/[controller]")]
+	[Route("api/db/[controller]")]
 	public class IntakesController : ControllerBase
 	{
 		private readonly IIntakeService _intakeService;
