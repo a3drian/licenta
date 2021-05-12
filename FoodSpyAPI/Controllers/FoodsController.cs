@@ -122,9 +122,17 @@ namespace FoodSpyAPI.Controllers
 					return NotFound($"Food with id '{id}' was not found!");
 				}
 
+				string name = meal.Name;
+				if (!Validator.IsValidFoodName(name)) {
+					return BadRequest($"Name '{meal.Name}' is invalid or does not contain only allowed characters!");
+				}
+
+				string convertedName = CharacterConverter.ConvertDiacritics(name);
 				Food updatedFood = new Food(meal)
 				{
-					Id = oldFood.Id
+					Id = oldFood.Id,
+					Name = convertedName,   // convert diacritics
+					DisplayName = name      // keep diacritics
 				};
 
 				bool updated = await _foodService.UpdateFood(updatedFood);
