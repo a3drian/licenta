@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using FoodSpyAPI.Common;
 using FoodSpyAPI.Interfaces;
 
 namespace FoodSpyAPI.Models
@@ -75,13 +76,13 @@ namespace FoodSpyAPI.Models
 
 			output += $"{blank.PadLeft(10, space)}";
 
-			output += $" {nameof(Energy)}: {Energy}" + "kcal,";
-			output += $" {nameof(Fats)}: {Fats}" + "g,";
-			output += $" {nameof(Saturates)}: {Saturates}" + "g,";
-			output += $" {nameof(Carbohydrates)}: {Carbohydrates}" + "g,";
-			output += $" {nameof(Sugars)}: {Sugars}" + "g,";
-			output += $" {nameof(Proteins)}: {Proteins}" + "g,";
-			output += $" {nameof(Salt)}: {Salt}" + "g" + "\n";
+			output += $" {nameof(Energy)}: {Energy}" + Units.CALORIES + ",";
+			output += $" {nameof(Fats)}: {Fats}" + Units.GRAMS + ",";
+			output += $" {nameof(Saturates)}: {Saturates}" + Units.GRAMS + ",";
+			output += $" {nameof(Carbohydrates)}: {Carbohydrates}" + Units.GRAMS + ",";
+			output += $" {nameof(Sugars)}: {Sugars}" + Units.GRAMS + ",";
+			output += $" {nameof(Proteins)}: {Proteins}" + Units.GRAMS + ",";
+			output += $" {nameof(Salt)}: {Salt}" + Units.GRAMS + "\n";
 
 			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(Food) + "\n";
 

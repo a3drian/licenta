@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using FoodSpyAPI.Common;
 using FoodSpyAPI.Helpers;
 using FoodSpyAPI.Interfaces;
 
@@ -18,6 +19,10 @@ namespace FoodSpyAPI.Models
 		[BsonElement(nameof(Email))]
 		[Required]
 		public string Email { get; set; }
+
+		[BsonElement(nameof(Calories))]
+		[Required]
+		public uint Calories { get; set; }
 
 		[BsonElement(nameof(CreatedAt))]
 		[Required]
@@ -34,6 +39,7 @@ namespace FoodSpyAPI.Models
 		public Intake(Intake intake)
 		{
 			this.Email = intake.Email;
+			this.Calories = intake.Calories;
 			this.CreatedAt = intake.CreatedAt;
 			this.MealIDs = intake.MealIDs;
 			this.Meals = new List<Meal>();
@@ -49,6 +55,7 @@ namespace FoodSpyAPI.Models
 
 			output += $" Id: {Id}" + ",";
 			output += $" Email: {Email}" + ",";
+			output += $" Calories: {Calories}" + Units.CALORIES + ",";
 			output += $" CreatedAt: {CreatedAt.Print()}" + "\n";
 
 			output += $"{blank.PadLeft(10, space)} {nameof(MealIDs)}:" + "\n";
