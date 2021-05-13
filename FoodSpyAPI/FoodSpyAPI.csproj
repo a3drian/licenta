@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Compile Remove="Common\Constants.cs" />
+    <Compile Remove="Common\FoodUnit.cs" />
     <Compile Remove="Common\FoodUnits.cs" />
     <Compile Remove="DTOs\Models\MealFood.cs" />
     <Compile Remove="Interfaces\IFoodMeal.cs" />

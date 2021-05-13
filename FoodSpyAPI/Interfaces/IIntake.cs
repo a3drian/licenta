@@ -9,7 +9,9 @@ namespace FoodSpyAPI.Interfaces
 	{
 		string Email { get; set; }
 
-		uint Calories { get; set; }
+		double Calories { get; set; }
+
+		//double TargetCalories { get; set; }
 
 		DateTime CreatedAt { get; set; }
 

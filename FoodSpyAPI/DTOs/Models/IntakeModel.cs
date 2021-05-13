@@ -16,7 +16,9 @@ namespace FoodSpyAPI.DTOs.Models
 
 		[BsonElement(nameof(Email))] public string Email { get; set; }
 
-		[BsonElement(nameof(Calories))] public uint Calories { get; set; }
+		[BsonElement(nameof(Calories))] public double Calories { get; set; }
+
+		[BsonElement(nameof(TargetCalories))] public double TargetCalories { get; set; }
 
 		[BsonElement(nameof(CreatedAt))] public DateTime CreatedAt { get; set; }
 

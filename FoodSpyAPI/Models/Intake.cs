@@ -22,7 +22,11 @@ namespace FoodSpyAPI.Models
 
 		[BsonElement(nameof(Calories))]
 		[Required]
-		public uint Calories { get; set; }
+		public double Calories { get; set; }
+
+		[BsonElement(nameof(TargetCalories))]
+		[Required]
+		public double TargetCalories { get; set; }
 
 		[BsonElement(nameof(CreatedAt))]
 		[Required]
@@ -55,7 +59,7 @@ namespace FoodSpyAPI.Models
 
 			output += $" Id: {Id}" + ",";
 			output += $" Email: {Email}" + ",";
-			output += $" Calories: {Calories}" + Units.CALORIES + ",";
+			output += $" Calories: {Calories} / {TargetCalories}" + Units.CALORIES + ",";
 			output += $" CreatedAt: {CreatedAt.Print()}" + "\n";
 
 			output += $"{blank.PadLeft(10, space)} {nameof(MealIDs)}:" + "\n";
