@@ -2,36 +2,36 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FoodSpyAPI.Helpers;
-using FoodSpyAPI.Models;
-using FoodSpyAPI.Services;
-using AutoMapper;
-using FoodSpyAPI.Common;
-using FoodSpyAPI.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
+using AutoMapper;
+using FoodSpyAPI.DTOs.Models;
+using FoodSpyAPI.Interfaces.Services;
+using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Controllers
 {
 	[ApiController]
-	[Route("api/[controller]")]
+	[Route("api/db/[controller]")]
 	public class MealsController : ControllerBase
 	{
-		private readonly MealService _mealService;
+		private readonly IMealService _mealService;
 		private readonly IMapper _mapper;
 		private readonly LinkGenerator _linkGenerator;
-		private readonly ILogger<MealService> _logger;
+		private readonly ILogger<IMealService> _logger;
 
-		public MealsController(MealService mealService, IMapper mapper, LinkGenerator linkGenerator,
-			 ILogger<MealService> logger)
+		public MealsController(IMealService mealService, IMapper mapper, LinkGenerator linkGenerator, ILogger<IMealService> logger)
 		{
-			_mealService = mealService;
-			_mapper = mapper;
-			_linkGenerator = linkGenerator;
-			_logger = logger;
+			_mealService = mealService ?? throw new ArgumentNullException(nameof(mealService));
+			_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+			_linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
+
+		#region GET
 
 		[HttpGet]
 		public async Task<ActionResult<List<MealModel>>> GetMeals()
@@ -47,17 +47,32 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		[HttpGet("withFoods")]
+		public async Task<ActionResult<List<MealModel>>> GetMealsWithFoods()
+		{
+			try {
+
+				List<Meal> meals = await _mealService.GetMealsWithFoods();
+				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(meals);
+				return mappedMeals;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
+
+		#endregion
+
+		#region GET/:id
+
 		[HttpGet("{id}")]
 		public async Task<ActionResult<MealModel>> GetMealById(string id)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
-					return BadRequest($"'id' parameter: '{id}' is invalid!");
-				}
-
-				if (!Validator.IsValid24DigitHexString(id)) {
-					return BadRequest($"'id' parameter: '{id}' is not a valid 24 digit hex string!");
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
 				Meal meal = await _mealService.GetMealById(id);
@@ -74,12 +89,22 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region POST
+
 		[HttpPost]
-		public async Task<ActionResult<MealModel>> AddMeal(Meal meal)
+		public async Task<ActionResult<MealModel>> AddMeal(MealModel meal)
 		{
 			try {
 
-				Meal addedMeal = await _mealService.AddMeal(meal);
+				ObjectResult validateMeal = ValidateMeal(meal);
+				if (!validateMeal.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateMeal;
+				}
+
+				Meal mapFromModel = _mapper.Map<MealModel, Meal>(meal);
+				Meal addedMeal = await _mealService.AddMeal(mapFromModel);
 
 				string location = _linkGenerator.GetPathByAction(
 					 "GetMealById",
@@ -93,21 +118,31 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest($"Id '{meal.Id}' is invalid and cannot be used to create a new Meal!");
 				}
 
-				MealModel mappedMeal = _mapper.Map<MealModel>(addedMeal);
-				return Created(location, mappedMeal);
+				MealModel mapToModel = _mapper.Map<MealModel>(addedMeal);
+				return Created(location, mapToModel);
 
 			} catch (Exception e) {
 				return LogDatabaseException(e);
 			}
 		}
 
+		#endregion
+
+		#region PUT
+
 		[HttpPut("{id}")]
-		public async Task<ActionResult<MealModel>> UpdateMeal(string id, Meal meal)
+		public async Task<ActionResult<MealModel>> UpdateMeal(string id, MealModel meal)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
-					return BadRequest($"'id' parameter: '{id}' is invalid!");
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
+				}
+
+				ObjectResult validateMeal = ValidateMeal(meal);
+				if (!validateMeal.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateMeal;
 				}
 
 				Meal oldMeal = await _mealService.GetMealById(id);
@@ -115,7 +150,8 @@ namespace FoodSpyAPI.Controllers
 					return NotFound($"Meal with id '{id}' was not found!");
 				}
 
-				Meal updatedMeal = new Meal(meal)
+				Meal mapFromModel = _mapper.Map<MealModel, Meal>(meal);
+				Meal updatedMeal = new Meal(mapFromModel)
 				{
 					Id = oldMeal.Id
 				};
@@ -125,20 +161,26 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest("Invalid parameters for 'PUT' request!");
 				}
 
-				return _mapper.Map<MealModel>(updatedMeal);
+				MealModel mapToModel = _mapper.Map<MealModel>(updatedMeal);
+				return mapToModel;
 
 			} catch (Exception e) {
 				return LogDatabaseException(e);
 			}
 		}
 
+		#endregion
+
+		#region DELETE
+
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteMeal(string id)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
-					return BadRequest($"'id' parameter: '{id}' is invalid!");
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
 				Meal meal = await _mealService.GetMealById(id);
@@ -158,13 +200,25 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region Search methods
+
 		[HttpGet("type/{type}")]
-		//[HttpGet("type")]
 		public async Task<ActionResult<List<MealModel>>> SearchMealsByType(string type)
 		{
 			try {
 
-				List<Meal> searchResults = await _mealService.SearchMealsByType(type);
+				if (!Validator.IsValidSearchTerm(type)) {
+					return BadRequest($"'{nameof(type)}' should be a valid search term!");
+				}
+
+				if (!Validator.IsValidMealType(type)) {
+					return BadRequest($"'{nameof(type)}' should be a valid meal type!");
+				}
+
+				string firstLetterUppercased = type.FirstLetterUppercased();
+				List<Meal> searchResults = await _mealService.SearchMealsByType(firstLetterUppercased);
 				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(searchResults);
 				return mappedMeals;
 
@@ -173,6 +227,53 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region Validator methods
+
+		private ObjectResult ValidateID(string id)
+		{
+			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
+
+			if (!Validator.IsValidId(id)) {
+				return BadRequest($"'{nameof(id)}' parameter: '{id}' is invalid!");
+			}
+			if (!Validator.IsValid24DigitHexString(id)) {
+				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid 24 digit hex string!");
+			}
+
+			return result;
+		}
+
+		private ObjectResult ValidateMeal(MealModel meal)
+		{
+			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
+			if (!Validator.IsValidMealType(meal.Type)) {
+				return BadRequest($"'{nameof(meal.Type)}' is missing or is invalid!");
+			}
+			if (!Validator.IsValidDate(meal.CreatedAt)) {
+				return BadRequest($"'{nameof(meal.CreatedAt)}' is missing or is invalid!");
+			}
+			/*
+			if (!Validator.IsValidIDArray(meal.FoodIDs)) {
+				return BadRequest($"'{nameof(meal.FoodIDs)}' is missing, is invalid or contains duplicates!");
+			}
+
+			List<string> foodIDs = meal.FoodIDs;
+			foreach (string foodID in foodIDs) {
+				ObjectResult validateID = ValidateID(foodID);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
+				}
+			}
+			*/
+
+			return result;
+		}
+		#endregion
+
+		#region Private methods
+
 		private ObjectResult LogDatabaseException(Exception e)
 		{
 			_logger.LogError(e.ToString());
@@ -180,5 +281,8 @@ namespace FoodSpyAPI.Controllers
 				 StatusCodes.Status500InternalServerError,
 				 "Database failure!");
 		}
+
+		#endregion
+
 	}
 }

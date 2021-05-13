@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+// Interfaces:
+import { IUser } from 'foodspy-shared';
+// Services:
 import { IntakesService } from '../services/intakes.service';
+import { UserService } from '../auth/user.service';
+// Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
-import { Router } from '@angular/router';
-import { UserService } from '../auth/user.service';
-import { IUser } from 'foodspy-shared';
 
 @Component({
   selector: 'app-intakes',
@@ -15,6 +19,9 @@ export class IntakesComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
   isLoading: boolean = true;
+  intakesLoaded: boolean = false;
+
+  errorResponse: HttpErrorResponse | null = null;
 
   user: IUser | null = null;
   isAuthenticated: boolean = false;
@@ -49,11 +56,14 @@ export class IntakesComponent implements OnInit {
       .subscribe(
         (intakes) => {
           this.intakes = intakes;
+          this.intakesLoaded = true;
           this.isLoading = false;
         },
-        (error) => {
+        (error: HttpErrorResponse) => {
           log('intakes.ts', this.ngOnInit.name, '(error) error:', error);
+          this.intakesLoaded = false;
           this.isLoading = false;
+          this.errorResponse = error;
         }
       )
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
@@ -64,7 +74,14 @@ export class IntakesComponent implements OnInit {
   viewIntakeDetails(intakeId: string): void {
     log('intakes.ts', this.viewIntakeDetails.name, `Attempting to access intake with id: '${intakeId}'`);
     if (this.isAuthenticated) {
-      this.router.navigate([`/history/${intakeId}`]);
+      const url: string = `/history/${intakeId}`;
+      this.router
+        .navigate([url])
+        .catch(
+          (error) => {
+            log('intakes.ts', this.viewIntakeDetails.name, `Could not navigate to: ${url}, error:`, error);
+          }
+        );
     } else {
       log('intakes.ts', this.viewIntakeDetails.name, 'User is not authenticated!');
     }
@@ -72,22 +89,30 @@ export class IntakesComponent implements OnInit {
 
   addNewMeal(): void {
     if (this.isAuthenticated) {
-      this.router.navigate(['dashboard/add']);
+      const url: string = 'dashboard/add';
+      this.router
+        .navigate([url])
+        .catch(
+          (error) => {
+            log('intakes.ts', this.addNewMeal.name, `Could not navigate to: ${url}, error:`, error);
+          }
+        );
     } else {
       log('intakes.ts', this.addNewMeal.name, 'User is not authenticated!');
     }
   }
 
   canShowIntakesTable(): boolean {
-    /*
-    if (!this.intakes) {
-      return false;
-    } else if (this.intakes.length === 0) {
-      return false;
-    } else {
-      return false;
+
+    if (this.intakesLoaded) {
+      if (this.intakes) {
+        if (this.intakes.length !== 0) {
+          return true;
+        }
+      }
     }
-    */
-    return true;
+
+    return false;
   }
+
 }

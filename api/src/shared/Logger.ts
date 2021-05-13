@@ -6,8 +6,15 @@ const log = function (
    caller: string,
    message: string,
    object?: any
-) {
+): void {
    if (Constants.IN_DEBUG_MODE) {
+      if (!(caller.includes('(') || caller.includes(')'))) {
+         caller = caller + '()';
+      }
+      if (caller.includes('^')) {
+         caller = caller.replace('^', '');
+         caller = caller + '^';
+      }
       if (object) {
          console.log(`${className}.${caller}: ${message}`, object);
       } else {

@@ -1,11 +1,15 @@
 import { Router, Response, NextFunction } from 'express';
 import { EntityManager } from '@mikro-orm/core';
-import { User } from '../entities/user.entity';
+// Interfaces:
+import { IAuthResponseData } from 'foodspy-shared';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
+// Models:
+import { AuthResponseData } from '../models/AuthResponseData';
+import { User } from '../entities/user.entity';
+// Services:
 import * as userService from '../services/users.service';
 import { decryptPassword } from '../services/password.service';
-import { IAuthResponseData } from 'foodspy-shared';
-import { AuthResponseData } from '../models/AuthResponseData';
+// Shared:
 import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
 import { log } from '../shared/Logger';
 
@@ -32,9 +36,9 @@ async function loginUser(
     }
 
     console.log('');
-    console.log('login.route.ts, loginUser():');
-    console.log('req.baseUrl:', req.baseUrl);
-    console.log('req.originalUrl:', req.originalUrl);
+    log('login.route.ts', loginUser.name, '');
+    log('login.route.ts', loginUser.name, 'req.baseUrl:', req.baseUrl);
+    log('login.route.ts', loginUser.name, 'req.originalUrl:', req.originalUrl);
 
     let response: Error | User | null;
     try {
@@ -60,28 +64,35 @@ async function loginUser(
         }
 
         if (response instanceof User) {
-            console.log(response);
+            log('login.route.ts', loginUser.name, 'response:', response);
+
             const formPassword = body.password;
             const storedPassword = response.password;
             const match = decryptPassword(formPassword, storedPassword);
             if (match) {
-                console.log('Passwords match! Signing user in...');
+
+                log('login.route.ts', loginUser.name, 'Passwords match! Signing user in...');
                 let authResponseData: IAuthResponseData = new AuthResponseData;
                 authResponseData.email = response.email;
                 authResponseData.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
                 authResponseData.id = response.id;
                 authResponseData.expiresIn = FIFTEEN_MINUTES;
+
+                log('login.route.ts', `${loginUser.name}^`, '');
+                console.log('');
+
                 return res.status(200).json(authResponseData);
             } else {
                 const wrongPasswordError: Error = new Error;
                 wrongPasswordError.name = ERROR_MESSAGES.WRONG_PASSWORD;
                 wrongPasswordError.message = 'Wrong e-mail or password!';
+
+                log('login.route.ts', `${loginUser.name}^`, '');
+                console.log('');
+
                 return res.status(STATUS_CODES.UNAUTHORIZED).json(wrongPasswordError);
             }
         }
-
-        console.log('login.route.ts, loginUser()^');
-        console.log('');
 
     } catch (ex) {
         return next(ex);

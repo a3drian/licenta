@@ -1,21 +1,26 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+// rxjs:
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+// Interfaces:
 import { IIntake } from 'foodspy-shared';
+// Models:
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
 import { SearchByEmailAndDate } from '../models/searchOptions/SearchByEmailAndDate';
-import { log } from '../shared/Logger';
+// Shared:
+import { Constants } from '../shared/Constants';
 import { STATUS_CODES } from 'foodspy-shared';
+import { log } from '../shared/Logger';
 
 @Injectable({
    providedIn: 'root'
 })
 export class IntakesService {
 
-   readonly BASE_URL: string = '/api/intakes';
-   readonly SEARCH_URL: string = '/api/intakes/search/';
-   readonly SEARCH_BY_EMAIL_AND_DATE: string = '/api/intakes/searchByEmailAndCreatedAt';
+   readonly BASE_URL: string = Constants.APIEndpoints.INTAKES_BASE_URL;
+   readonly SEARCH_URL: string = Constants.APIEndpoints.INTAKES_SEARCH_URL;
+   readonly SEARCH_BY_EMAIL_AND_DATE: string = Constants.APIEndpoints.INTAKES_SEARCH_BY_EMAIL_AND_DATE;
 
    constructor(private http: HttpClient) { }
 
@@ -74,9 +79,9 @@ export class IntakesService {
    // Get intakes by e-mail
    getIntakesByEmail(
       email: string
-   ) {
+   ): Observable<IIntake> {
       const request = this.http
-         .post(
+         .post<IIntake>(
             this.SEARCH_URL,
             new SearchByEmail(
                {

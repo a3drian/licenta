@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using FoodSpyAPI.DTOs.Models;
 using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Profiles

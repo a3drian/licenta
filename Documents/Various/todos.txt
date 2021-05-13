@@ -1,0 +1,36 @@
+-salvez mai intai un meal
+-iau id-ul acelui meal
+-ii fac embed in intake-ul in care am nevoie de el
+
+1. trebuie avut grija sa se faca ori "add" ori "update" pe meal
+	a. trebuie avut grija sa se faca "add" daca schimba "type"-ul meal-ului
+	b. trebuie avut grija sa se faca "update" daca ramane in acelasi "type", lunch, snack, etc.
+-daca nu ai Intake pe ziua respectiva => existingMeal = false
+-daca ai Intake => daca ai acelasi "type" => existingMeal = true
+		   daca nu ai acelasi type => existingMeal = false
+-sa se faca un refresh pe pagina dupa "Add meal" =>
+	1. se creeaza un nou Intake => ai deja un Meal sub Intake =>
+	   cand dai "Add new meal" a doua oara:
+		a. daca ai acelasi "type" cand dai "onSubmit()"  => existingMeal = true
+		b. daca nu ai acelasi type cand dai "onSubmit()" => existingMeal = false
+-daca dai refresh pe pagina sigur se rezolva:
+	1. problema cu butonul de "View"
+	2. ramai doar cu intrebarea Intake pe ziua respectiva sau nu
+-sa pun un observabil pe meal type (?)[DONE]
+-cazul 	1. nu ai Intake => nu ai niciun Meal => un nou Meal => embed in Intake => un nou Intake
+	2. ai Intake, dar nu exista acelasi Meal.type => un nou Meal => embed in Intake => editezi Intake existent
+	3. ai Intake, dar exista acelasi Meal.type => editezi Meal existent => embed in Intake => editezi Intake existent
+-need to fix "intakeText" and "canShowIntakeHistoryButton()" (?)
+-trebuie odata cu stergerea unui Intake sa i se stearga si intrarile aferente de Meal (?)
+-sa poti adauga mai multe "Snack" ca meals, deci sa ai mai mult de 4 maxim meals intr-o zi (?)
+Fix:
+-push foods to foodIDs
+-push meals to mealIDs
+-fa sa se vada foods[] si meal[] in history
+
+caÃmaraÛ Ñnoastra_=+Ã 
+
+-update with Intake on the frontend so that a new Intake is added from "/add"
+-(?) do I need "authService" everywhere I need the authenticated user?
+-add AuthGuards from tutorial
+-fix "meals" with "email" property (cred ca sunt intrari in db cu "email" si de aia da fail)

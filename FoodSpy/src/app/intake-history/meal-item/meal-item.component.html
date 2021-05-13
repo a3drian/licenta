@@ -1,17 +1,35 @@
 <p *ngIf="isInDebugMode"><b>meal-item</b> works!</p>
 
-<p>
-   Meal type:
-   {{ meal.type }}
+<p *ngIf="isInDebugMode">
+   Meal ID:
+   {{ meal.id }}
 </p>
 
-<p>
-   Created at:
-   {{ meal.createdAt | date: 'short' }}
-</p>
+<div *ngIf="isLoading" class="loading-spinner">
+   <app-loading-spinner></app-loading-spinner>
+</div>
 
-<p>
-   Foods:
-   <app-food-item *ngFor="let food of meal.foods" [food]="food">
-   </app-food-item>
-</p>
+<div *ngIf="!isLoading">
+   <p>
+      Meal type:
+      <b>{{ meal.type }}</b>
+   </p>
+
+   <p>
+      Created at:
+      {{ meal.createdAt | date: 'short' }}
+   </p>
+
+   <!--
+   <p>
+      Foods:
+      <app-food-item *ngFor="let food of foods" [food]="food">
+      </app-food-item>
+   </p>
+   -->
+
+   <div *ngFor="let mealFood of meal.mealFoods">
+      {{ mealFood.mfid }}, {{ mealFood.quantity }} {{ mealFood.unit }}
+   </div>
+
+</div>

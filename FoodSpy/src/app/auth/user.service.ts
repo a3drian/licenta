@@ -10,7 +10,7 @@ export class UserService {
    public authenticatedUserEmail: string = '';
 
    constructor(private authService: AuthService) {
-      log('user.service.ts', 'constructor()', 'called autoLogin()');
+      // log('user.service.ts', 'constructor()', 'called autoLogin()');
       // this.authService.autoLogin();
    }
 }

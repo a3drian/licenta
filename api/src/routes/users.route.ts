@@ -1,8 +1,12 @@
 import { Router, Response, NextFunction } from 'express';
 import { EntityManager } from '@mikro-orm/core';
-import { User } from '../entities/user.entity';
+// Interfaces:
 import { IExpressRequest } from '../interfaces/IExpressRequest';
+// Models:
+import { User } from '../entities/user.entity';
+// Services:
 import * as userService from '../services/users.service';
+// Shared:
 import { STATUS_CODES } from 'foodspy-shared';
 import { log } from '../shared/Logger';
 
@@ -33,10 +37,10 @@ async function getUsers(
    }
 
    console.log('');
-   console.log('user.route.ts, getUsers():');
-   console.log('req.baseUrl:', req.baseUrl);
-   console.log('req.originalUrl:', req.originalUrl);
-   console.log('user.route.ts, getUsers()^');
+   log(CLASS_NAME, getUsers.name, '');
+   log(CLASS_NAME, getUsers.name, 'req.baseUrl:', req.baseUrl);
+   log(CLASS_NAME, getUsers.name, 'req.originalUrl:', req.originalUrl);
+   log(CLASS_NAME, `${getUsers.name}^`, '');
    console.log('');
 
    let response: Error | User[] | null;
@@ -66,10 +70,10 @@ async function postUser(
    }
 
    console.log('');
-   console.log('users.route.ts, postUser():');
-   console.log('req.baseUrl:', req.baseUrl);
-   console.log('req.originalUrl:', req.originalUrl);
-   console.log('users.route.ts, postUser()^');
+   log(CLASS_NAME, postUser.name, '');
+   log(CLASS_NAME, postUser.name, 'req.baseUrl:', req.baseUrl);
+   log(CLASS_NAME, postUser.name, 'req.originalUrl:', req.originalUrl);
+   log(CLASS_NAME, `${postUser.name}^`, '');
    console.log('');
 
    let response: Error | User;

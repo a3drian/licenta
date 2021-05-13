@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { IntakesService } from '../services/intakes.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+// Interfaces:
 import { IIntake } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
-import { Constants } from '../shared/Constants';
-import { UserService } from '../auth/user.service';
 import { IUser } from 'foodspy-shared';
+// Services:
+import { IntakesService } from '../services/intakes.service';
+import { UserService } from '../auth/user.service';
+// Shared:
 import { log } from '../shared/Logger';
+import { Constants } from '../shared/Constants';
 import { STATUS_CODES } from 'foodspy-shared';
 
 @Component({
@@ -17,12 +21,14 @@ import { STATUS_CODES } from 'foodspy-shared';
 export class IntakeHistoryComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
-
-  intake: IIntake = <IIntake>{};
-  intakeId: string = '';
   intakeWasFound: boolean = false;
   idNotFound: boolean = false;
   isLoading: boolean = true;
+
+  errorResponse: HttpErrorResponse | null = null;
+
+  intake: IIntake = <IIntake>{};
+  intakeId: string = '';
 
   user: IUser | null = null;
   authenticatedUserEmail: string = '';
@@ -34,13 +40,14 @@ export class IntakeHistoryComponent implements OnInit {
     private userService: UserService
   ) {
     this.activatedRoute.params.subscribe(
-      (params) => {
+      (params: Params) => {
         log('intake-history.ts', 'constructor()', 'params:', params);
         this.intakeId = params.id ? params.id : '0';
       }
     );
 
     if (this.intakeId === '0') {
+      log('intake-history.ts', 'constructor()', 'this.intakeId === 0');
     } else {
       this.intakesService
         .getIntakeById(this.intakeId)
@@ -50,12 +57,14 @@ export class IntakeHistoryComponent implements OnInit {
             this.idNotFound = false;
             log('intake-history.ts', 'constructor()', '(data), this.idNotFound:', this.idNotFound);
           },
-          (error) => {
+          (error: HttpErrorResponse) => {
             log('intake-history.ts', 'constructor()', '(error), error:', error);
             if (error.status === STATUS_CODES.NOT_FOUND) {
               this.idNotFound = true;
             }
             log('intake-history.ts', 'constructor()', '(error) this.idNotFound:', this.idNotFound);
+            this.isLoading = false;
+            this.errorResponse = error;
           }
         );
     }
@@ -74,6 +83,10 @@ export class IntakeHistoryComponent implements OnInit {
           this.intake = new Intake(data);
           this.intakeWasFound = this.intake ? true : false;
           this.isLoading = false;
+        },
+        (error: HttpErrorResponse) => {
+          log('intake-history.ts', this.ngOnInit.name, 'error:', error);
+          this.errorResponse = error;
         }
       );
   }

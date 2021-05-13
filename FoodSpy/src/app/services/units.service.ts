@@ -7,13 +7,15 @@ import { Unit } from '../models/Unit';
 })
 export class UnitsService {
 
-   units: IUnit[] =
-      [
-         new Unit({ unit: 'grams' }),
-         new Unit({ unit: 'pieces' })
-      ];
+   units: IUnit[] = [];
 
-   constructor() { }
+   constructor() {
+      this.units =
+         [
+            new Unit({ unit: 'grams' }),
+            new Unit({ unit: 'pieces' })
+         ];
+   }
 
    getUnits(): IUnit[] {
       return this.units;

@@ -1,0 +1,19 @@
+daca pun lista de string => merge POST => nu merge GET
+daca pun lista de ObjectId => merge GET => nu merge POST
+
+{ "$oid": "60885438265832838f351c84" }
+-mi-ar putea veni ca string, dar eu sa le salvez cu POST ca objectID
+-primul care se apeleaza e Controller-ul, care mai apoi apeleaza serivicul
+-Controller lucreaza cu IntakeModel, serviciul lucreaza cu Intake
+
+[X] GET, GET/:id, POST, DELETE
+[] PUT, Searches
+
+-merge chiar daca ai in baza de date intrari cu "string" pentru ca am facut un profil care face maparea si invers
+-PUT merge cum trebuie, insa nu aduce mesele care sunt duplicat, deci trebuie verificat mealIDs sa nu contina duplicate
+.aia care e duplicate o ia ultima
+
+-la POST trebuie sa incluzi ceva in "mealIDs"; la PUT e posibil sa vrei sa se scoata toate din array, gen cand editezi un Intake din history (?)
+-ce se intampla daca ai id-uri in array-uri care nu sunt in baza de date (?)
+-ar trebui ca un Intake sa fie retinut sub forma de id intr-un Meal si atunci cand Meal are lista de id-uri de intake goala inseamna ca poate fi stearsa (?)
+-(!) ca sa mearga "lookup" acel "id" trebuie sa fie de tip "ObjectId"

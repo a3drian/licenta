@@ -13,20 +13,30 @@
 
   <ItemGroup>
     <Compile Remove="Common\Constants.cs" />
+    <Compile Remove="Common\FoodUnit.cs" />
     <Compile Remove="Common\FoodUnits.cs" />
+    <Compile Remove="DTOs\Models\MealFood.cs" />
+    <Compile Remove="Interfaces\IFoodMeal.cs" />
+    <Compile Remove="Models\FoodMeal.cs" />
+    <Compile Remove="Models\FoodMeals.cs" />
+    <Compile Remove="Models\FoodModel.cs" />
+    <Compile Remove="Models\IntakeModel.cs" />
+    <Compile Remove="Models\MealModel.cs" />
+    <Compile Remove="Services\IIntakeService.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Common\FoodUnit" />
+    <None Remove="Interfaces\Services" />
     <None Remove="Settings" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
-    <PackageReference Include="MongoDB.Driver" Version="2.12.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.1.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.12.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.1.3" />
   </ItemGroup>
 
 </Project>

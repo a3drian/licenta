@@ -2,36 +2,38 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FoodSpyAPI.Helpers;
-using AutoMapper;
-using FoodSpyAPI.Common;
-using FoodSpyAPI.DTOs;
-using FoodSpyAPI.Models;
-using FoodSpyAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.DTOs;
+using FoodSpyAPI.DTOs.Models;
+using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Interfaces.Services;
+using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Controllers
 {
 	[ApiController]
-	[Route("api/[controller]")]
+	[Route("api/db/[controller]")]
 	public class IntakesController : ControllerBase
 	{
-		private readonly IntakeService _intakeService;
+		private readonly IIntakeService _intakeService;
 		private readonly IMapper _mapper;
 		private readonly LinkGenerator _linkGenerator;
-		private readonly ILogger<IntakeService> _logger;
+		private readonly ILogger<IIntakeService> _logger;
 
-		public IntakesController(IntakeService intakeService, IMapper mapper, LinkGenerator linkGenerator,
-			 ILogger<IntakeService> logger)
+		public IntakesController(IIntakeService intakeService, IMapper mapper, LinkGenerator linkGenerator, ILogger<IIntakeService> logger)
 		{
-			_intakeService = intakeService;
-			_mapper = mapper;
-			_linkGenerator = linkGenerator;
-			_logger = logger;
+			_intakeService = intakeService ?? throw new ArgumentNullException(nameof(intakeService));
+			_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+			_linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
+
+		#region GET
 
 		[HttpGet]
 		public async Task<ActionResult<List<IntakeModel>>> GetIntakes()
@@ -47,17 +49,18 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region GET/:id
+
 		[HttpGet("{id}")]
 		public async Task<ActionResult<IntakeModel>> GetIntakeById(string id)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
-					return BadRequest($"'id' parameter: '{id}' is invalid!");
-				}
-
-				if (!Validator.IsValid24DigitHexString(id)) {
-					return BadRequest($"'id' parameter: '{id}' is not a valid 24 digit hex string!");
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
 				Intake intake = await _intakeService.GetIntakeById(id);
@@ -74,12 +77,22 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region POST
+
 		[HttpPost]
-		public async Task<ActionResult<IntakeModel>> AddIntake(Intake intake)
+		public async Task<ActionResult<IntakeModel>> AddIntake(IntakeModel intake)
 		{
 			try {
 
-				Intake addedIntake = await _intakeService.AddIntake(intake);
+				ObjectResult validationResult = ValidateIntake(intake);
+				if (!validationResult.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validationResult;
+				}
+
+				Intake mapFromModel = _mapper.Map<IntakeModel, Intake>(intake);
+				Intake addedIntake = await _intakeService.AddIntake(mapFromModel);
 
 				string location = _linkGenerator.GetPathByAction(
 					 "GetIntakeById",
@@ -93,21 +106,31 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest($"Id '{intake.Id}' is invalid and cannot be used to create a new Intake!");
 				}
 
-				IntakeModel mappedIntake = _mapper.Map<IntakeModel>(addedIntake);
-				return Created(location, mappedIntake);
+				IntakeModel mapToModel = _mapper.Map<IntakeModel>(addedIntake);
+				return Created(location, mapToModel);
 
 			} catch (Exception e) {
 				return LogDatabaseException(e);
 			}
 		}
 
+		#endregion
+
+		#region PUT
+
 		[HttpPut("{id}")]
-		public async Task<ActionResult<IntakeModel>> UpdateIntake(string id, Intake intake)
+		public async Task<ActionResult<IntakeModel>> UpdateIntake(string id, IntakeModel intake)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
-					return BadRequest($"'id' parameter: '{id}' is invalid!");
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
+				}
+
+				ObjectResult validateIntake = ValidateIntake(intake);
+				if (!validateIntake.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateIntake;
 				}
 
 				Intake oldIntake = await _intakeService.GetIntakeById(id);
@@ -115,7 +138,8 @@ namespace FoodSpyAPI.Controllers
 					return NotFound($"Intake with id '{id}' was not found!");
 				}
 
-				Intake updatedIntake = new Intake(intake)
+				Intake mapFromModel = _mapper.Map<IntakeModel, Intake>(intake);
+				Intake updatedIntake = new Intake(mapFromModel)
 				{
 					Id = oldIntake.Id
 				};
@@ -125,20 +149,26 @@ namespace FoodSpyAPI.Controllers
 					return BadRequest("Invalid parameters for 'PUT' request!");
 				}
 
-				return _mapper.Map<IntakeModel>(updatedIntake);
+				IntakeModel mapToModel = _mapper.Map<IntakeModel>(updatedIntake);
+				return mapToModel;
 
 			} catch (Exception e) {
 				return LogDatabaseException(e);
 			}
 		}
 
+		#endregion
+
+		#region DELETE
+
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteIntake(string id)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
-					return BadRequest($"'id' parameter: '{id}' is invalid!");
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
 				}
 
 				Intake intake = await _intakeService.GetIntakeById(id);
@@ -158,10 +188,18 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region Search methods
+
 		[HttpPost("search")]
 		public async Task<ActionResult<List<IntakeModel>>> SearchIntakesByEmail([FromBody] SearchByEmailOptions searchQuery)
 		{
 			try {
+
+				if (!Validator.IsValidSearchByEmailQuery(searchQuery)) {
+					return BadRequest($"'{nameof(searchQuery)}' should contain valid e-mail and sort order!");
+				}
 
 				string email = searchQuery.Email;
 				SortOrder sortOrder = searchQuery.SortOrder;
@@ -180,11 +218,14 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
+				if (!Validator.IsValidSearchByEmailAndDateQuery(searchQuery)) {
+					return BadRequest($"'{nameof(searchQuery)}' should contain valid e-mail and createdAt!");
+				}
+
 				string email = searchQuery.Email;
 				DateTime createdAt = searchQuery.CreatedAt;
-				SortOrder sortOrder = searchQuery.SortOrder;
 
-				Intake intake = await _intakeService.SearchIntakeByEmailAndDate(email, createdAt, sortOrder);
+				Intake intake = await _intakeService.SearchIntakeByEmailAndDate(email, createdAt);
 
 				if (intake == null) {
 					return NoContent();
@@ -198,6 +239,54 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		#endregion
+
+		#region Validator methods
+
+		private ObjectResult ValidateID(string id)
+		{
+			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
+
+			if (!Validator.IsValidId(id)) {
+				return BadRequest($"'{nameof(id)}' parameter: '{id}' is invalid!");
+			}
+			if (!Validator.IsValid24DigitHexString(id)) {
+				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid 24 digit hex string!");
+			}
+
+			return result;
+		}
+
+		private ObjectResult ValidateIntake(IntakeModel intake)
+		{
+			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
+			if (!Validator.IsValidEmail(intake.Email)) {
+				return BadRequest($"'{nameof(intake.Email)}' is missing or is invalid!");
+			}
+			if (!Validator.IsValidDate(intake.CreatedAt)) {
+				return BadRequest($"'{nameof(intake.CreatedAt)}' is missing or is invalid!");
+			}
+			if (!Validator.IsValidIDArray(intake.MealIDs)) {
+				return BadRequest($"'{nameof(intake.MealIDs)}' is missing, is invalid or contains duplicates!");
+			}
+
+			List<string> mealIDs = intake.MealIDs;
+			foreach (string mealID in mealIDs) {
+				if (!Validator.IsValidId(mealID)) {
+					return BadRequest($"'{nameof(mealID)}' parameter: '{mealID}' is invalid!");
+				}
+				if (!Validator.IsValid24DigitHexString(mealID)) {
+					return BadRequest($"'{nameof(mealID)}' parameter: '{mealID}' is not a valid 24 digit hex string!");
+				}
+			}
+
+			return result;
+		}
+
+		#endregion
+
+		#region Private methods
+
 		private ObjectResult LogDatabaseException(Exception e)
 		{
 			_logger.LogError(e.ToString());
@@ -205,5 +294,7 @@ namespace FoodSpyAPI.Controllers
 				 StatusCodes.Status500InternalServerError,
 				 "Database failure!");
 		}
+
+		#endregion
 	}
 }

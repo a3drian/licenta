@@ -1,12 +1,17 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
-import { throwError } from "rxjs";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+// rxjs:
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+// Interfaces:
+import { IAuthResponseData } from 'foodspy-shared';
+// Models:
 import { User } from '../models/User';
+// Shared:
 import { Constants } from '../shared/Constants';
-import { log } from "../shared/Logger";
+import { log } from '../shared/Logger';
 
 export interface AuthResponseData {
     email: string;
@@ -48,7 +53,7 @@ export class AuthService {
         return throwError(errorMessage);
     }
 
-    private handleAuthentication(responseData: AuthResponseData) {
+    private handleAuthentication(responseData: AuthResponseData): void {
         const timeNow = new Date().getTime();
         const tokenExpiryTime = responseData.expiresIn * 1000;
         const expirationDate = new Date(timeNow + tokenExpiryTime);
@@ -64,7 +69,7 @@ export class AuthService {
         localStorage.setItem(this.LOCAL_STORAGE_USER_DATA_KEY, JSON.stringify(user));
     }
 
-    register(_email: string, _password: string) {
+    register(_email: string, _password: string): Observable<IAuthResponseData> {
         return this.http
             .post<AuthResponseData>(
                 this.REGISTER_URL,
@@ -87,7 +92,7 @@ export class AuthService {
             )
     }
 
-    login(_email: string, _password: string) {
+    login(_email: string, _password: string): Observable<IAuthResponseData> {
         return this.http
             .post<AuthResponseData>(
                 this.LOGIN_URL,
@@ -106,7 +111,7 @@ export class AuthService {
             )
     }
 
-    logout() {
+    logout(): void {
         log('auth.service', this.logout.name, '');
         this.user.next(null);
         localStorage.removeItem(this.LOCAL_STORAGE_USER_DATA_KEY);
@@ -114,7 +119,13 @@ export class AuthService {
             clearTimeout(this.tokenExpirationTimer);
         }
         this.tokenExpirationTimer = null;
-        this.router.navigate([this.LOGOUT_REDIRECT_URL]);
+        this.router
+            .navigate([this.LOGOUT_REDIRECT_URL])
+            .catch(
+                (error) => {
+                    log('auth.service.ts', this.logout.name, `Could not navigate to: ${this.LOGOUT_REDIRECT_URL}`, error);
+                }
+            );
     }
 
     autoLogin(): void {

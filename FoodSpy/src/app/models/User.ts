@@ -9,7 +9,7 @@ export class User implements IUser {
         private _tokenExpirationDate: Date,
     ) { }
 
-    get token() {
+    get token(): string | null {
         const tokenExpired = new Date() > this._tokenExpirationDate;
         if (!this._tokenExpirationDate || tokenExpired) {
             return null;
@@ -17,7 +17,7 @@ export class User implements IUser {
         return this._token;
     }
 
-    get tokenExpirationDate() {
+    get tokenExpirationDate(): Date {
         return this._tokenExpirationDate;
     }
 

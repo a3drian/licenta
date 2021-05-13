@@ -1,51 +1,103 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using FoodSpyAPI.Common;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.Comparators;
+using FoodSpyAPI.Helpers;
+using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Settings;
 
 namespace FoodSpyAPI.Services
 {
-	public class IntakeService
+	public class IntakeService : IIntakeService
 	{
-		private readonly IMongoCollection<Intake> _intakes;
-		private readonly ILogger<IntakeService> _logger;
+		#region Constants
 
-		public IntakeService(IIntakesDatabaseSettings settings, ILogger<IntakeService> logger)
+		private const string MEALS_FOREIGN_COLLECTION_NAME = "Meals";
+		private const string INTAKE_LOCAL_FIELD = nameof(Intake.MealIDs);
+		private const string MEAL_FOREIGN_FIELD = "_id";
+		private const string MEALS_ARRAY = nameof(Intake.Meals);
+
+		#endregion
+
+		private readonly IMongoCollection<Intake> _intakes;
+		private readonly ILogger<IIntakeService> _logger;
+
+		public IntakeService(IIntakesDatabaseSettings settings, ILogger<IIntakeService> logger)
 		{
+			if (settings == null) {
+				throw new ArgumentNullException(nameof(settings));
+			}
+
 			MongoClient client = new MongoClient(settings.ConnectionString);
 			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
 
 			_intakes = database.GetCollection<Intake>(settings.IntakesCollectionName);
 
-			_logger = logger;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
-		// GET
+		#region GET
+
 		public async Task<List<Intake>> GetIntakes()
 		{
 			_logger.LogInformation($"Fetching intakes...");
 
-			IAsyncCursor<Intake> intakes = await _intakes.FindAsync<Intake>(intake => true);
-			List<Intake> intakesList = intakes.ToList();
+			IAggregateFluent<Intake> aggregationMatch = _intakes
+				.Aggregate()
+				.Match<Intake>(intake => true);
+
+			List<Intake> intakesList = await aggregationMatch
+				.Lookup(
+					MEALS_FOREIGN_COLLECTION_NAME,
+					INTAKE_LOCAL_FIELD,
+					MEAL_FOREIGN_FIELD,
+					MEALS_ARRAY
+				)
+				.As<Intake>()
+				.ToListAsync();
+
 			return intakesList;
 		}
 
-		// GET/:id
+		#endregion
+
+		#region GET/:id
+
 		public async Task<Intake> GetIntakeById(string id)
 		{
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
-			IAsyncCursor<Intake> findResult = await _intakes.FindAsync<Intake>(n => n.Id == id);
-			Task<Intake> intakeSingleOrDefault = findResult.SingleOrDefaultAsync();
-			Intake intake = intakeSingleOrDefault.Result;
+			IAggregateFluent<Intake> aggregationMatch = _intakes
+				.Aggregate()
+				.Match<Intake>(intake => intake.Id == id);
+
+			Intake intake = await aggregationMatch
+				.Lookup(
+					MEALS_FOREIGN_COLLECTION_NAME,
+					INTAKE_LOCAL_FIELD,
+					MEAL_FOREIGN_FIELD,
+					MEALS_ARRAY
+				)
+				.As<Intake>()
+				.SingleOrDefaultAsync();
+
+			_logger.LogInformation($"Intake with id '{id}' ...\n{intake}");
+
 			return intake;
 		}
+
+		#endregion
+
+		#region POST
 
 		/// <summary>
 		/// Executes the "POST" request on the database.
@@ -61,6 +113,10 @@ namespace FoodSpyAPI.Services
 			await _intakes.InsertOneAsync(intake);
 			return intake;
 		}
+
+		#endregion
+
+		#region PUT
 
 		/// <summary>
 		/// Executes the "UPDATE" request on the database.
@@ -86,6 +142,10 @@ namespace FoodSpyAPI.Services
 			return updated;
 		}
 
+		#endregion
+
+		#region DELETE
+
 		/// <summary>
 		/// Executes the "DELETE" request on the database.
 		/// </summary>
@@ -105,7 +165,13 @@ namespace FoodSpyAPI.Services
 			return deleted;
 		}
 
-		public async Task<List<Intake>> SearchIntakesByEmail(string email, SortOrder sortOrder = SortOrder.Descending)
+		#endregion
+
+		#region Search methods
+
+		public async Task<List<Intake>> SearchIntakesByEmail(
+			string email,
+			SortOrder sortOrder = SortOrder.Descending)
 		{
 			string sortOrderName = Enum.GetName(typeof(SortOrder), sortOrder);
 			_logger.LogInformation($"Searching by email of '{email}' and sort order '{sortOrderName}' ...");
@@ -129,7 +195,7 @@ namespace FoodSpyAPI.Services
 
 			_logger.LogInformation($"Intakes with email: '{email}' ...");
 			foreach (Intake intake in intakesList) {
-				_logger.LogInformation($"Intake: {intake}\n");
+				Console.WriteLine(intake);
 			}
 
 			return intakesList;
@@ -137,33 +203,51 @@ namespace FoodSpyAPI.Services
 
 		public async Task<Intake> SearchIntakeByEmailAndDate(
 			string email,
-			DateTime createdAt,
-			SortOrder sortOrder = SortOrder.Descending
-		)
+			DateTime createdAt)
 		{
 			DateTime beginDate = createdAt.Date;
 			DateTime endDate = beginDate.AddDays(1);
 
-			string sortOrderName = Enum.GetName(typeof(SortOrder), sortOrder);
-			_logger.LogInformation($"Searching by email of '{email}', created at of '{createdAt}' and sort order '{sortOrderName}' ...");
+			_logger.LogInformation($"Searching by email of '{email}' and created at '{createdAt.Print()}' ...");
 
-			string SORT_BY_DATE = nameof(Intake.CreatedAt);
-			SortDefinition<Intake> sortDefinition = sortOrder == SortOrder.Descending ?
-				new SortDefinitionBuilder<Intake>().Descending(SORT_BY_DATE) :
-				new SortDefinitionBuilder<Intake>().Ascending(SORT_BY_DATE);
+			Expression<Func<Intake, bool>> filter =
+					i => i.Email.Equals(email) &&
+					i.CreatedAt >= beginDate &&
+					i.CreatedAt <= endDate;
 
-			FindOptions<Intake> findOptions = new FindOptions<Intake>() { Sort = sortDefinition };
+			IAggregateFluent<Intake> aggregationMatch = _intakes
+				.Aggregate()
+				.Match<Intake>(filter);
 
-			IAsyncCursor<Intake> findResult = await _intakes
-				.FindAsync<Intake>(
-					filter: i => i.Email.Equals(email) && i.CreatedAt >= beginDate && i.CreatedAt <= endDate,
-					findOptions
-				);
+			Intake intake = await aggregationMatch
+				.Lookup(
+					MEALS_FOREIGN_COLLECTION_NAME,
+					INTAKE_LOCAL_FIELD,
+					MEAL_FOREIGN_FIELD,
+					MEALS_ARRAY
+				)
+				.As<Intake>()
+				.SingleOrDefaultAsync();
 
-			Task<Intake> intakeSingleOrDefault = findResult.SingleOrDefaultAsync();
-			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt}'...");
-			Intake intake = intakeSingleOrDefault.Result;
+			if (intake == null) {
+				// If there is no intake on the given "createdAt" date
+				_logger.LogInformation($"There are no intakes on date '{createdAt.Print()}' ...");
+				return null;
+			}
+
+			List<Meal> meals = intake.Meals;
+			List<Meal> orderedMeals = meals
+				.OrderBy(meal => meal, new MealTypeComparer())
+				.ToList();
+
+			intake.Meals = orderedMeals;
+
+			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt.Print()}' ...");
+			Console.WriteLine(intake);
+
 			return intake;
 		}
+
+		#endregion
 	}
 }

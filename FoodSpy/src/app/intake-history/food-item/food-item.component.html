@@ -1,16 +1,46 @@
 <p *ngIf="isInDebugMode"><b>food-item</b> works!</p>
 
+<p *ngIf="isInDebugMode">
+   Food ID:
+   {{ food.id }}
+</p>
+
 <p>
    Name:
    {{ food.name }}
 </p>
 
 <p>
-   Quantity:
-   {{ food.quantity }}
+   Energy:
+   {{ food.energy }} g
 </p>
 
 <p>
-   Unit:
-   {{ food.unit }}
+   Fats:
+   {{ food.fats }} g
+</p>
+
+<p>
+   Saturates:
+   {{ food.saturates }} g
+</p>
+
+<p>
+   Carbohydrates:
+   {{ food.carbohydrates }} g
+</p>
+
+<p>
+   Sugars:
+   {{ food.sugars }} g
+</p>
+
+<p>
+   Proteins:
+   {{ food.proteins }} g
+</p>
+
+<p>
+   Salt:
+   {{ food.salt }} g
 </p>

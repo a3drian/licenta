@@ -8,6 +8,10 @@
    {{ authenticatedUserEmail }}
 </h2>
 
+<div *ngIf="errorResponse">
+   <app-error-response [errorResponse]="errorResponse"></app-error-response>
+</div>
+
 <div *ngIf="isLoading" class="loading-spinner">
    <app-loading-spinner></app-loading-spinner>
 </div>
@@ -27,7 +31,7 @@
    </div>
 
    <div>
-      <label>Meals:</label>
+      <label><b>Meals:</b></label>
       <app-meal-item *ngFor="let food of intake.meals" [meal]="food">
       </app-meal-item>
    </div>

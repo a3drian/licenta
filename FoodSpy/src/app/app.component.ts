@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './auth/user.service';
 import { log } from './shared/Logger';
@@ -9,7 +9,7 @@ import { Constants } from './shared/Constants';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 

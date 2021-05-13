@@ -1,15 +1,16 @@
 
-using AutoMapper;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using FoodSpyAPI.Controllers;
+using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Services;
 using FoodSpyAPI.Settings;
-using Microsoft.OpenApi.Models;
 
 namespace FoodSpyAPI
 {
@@ -18,6 +19,8 @@ namespace FoodSpyAPI
 		private const string API_VERSION = "v1";
 		private const string AUTHOR = "Teodor-Adrian Manghiuc";
 		private const string TITLE = "FoodSpyAPI";
+		private const string GITHUB_LINK = "https://github.com/a3drian";
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -38,26 +41,25 @@ namespace FoodSpyAPI
 			// Foods database
 			services.Configure<FoodsDatabaseSettings>(
 				Configuration.GetSection(nameof(FoodsDatabaseSettings)));
-
 			services.AddSingleton<IFoodsDatabaseSettings>(sp =>
 				sp.GetRequiredService<IOptions<FoodsDatabaseSettings>>().Value);
+
 			// Meals database
 			services.Configure<MealsDatabaseSettings>(
 				 Configuration.GetSection(nameof(MealsDatabaseSettings)));
-
 			services.AddSingleton<IMealsDatabaseSettings>(sp =>
 				 sp.GetRequiredService<IOptions<MealsDatabaseSettings>>().Value);
+
 			// Intakes database
 			services.Configure<IntakesDatabaseSettings>(
 				Configuration.GetSection(nameof(IntakesDatabaseSettings)));
-
 			services.AddSingleton<IIntakesDatabaseSettings>(sp =>
 				sp.GetRequiredService<IOptions<IntakesDatabaseSettings>>().Value);
 
 			// Services
-			services.AddSingleton<FoodService>();
-			services.AddSingleton<MealService>();
-			services.AddSingleton<IntakeService>();
+			services.AddSingleton<IFoodService, FoodService>();
+			services.AddSingleton<IMealService, MealService>();
+			services.AddSingleton<IIntakeService, IntakeService>();
 
 			// CORS
 			services.AddCors(options =>
@@ -85,7 +87,8 @@ namespace FoodSpyAPI
 					Description = "API for FoodSpy application.",
 					Contact = new OpenApiContact
 					{
-						Name = AUTHOR
+						Name = AUTHOR,
+						Url = new Uri(GITHUB_LINK)
 					}
 				});
 			});

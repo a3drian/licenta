@@ -1,0 +1,13 @@
+<p *ngIf="isInDebugMode"><b>error-response</b> works!</p>
+
+<div>
+
+   <p>
+      {{ errorMessage }}
+   </p>
+
+   <p *ngIf="isInDebugMode">
+      {{ errorResponse.error }}
+   </p>
+
+</div>

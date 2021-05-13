@@ -1,9 +1,13 @@
 import { Router, Response, NextFunction } from 'express';
 import { EntityManager } from '@mikro-orm/core';
-import { User } from '../entities/user.entity';
+// Interfaces:
 import { IExpressRequest } from '../interfaces/IExpressRequest';
+// Models:
+import { User } from '../entities/user.entity';
+// Services:
 import * as userService from '../services/users.service';
 import { encryptPassword } from '../services/password.service';
+// Shared:
 import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
 import { log } from '../shared/Logger';
 
@@ -26,10 +30,10 @@ async function registerUser(
     }
 
     console.log('');
-    console.log('register.route.ts, registerUser():');
-    console.log('req.baseUrl:', req.baseUrl);
-    console.log('req.originalUrl:', req.originalUrl);
-    console.log('register.route.ts, registerUser()^');
+    log('register.route.ts', registerUser.name, '');
+    log('register.route.ts', registerUser.name, 'req.baseUrl:', req.baseUrl);
+    log('register.route.ts', registerUser.name, 'req.originalUrl:', req.originalUrl);
+    log('register.route.ts', `${registerUser.name}^`, '');
     console.log('');
 
     let response: Error | User | null;

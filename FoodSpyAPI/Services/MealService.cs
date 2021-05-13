@@ -1,32 +1,51 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using FoodSpyAPI.Common;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+using FoodSpyAPI.Common;
+using FoodSpyAPI.Comparators;
+using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Models;
 using FoodSpyAPI.Settings;
 
 namespace FoodSpyAPI.Services
 {
-	public class MealService
+	public class MealService : IMealService
 	{
-		private readonly IMongoCollection<Meal> _meals;
-		private readonly ILogger<MealService> _logger;
+		#region Constants
 
-		public MealService(IMealsDatabaseSettings settings, ILogger<MealService> logger)
+		private const string FOODS_FOREIGN_COLLECTION_NAME = "Foods";
+		private const string MEAL_LOCAL_FIELD = "MealFoods.Mfid";
+		private const string FOOD_FOREIGN_FIELD = "_id";
+		private const string FOODS_ARRAY = nameof(Meal.Foods);
+
+		#endregion
+
+		private readonly IMongoCollection<Meal> _meals;
+		private readonly ILogger<IMealService> _logger;
+
+		public MealService(IMealsDatabaseSettings settings, ILogger<IMealService> logger)
 		{
+			if (settings == null) {
+				throw new ArgumentNullException(nameof(settings));
+			}
+
 			MongoClient client = new MongoClient(settings.ConnectionString);
 			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
 
 			_meals = database.GetCollection<Meal>(settings.MealsCollectionName);
 
-			_logger = logger;
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
-		// GET
+		#region GET
+
 		public async Task<List<Meal>> GetMeals()
 		{
 			_logger.LogInformation($"Fetching meals...");
@@ -36,7 +55,31 @@ namespace FoodSpyAPI.Services
 			return mealsList;
 		}
 
-		// GET/:id
+		public async Task<List<Meal>> GetMealsWithFoods()
+		{
+			_logger.LogInformation($"Fetching meals...");
+
+			IAggregateFluent<Meal> aggregationMatch = _meals
+				.Aggregate()
+				.Match<Meal>(meal => true);
+
+			List<Meal> mealsList = await aggregationMatch
+				.Lookup(
+					FOODS_FOREIGN_COLLECTION_NAME,
+					MEAL_LOCAL_FIELD,
+					FOOD_FOREIGN_FIELD,
+					FOODS_ARRAY
+				)
+				.As<Meal>()
+				.ToListAsync();
+
+			return mealsList;
+		}
+
+		#endregion
+
+		#region GET/:id
+
 		public async Task<Meal> GetMealById(string id)
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
@@ -44,8 +87,15 @@ namespace FoodSpyAPI.Services
 			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
 			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
 			Meal meal = mealSingleOrDefault.Result;
+
+			_logger.LogInformation($"Meal with id '{id}' ...\n{meal}");
+
 			return meal;
 		}
+
+		#endregion
+
+		#region POST
 
 		/// <summary>
 		/// Executes the "POST" request on the database.
@@ -61,6 +111,10 @@ namespace FoodSpyAPI.Services
 			await _meals.InsertOneAsync(meal);
 			return meal;
 		}
+
+		#endregion
+
+		#region PUT
 
 		/// <summary>
 		/// Executes the "UPDATE" request on the database.
@@ -86,6 +140,10 @@ namespace FoodSpyAPI.Services
 			return updated;
 		}
 
+		#endregion
+
+		#region DELETE
+
 		/// <summary>
 		/// Executes the "DELETE" request on the database.
 		/// </summary>
@@ -105,6 +163,10 @@ namespace FoodSpyAPI.Services
 			return deleted;
 		}
 
+		#endregion
+
+		#region Search methods
+
 		public async Task<List<Meal>> SearchMealsByType(string type)
 		{
 			_logger.LogInformation($"Searching by type of '{type}' ...");
@@ -113,14 +175,22 @@ namespace FoodSpyAPI.Services
 				 .FindAsync<Meal>(
 					  filter: meal => meal.Type.Equals(type)
 				 );
+
+			if (meals == null) {
+				_logger.LogInformation($"There are no meals matching type '{type}' ...");
+				return null;
+			}
+
 			List<Meal> mealsList = meals.ToList();
 
 			_logger.LogInformation($"Meals of type: '{type}' ...");
 			foreach (Meal meal in mealsList) {
-				_logger.LogInformation($"Meal: {meal}\n");
+				Console.WriteLine(meal);
 			}
 
 			return mealsList;
 		}
+
+		#endregion
 	}
 }

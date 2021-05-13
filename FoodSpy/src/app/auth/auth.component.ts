@@ -1,10 +1,13 @@
-import { Component } from "@angular/core";
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { AuthResponseData, AuthService } from "./auth.service";
+import { Router } from '@angular/router';
+// rxjs:
+import { Observable } from 'rxjs';
+// Services:
+import { AuthResponseData, AuthService } from './auth.service';
+// Shared:
 import { Constants } from '../shared/Constants';
-import { log } from "../shared/Logger";
+import { log } from '../shared/Logger';
 
 @Component({
     selector: 'app-auth',
@@ -58,7 +61,7 @@ export class AuthComponent {
         }
 
         const form = this.authForm.value;
-        log('auth.component.ts', this.onSubmit.name, 'Form data:', form);
+        log('auth.ts', this.onSubmit.name, 'Form data:', form);
 
         const email = form.email;
         const password = form.password;
@@ -77,14 +80,20 @@ export class AuthComponent {
         authObservable
             .subscribe(
                 (responseData) => {
-                    log('auth.component', this.onSubmit.name, 'Response data for log in / sign up request:', responseData);
+                    log('auth.ts', this.onSubmit.name, 'Response data for log in / sign up request:', responseData);
                     this.isLoading = false;
                     // navigation from inside the code, not from inside the template
-                    this.router.navigate([this.DASHBOARD_URL]);
+                    this.router
+                        .navigate([this.DASHBOARD_URL])
+                        .catch(
+                            (error) => {
+                                log('add-meal.ts', this.onSubmit.name, `Could not navigate to: ${this.DASHBOARD_URL}`, error);
+                            }
+                        );
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
                 (errorMessage) => {
-                    log('auth.component', this.onSubmit.name, 'Error when trying to log in / sign up:', errorMessage);
+                    log('auth.ts', this.onSubmit.name, 'Error when trying to log in / sign up:', errorMessage);
 
                     this.error = errorMessage;
                     this.isLoading = false;
