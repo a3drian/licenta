@@ -143,7 +143,7 @@ namespace FoodSpyAPIUnitTests
 		{
 			Intake intake = new Intake
 			{
-				Id = id,
+				Id = Guid.Parse(id),
 				Email = GOOD_EMAIL,
 				CreatedAt = new DateTime(2021, 5, 25),
 				MealIDs = new List<ObjectId>() { GOOD_OID }

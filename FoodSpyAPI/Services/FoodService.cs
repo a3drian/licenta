@@ -45,7 +45,7 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching food with id '{id}' ...");
 
-			IAsyncCursor<Food> findResult = await _foods.FindAsync<Food>(n => n.Id == id);
+			IAsyncCursor<Food> findResult = await _foods.FindAsync<Food>(n => n.Id.ToString() == id);
 			Task<Food> foodSingleOrDefault = findResult.SingleOrDefaultAsync();
 			Food food = foodSingleOrDefault.Result;
 			return food;

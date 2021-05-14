@@ -11,7 +11,6 @@ namespace FoodSpyAPI.DTOs.Models
 	public class IntakeModel : IIntake
 	{
 		[BsonId]
-		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
 		[BsonElement(nameof(Email))] public string Email { get; set; }

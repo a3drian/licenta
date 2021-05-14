@@ -4,14 +4,14 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using FoodSpyAPI.Common;
 using FoodSpyAPI.Interfaces;
+using System;
 
 namespace FoodSpyAPI.Models
 {
 	public class Food : IFood
 	{
 		[BsonId]
-		[BsonRepresentation(BsonType.ObjectId)]
-		public string Id { get; set; }
+		public Guid Id { get; set; }
 
 		[BsonElement(nameof(Name))]
 		[Required]

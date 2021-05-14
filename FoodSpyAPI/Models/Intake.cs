@@ -13,8 +13,7 @@ namespace FoodSpyAPI.Models
 	public class Intake : IIntake
 	{
 		[BsonId]
-		[BsonRepresentation(BsonType.ObjectId)]
-		public string Id { get; set; }
+		public Guid Id { get; set; }
 
 		[BsonElement(nameof(Email))]
 		[Required]

@@ -2,19 +2,23 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using FoodSpyAPI.Interfaces;
+using System;
 
 namespace FoodSpyAPI.Models
 {
 	public class MealFood : IMealFood
 	{
 		[BsonElement(nameof(Mfid))]
-		public string Mfid { get; set; }
+		public Guid Mfid { get; set; }
 
 		[BsonElement(nameof(Quantity))]
 		public double Quantity { get; set; }
 
 		[BsonElement(nameof(Unit))]
 		public string Unit { get; set; }
+
+		[BsonElement(nameof(Food))]
+		public Food Food { get; set; }
 
 		public MealFood() { }
 
@@ -23,6 +27,7 @@ namespace FoodSpyAPI.Models
 			this.Mfid = mealFood.Mfid;
 			this.Quantity = mealFood.Quantity;
 			this.Unit = mealFood.Unit;
+			this.Food = mealFood.Food;
 		}
 
 		public override string ToString()
@@ -35,6 +40,7 @@ namespace FoodSpyAPI.Models
 
 			output += $" {nameof(Mfid)}: {Mfid}" + ",";
 			output += $" {nameof(Quantity)}: {Quantity}" + ",";
+			output += $" {nameof(Food)}: {Food}" + ",";
 			output += $" {nameof(Unit)}: {Unit}" + "\n";
 
 			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(MealFood) + "\n";

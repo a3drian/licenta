@@ -93,6 +93,42 @@ namespace FoodSpyAPI.Services
 			return meal;
 		}
 
+		public async Task<Meal> GetMealByIdWithFoods(string id)
+		{
+			_logger.LogInformation($"Fetching meal with id '{id}' ...");
+
+			IAggregateFluent<Meal> aggregationMatch = _meals
+				.Aggregate()
+				.Match<Meal>(meal => meal.Id == id);
+
+			// sa vad daca pot popula "MealFoods.Food" de exemplu
+			Meal meal = await aggregationMatch
+				.Lookup(
+					FOODS_FOREIGN_COLLECTION_NAME,
+					MEAL_LOCAL_FIELD,
+					FOOD_FOREIGN_FIELD,
+					FOODS_ARRAY
+				)
+				.As<Meal>()
+				.SingleOrDefaultAsync();
+
+			List<MealFood> mealFoods = meal.MealFoods;
+
+			for (int i = 0; i < meal.Foods.Count; i++) {
+				mealFoods[i].Food = meal.Foods[i];
+			}
+
+			/*
+			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
+			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
+			Meal meal = mealSingleOrDefault.Result;
+			*/
+
+			_logger.LogInformation($"Meal with id '{id}' ...\n{meal}");
+
+			return meal;
+		}
+
 		#endregion
 
 		#region POST

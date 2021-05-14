@@ -20,5 +20,7 @@ namespace FoodSpyAPI.Interfaces.Services
 		public Task<List<Meal>> SearchMealsByType(string type);
 
 		public Task<List<Meal>> GetMealsWithFoods();
+
+		public Task<Meal> GetMealByIdWithFoods(string id);
 	}
 }

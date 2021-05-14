@@ -89,6 +89,32 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		[HttpGet("withFoods/{id}")]
+		public async Task<ActionResult<MealModel>> GetMealByIdWithFoods(string id)
+		{
+			try {
+
+				/*
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
+				}
+				*/
+
+				Meal meal = await _mealService.GetMealByIdWithFoods(id);
+
+				if (meal == null) {
+					return NotFound($"Meal with id '{id}' was not found!");
+				}
+
+				MealModel mappedMeal = _mapper.Map<MealModel>(meal);
+				return mappedMeal;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
+
 		#endregion
 
 		#region POST
