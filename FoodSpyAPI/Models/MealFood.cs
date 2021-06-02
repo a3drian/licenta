@@ -40,8 +40,8 @@ namespace FoodSpyAPI.Models
 
 			output += $" {nameof(Mfid)}: {Mfid}" + ",";
 			output += $" {nameof(Quantity)}: {Quantity}" + ",";
-			output += $" {nameof(Food)}: {Food}" + ",";
-			output += $" {nameof(Unit)}: {Unit}" + "\n";
+			output += $" {nameof(Unit)}: {Unit}" + ",";
+			output += $" {nameof(Food)}: {Food}" + "\n";
 
 			output += $"{blank.PadLeft(5, space)}" + " } :" + nameof(MealFood) + "\n";
 

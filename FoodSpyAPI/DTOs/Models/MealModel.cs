@@ -11,7 +11,8 @@ namespace FoodSpyAPI.DTOs.Models
 	public class MealModel : IMeal
 	{
 		[BsonId]
-		public string Id { get; set; }
+		[BsonElement(nameof(Id))]
+		public Guid Id { get; set; }
 
 		[BsonElement(nameof(Type))] public string Type { get; set; }
 
@@ -19,6 +20,6 @@ namespace FoodSpyAPI.DTOs.Models
 
 		[BsonElement(nameof(MealFoods))] public List<MealFood> MealFoods { get; set; }
 
-		//[BsonElement(nameof(Foods))] public List<Food> Foods { get; set; }
+		// [BsonElement(nameof(Foods))] public List<Food> Foods { get; set; }
 	}
 }

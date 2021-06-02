@@ -247,10 +247,10 @@ namespace FoodSpyAPI.Controllers
 		{
 			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
 
-			if (!Validator.IsValidId(id)) {
+			if (!Validator.IsValidAndNotEmptyString(id)) {
 				return BadRequest($"'{nameof(id)}' parameter: '{id}' is invalid!");
 			}
-			if (!Validator.IsValid24DigitHexString(id)) {
+			if (!Validator.IsValidGuid(id)) {
 				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid 24 digit hex string!");
 			}
 
@@ -266,16 +266,17 @@ namespace FoodSpyAPI.Controllers
 			if (!Validator.IsValidDate(intake.CreatedAt)) {
 				return BadRequest($"'{nameof(intake.CreatedAt)}' is missing or is invalid!");
 			}
-			if (!Validator.IsValidIDArray(intake.MealIDs)) {
+			if (!Validator.IsValidGuidArray(intake.MealIDs)) {
 				return BadRequest($"'{nameof(intake.MealIDs)}' is missing, is invalid or contains duplicates!");
 			}
 
-			List<string> mealIDs = intake.MealIDs;
-			foreach (string mealID in mealIDs) {
-				if (!Validator.IsValidId(mealID)) {
+			List<Guid> mealIDs = intake.MealIDs;
+			foreach (Guid mealID in mealIDs) {
+				string mealGuid = mealID.ToString();
+				if (!Validator.IsValidAndNotEmptyString(mealGuid)) {
 					return BadRequest($"'{nameof(mealID)}' parameter: '{mealID}' is invalid!");
 				}
-				if (!Validator.IsValid24DigitHexString(mealID)) {
+				if (!Validator.IsValidGuid(mealGuid)) {
 					return BadRequest($"'{nameof(mealID)}' parameter: '{mealID}' is not a valid 24 digit hex string!");
 				}
 			}

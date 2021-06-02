@@ -10,6 +10,7 @@ namespace FoodSpyAPI.Profiles
 		public FoodProfile()
 		{
 			this.CreateMap<Food, FoodModel>();
+			this.CreateMap<FoodModel, Food>();
 		}
 	}
 }

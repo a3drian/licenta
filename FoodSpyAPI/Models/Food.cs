@@ -11,41 +11,42 @@ namespace FoodSpyAPI.Models
 	public class Food : IFood
 	{
 		[BsonId]
+		[BsonElement(nameof(Id))]
 		public Guid Id { get; set; }
 
-		[BsonElement(nameof(Name))]
 		[Required]
+		[BsonElement(nameof(Name))]
 		public string Name { get; set; }
 
 		[BsonElement(nameof(DisplayName))]
 		public string DisplayName { get; set; }
 
-		[BsonElement(nameof(Energy))]
 		[Required]
+		[BsonElement(nameof(Energy))]
 		public double Energy { get; set; }
 
-		[BsonElement(nameof(Fats))]
 		[Required]
+		[BsonElement(nameof(Fats))]
 		public double Fats { get; set; }
 
-		[BsonElement(nameof(Saturates))]
 		[Required]
+		[BsonElement(nameof(Saturates))]
 		public double Saturates { get; set; }
 
-		[BsonElement(nameof(Carbohydrates))]
 		[Required]
+		[BsonElement(nameof(Carbohydrates))]
 		public double Carbohydrates { get; set; }
 
-		[BsonElement(nameof(Sugars))]
 		[Required]
+		[BsonElement(nameof(Sugars))]
 		public double Sugars { get; set; }
 
-		[BsonElement(nameof(Proteins))]
 		[Required]
+		[BsonElement(nameof(Proteins))]
 		public double Proteins { get; set; }
 
-		[BsonElement(nameof(Salt))]
 		[Required]
+		[BsonElement(nameof(Salt))]
 		public double Salt { get; set; }
 
 		public Food() { }

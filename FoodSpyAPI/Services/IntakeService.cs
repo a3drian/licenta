@@ -31,8 +31,6 @@ namespace FoodSpyAPI.Services
 		private readonly IMongoCollection<Intake> _intakes;
 		private readonly ILogger<IIntakeService> _logger;
 
-		private readonly MealFoodService mealFoodService;
-
 		public IntakeService(IIntakesDatabaseSettings settings, ILogger<IIntakeService> logger)
 		{
 			if (settings == null) {
@@ -78,9 +76,11 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
+			Guid guid = new Guid(id);
+
 			IAggregateFluent<Intake> aggregationMatch = _intakes
 				.Aggregate()
-				.Match<Intake>(intake => intake.Id.ToString() == id);
+				.Match<Intake>(intake => intake.Id.Equals(guid));
 
 			Intake intake = await aggregationMatch
 				.Lookup(
@@ -96,7 +96,8 @@ namespace FoodSpyAPI.Services
 			List<Meal> meals = intake.Meals;
 			foreach (Meal m in meals) {
 				List<MealFood> mealFoods = m.MealFoods;
-				double c = mealFoodService.CalculateCalories(mealFoods);
+				double c = 0;
+				//double c = mealFoodService.CalculateCalories(mealFoods);
 				calories += c;
 			}
 

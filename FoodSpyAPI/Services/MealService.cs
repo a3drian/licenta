@@ -84,7 +84,7 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
 
-			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
+			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id.ToString() == id);
 			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
 			Meal meal = mealSingleOrDefault.Result;
 
@@ -97,11 +97,13 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
 
+			Guid guid = new Guid(id);
+
 			IAggregateFluent<Meal> aggregationMatch = _meals
 				.Aggregate()
-				.Match<Meal>(meal => meal.Id == id);
+				.Match<Meal>(meal => meal.Id.Equals(guid));
 
-			// sa vad daca pot popula "MealFoods.Food" de exemplu
+			// sa vad daca pot popula direct "MealFoods.Food" de exemplu
 			Meal meal = await aggregationMatch
 				.Lookup(
 					FOODS_FOREIGN_COLLECTION_NAME,
@@ -112,13 +114,22 @@ namespace FoodSpyAPI.Services
 				.As<Meal>()
 				.SingleOrDefaultAsync();
 
+			// workaround
 			List<MealFood> mealFoods = meal.MealFoods;
+			List<MealFood> sortedMealFoods = mealFoods.OrderBy(m => m.Mfid).ToList();
+			List<Food> sortedFoods = meal.Foods.OrderBy(m => m.Id).ToList();
 
+			for (int i = 0; i < sortedFoods.Count; i++) {
+				sortedMealFoods[i].Food = sortedFoods[i];
+			}
+
+			meal.MealFoods = sortedMealFoods;
+
+			/*
 			for (int i = 0; i < meal.Foods.Count; i++) {
 				mealFoods[i].Food = meal.Foods[i];
 			}
-
-			/*
+			
 			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
 			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
 			Meal meal = mealSingleOrDefault.Result;

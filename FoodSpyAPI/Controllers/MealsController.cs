@@ -94,12 +94,10 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				/*
 				ObjectResult validateID = ValidateID(id);
 				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
 					return validateID;
 				}
-				*/
 
 				Meal meal = await _mealService.GetMealByIdWithFoods(id);
 
@@ -261,11 +259,16 @@ namespace FoodSpyAPI.Controllers
 		{
 			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
 
-			if (!Validator.IsValidId(id)) {
+			if (!Validator.IsValidAndNotEmptyString(id)) {
 				return BadRequest($"'{nameof(id)}' parameter: '{id}' is invalid!");
 			}
+			/*
 			if (!Validator.IsValid24DigitHexString(id)) {
 				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid 24 digit hex string!");
+			}
+			*/
+			if (!Validator.IsValidGuid(id)) {
+				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid Guid!");
 			}
 
 			return result;

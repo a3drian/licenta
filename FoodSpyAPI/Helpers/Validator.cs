@@ -12,13 +12,13 @@ namespace FoodSpyAPI.Helpers
 	public static class Validator
 	{
 		/// <summary>
-		/// Determines whether an id of type "string" is valid.
+		/// Determines whether a given id is of type "string".
 		/// </summary>
 		/// <param name="id">The identifier.</param>
 		/// <returns>
 		///   <c>true</c> if id is of type string, is not null and does not contain whitespace; otherwise, <c>false</c>.
 		/// </returns>
-		internal static bool IsValidId(string id)
+		internal static bool IsValidAndNotEmptyString(string id)
 		{
 			if (
 				 id.GetType() != typeof(string) ||
@@ -31,7 +31,7 @@ namespace FoodSpyAPI.Helpers
 			return true;
 		}
 
-		private static bool IsEmptyString(string str)
+		private static bool IsEmptyOrNullString(string str)
 		{
 			if (
 				 str == null ||
@@ -47,7 +47,7 @@ namespace FoodSpyAPI.Helpers
 
 		private static bool IsEmptySearchTerm(string searchTerm)
 		{
-			if (IsEmptyString(searchTerm)) {
+			if (IsEmptyOrNullString(searchTerm)) {
 				return true;
 			}
 
@@ -67,7 +67,7 @@ namespace FoodSpyAPI.Helpers
 			return true;
 		}
 
-
+		/*
 		internal static bool IsValid24DigitHexString(string id)
 		{
 			if (
@@ -78,6 +78,7 @@ namespace FoodSpyAPI.Helpers
 
 			return true;
 		}
+		*/
 
 		internal static bool IsValidEmail(string email)
 		{
@@ -141,6 +142,24 @@ namespace FoodSpyAPI.Helpers
 			}
 
 			if (arrayOfIDs.GetType().IsArrayOf<string>()) {
+				return false;
+			}
+
+			bool allUnique = arrayOfIDs.GroupBy(id => id).All(g => g.Count() == 1);
+			if (!allUnique) {
+				return false;
+			}
+
+			return true;
+		}
+
+		internal static bool IsValidGuidArray(List<Guid> arrayOfIDs)
+		{
+			if (arrayOfIDs == null) {
+				return false;
+			}
+
+			if (arrayOfIDs.GetType().IsArrayOf<Guid>()) {
 				return false;
 			}
 
@@ -217,6 +236,12 @@ namespace FoodSpyAPI.Helpers
 
 			bool valid = name.All(letter => Alphabet.ALLOWED_CHARACTERS.Contains(letter));
 
+			return valid;
+		}
+
+		internal static bool IsValidGuid(string id)
+		{
+			bool valid = Guid.TryParse(id, out _);
 			return valid;
 		}
 	}
