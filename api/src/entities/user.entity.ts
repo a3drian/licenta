@@ -22,6 +22,8 @@ export class User implements IUser {
    email!: string;
    @Property()
    password!: string;
+   @Property()
+   targetCalories!: number;
 
    public constructor(partial?: Partial<User>) {
       Object.assign(this, partial);
