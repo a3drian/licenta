@@ -22,4 +22,5 @@ class Constants {
          INTAKES_SEARCH_URL: '/api/db/intakes/search/',
          INTAKES_SEARCH_BY_EMAIL_AND_DATE: '/api/db/intakes/searchByEmailAndCreatedAt'
       };
+   static TARGET_CALORIES: number = 2000;
 }

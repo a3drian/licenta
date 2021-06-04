@@ -8,18 +8,11 @@ import { throwError } from 'rxjs';
 // Interfaces:
 import { IAuthResponseData } from 'foodspy-shared';
 // Models:
+import { AuthResponseData } from '../models/AuthResponseData';
 import { User } from '../models/User';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
-
-export interface AuthResponseData {
-    email: string;
-    // response properties
-    id: string;
-    token: string;
-    expiresIn: number;
-}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -44,14 +37,20 @@ export class AuthService {
         private router: Router
     ) { }
 
+    // /*
     private handleError(errorResponse: HttpErrorResponse) {
-        let errorMessage = 'Unexpected error occurred when registering an user which is not connected to the API!';
+        let errorMessage: string = 'Unexpected error occurred when registering an user which is not connected to the API!';
         if (!errorResponse.error) {
             return throwError(errorMessage);
         }
         errorMessage = errorResponse.error.message;
         return throwError(errorMessage);
     }
+    // */
+
+    // private handleError(errorResponse: HttpErrorResponse) {
+    //     return throwError(errorResponse);
+    // }
 
     private handleAuthentication(responseData: AuthResponseData): void {
         const timeNow = new Date().getTime();
@@ -60,6 +59,7 @@ export class AuthService {
         const user = new User(
             responseData.email,
             responseData.id,
+            responseData.targetCalories,
             responseData.token,
             expirationDate
         );
@@ -139,6 +139,7 @@ export class AuthService {
         const localUserData: {
             email: string;
             id: string;
+            _targetCalories: string;
             _token: string;
             _tokenExpirationDate: string
         } = JSON.parse(localStorageUserData);
@@ -150,6 +151,7 @@ export class AuthService {
         const loadedUser = new User(
             localUserData.email,
             localUserData.id,
+            Constants.TARGET_CALORIES,
             localUserData._token,
             new Date(localUserData._tokenExpirationDate)
         );

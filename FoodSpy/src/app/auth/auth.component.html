@@ -2,6 +2,11 @@
     <div *ngIf="error">
         <p>{{ error }}</p>
     </div>
+
+    <div *ngIf="errorResponse">
+        <app-error-response [errorResponse]="errorResponse"></app-error-response>
+    </div>
+
     <div *ngIf="isLoading" class="loading-spinner">
         <app-loading-spinner></app-loading-spinner>
     </div>
@@ -13,6 +18,10 @@
         <div>
             <label for="password">Password</label>
             <input formControlName="password" type="password" id="password" required minlength="3" />
+        </div>
+        <div *ngIf="!isInLoginMode">
+            <label for="targetCalories">Target calories</label>
+            <input formControlName="targetCalories" type="number" id="targetCalories" required />
         </div>
         <div>
             <button type="submit" [disabled]="!isFormValid()">

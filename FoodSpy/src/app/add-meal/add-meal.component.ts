@@ -127,6 +127,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
             log('add-meal.ts', this.ngOnInit.name, '(intake) this.existingMealTypes:', this.existingMealTypes);
             this.intakeId = intake.id;
             this.intake.mealIDs = intake.mealIDs;
+            this.intake.targetCalories = Constants.TARGET_CALORIES;  // TO DO: take target from user preferences
           } else {
             this.initializeIntake();
             log('add-meal.ts', this.ngOnInit.name, '(!intake) (intake should be initialized with defaults) this.intake:', this.intake);
@@ -493,9 +494,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
     if (this.foodsLoaded) {
       if (this.databaseFoods) {
-        if (this.databaseFoods.length !== 0) {
-          return true;
-        }
+        // if (this.databaseFoods.length !== 0) { // cannot use this because the user can search for something that returns 0 results
+        return true;
+        // }
       }
     }
 

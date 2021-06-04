@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 // rxjs:
 import { Observable } from 'rxjs';
+// Models:
+import { AuthResponseData } from '../models/AuthResponseData';
 // Services:
-import { AuthResponseData, AuthService } from './auth.service';
+import { AuthService } from './auth.service';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
@@ -31,6 +34,7 @@ export class AuthComponent {
     noAccountButtonText: string = 'No account? Register';
 
     error: string | null = null;
+    errorResponse: HttpErrorResponse | null = null;
 
     onSwitchBetweenLoggedInAndOut(): void {
         this.isInLoginMode = !this.isInLoginMode;
@@ -49,7 +53,8 @@ export class AuthComponent {
             .group(
                 {
                     email: ['', Validators.required],
-                    password: ['', Validators.required]
+                    password: ['', Validators.required],
+                    targetCalories: [Constants.TARGET_CALORIES, Validators.required]
                 }
             );
     }
@@ -96,6 +101,7 @@ export class AuthComponent {
                     log('auth.ts', this.onSubmit.name, 'Error when trying to log in / sign up:', errorMessage);
 
                     this.error = errorMessage;
+                    this.errorResponse = errorMessage;
                     this.isLoading = false;
                 }
             );
