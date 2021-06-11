@@ -1,7 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.Interfaces
 {
@@ -11,10 +9,10 @@ namespace FoodSpyAPI.Interfaces
 
 		double Calories { get; set; }
 
-		//double TargetCalories { get; set; }
+		// double TargetCalories { get; set; }
 
 		DateTime CreatedAt { get; set; }
 
-		List<Meal> Meals { get; set; }
+		// List<MealModel> Meals { get; set; }
 	}
 }

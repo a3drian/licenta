@@ -11,5 +11,7 @@ namespace FoodSpyAPI.DTOs.Models
 		[BsonElement(nameof(Quantity))] public double Quantity { get; set; }
 
 		[BsonElement(nameof(Unit))] public string Unit { get; set; }
+
+		[BsonElement(nameof(Food))] public FoodModel Food { get; set; }
 	}
 }

@@ -29,18 +29,27 @@ namespace FoodSpyAPI.Services
 		#endregion
 
 		private readonly IMongoCollection<Intake> _intakes;
+		private readonly IMealService _mealService;
 		private readonly ILogger<IIntakeService> _logger;
 
-		public IntakeService(IIntakesDatabaseSettings settings, ILogger<IIntakeService> logger)
+		public IntakeService(
+			IIntakesDatabaseSettings settings,
+			IMealService mealService,
+			ILogger<IIntakeService> logger)
 		{
 			if (settings == null) {
 				throw new ArgumentNullException(nameof(settings));
+			}
+
+			if (mealService == null) {
+				throw new ArgumentNullException(nameof(mealService));
 			}
 
 			MongoClient client = new MongoClient(settings.ConnectionString);
 			IMongoDatabase database = client.GetDatabase(settings.DatabaseName);
 
 			_intakes = database.GetCollection<Intake>(settings.IntakesCollectionName);
+			_mealService = mealService;
 
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
@@ -76,31 +85,26 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
-			Guid guid = new Guid(id);
+			Intake intake = await GetIntakeByGuid(id);
 
-			IAggregateFluent<Intake> aggregationMatch = _intakes
-				.Aggregate()
-				.Match<Intake>(intake => intake.Id.Equals(guid));
+			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
+			intake.Meals = populatedMeals;
 
-			Intake intake = await aggregationMatch
-				.Lookup(
-					MEALS_FOREIGN_COLLECTION_NAME,
-					INTAKE_LOCAL_FIELD,
-					MEAL_FOREIGN_FIELD,
-					MEALS_ARRAY
-				)
-				.As<Intake>()
-				.SingleOrDefaultAsync();
+			_logger.LogInformation($"Intake with id '{id}' ...\n{intake}");
 
-			double calories = 0;
-			List<Meal> meals = intake.Meals;
-			foreach (Meal m in meals) {
-				List<MealFood> mealFoods = m.MealFoods;
-				double c = 0;
-				//double c = mealFoodService.CalculateCalories(mealFoods);
-				calories += c;
-			}
+			return intake;
+		}
 
+		public async Task<Intake> GetIntakeWithCalculatedCaloriesById(string id)
+		{
+			_logger.LogInformation($"Fetching intake with id '{id}' ...");
+
+			Intake intake = await GetIntakeByGuid(id);
+
+			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
+			intake.Meals = populatedMeals;
+
+			double calories = _mealService.CalculateCalories(populatedMeals);
 			intake.Calories = calories;
 
 			_logger.LogInformation($"Intake with id '{id}' ...\n{intake}");
@@ -259,6 +263,44 @@ namespace FoodSpyAPI.Services
 			Console.WriteLine(intake);
 
 			return intake;
+		}
+
+		#endregion
+
+		#region Helper methods
+
+		private async Task<Intake> GetIntakeByGuid(string id)
+		{
+			Guid guid = new Guid(id);
+
+			IAggregateFluent<Intake> aggregationMatch = _intakes
+				.Aggregate()
+				.Match<Intake>(intake => intake.Id.Equals(guid));
+
+			Intake intake = await aggregationMatch
+				.Lookup(
+					MEALS_FOREIGN_COLLECTION_NAME,
+					INTAKE_LOCAL_FIELD,
+					MEAL_FOREIGN_FIELD,
+					MEALS_ARRAY
+				)
+				.As<Intake>()
+				.SingleOrDefaultAsync();
+			return intake;
+		}
+
+		private List<Meal> PopulateIntakeMeals(Intake intake)
+		{
+			List<Meal> meals = intake.Meals;
+			List<Meal> populatedMeals = new List<Meal>();
+			foreach (Meal m in meals) {
+				string mealID = m.Id.ToString();
+				Task<Meal> task = _mealService.GetMealByIdWithFoods(mealID);
+				Meal result = task.Result;
+				populatedMeals.Add(result);
+			}
+
+			return populatedMeals;
 		}
 
 		#endregion

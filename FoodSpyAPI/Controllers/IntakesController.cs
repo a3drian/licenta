@@ -77,6 +77,30 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
+		[HttpGet("calculate/{id}")]
+		public async Task<ActionResult<IntakeModel>> GetIntakeAndCaloriesById(string id)
+		{
+			try {
+
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
+				}
+
+				Intake intake = await _intakeService.GetIntakeWithCalculatedCaloriesById(id);
+
+				if (intake == null) {
+					return NotFound($"Intake with id '{id}' was not found!");
+				}
+
+				IntakeModel mappedIntake = _mapper.Map<IntakeModel>(intake);
+				return mappedIntake;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
+
 		#endregion
 
 		#region POST

@@ -103,7 +103,7 @@ namespace FoodSpyAPI.Services
 				.Aggregate()
 				.Match<Meal>(meal => meal.Id.Equals(guid));
 
-			// sa vad daca pot popula direct "MealFoods.Food" de exemplu
+			// sa vad daca pot popula direct "MealFoods.Food", de ex.
 			Meal meal = await aggregationMatch
 				.Lookup(
 					FOODS_FOREIGN_COLLECTION_NAME,
@@ -124,16 +124,6 @@ namespace FoodSpyAPI.Services
 			}
 
 			meal.MealFoods = sortedMealFoods;
-
-			/*
-			for (int i = 0; i < meal.Foods.Count; i++) {
-				mealFoods[i].Food = meal.Foods[i];
-			}
-			
-			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
-			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
-			Meal meal = mealSingleOrDefault.Result;
-			*/
 
 			_logger.LogInformation($"Meal with id '{id}' ...\n{meal}");
 
@@ -236,6 +226,38 @@ namespace FoodSpyAPI.Services
 			}
 
 			return mealsList;
+		}
+
+		#endregion
+
+		#region Helper methods
+
+		public double CalculateCalories(Meal meal)
+		{
+			double calories = 0;
+			List<MealFood> mealFoods = meal.MealFoods;
+			foreach (MealFood mealFood in mealFoods) {
+				Food food = mealFood.Food;
+				double energy = food.Energy;
+				calories += energy;
+			}
+			return calories;
+		}
+
+		public double CalculateCalories(List<Meal> meals)
+		{
+			double calories = 0;
+			foreach (Meal meal in meals) {
+				List<MealFood> mealFoods = meal.MealFoods;
+				double c = 0;
+				foreach (MealFood mealFood in mealFoods) {
+					Food food = mealFood.Food;
+					double energy = food.Energy;
+					c += energy;
+				}
+				calories += c;
+			}
+			return calories;
 		}
 
 		#endregion

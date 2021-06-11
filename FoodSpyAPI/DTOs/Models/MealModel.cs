@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using FoodSpyAPI.Interfaces;
-using FoodSpyAPI.Models;
 
 namespace FoodSpyAPI.DTOs.Models
 {
@@ -18,7 +17,7 @@ namespace FoodSpyAPI.DTOs.Models
 
 		[BsonElement(nameof(CreatedAt))] public DateTime CreatedAt { get; set; }
 
-		[BsonElement(nameof(MealFoods))] public List<MealFood> MealFoods { get; set; }
+		[BsonElement(nameof(MealFoods))] public List<MealFoodModel> MealFoods { get; set; }
 
 		// [BsonElement(nameof(Foods))] public List<Food> Foods { get; set; }
 	}

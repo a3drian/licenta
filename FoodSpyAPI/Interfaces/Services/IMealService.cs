@@ -22,5 +22,8 @@ namespace FoodSpyAPI.Interfaces.Services
 		public Task<List<Meal>> GetMealsWithFoods();
 
 		public Task<Meal> GetMealByIdWithFoods(string id);
+
+		double CalculateCalories(Meal result);
+		double CalculateCalories(List<Meal> meals);
 	}
 }

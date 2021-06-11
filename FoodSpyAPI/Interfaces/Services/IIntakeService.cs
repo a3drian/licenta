@@ -23,5 +23,6 @@ namespace FoodSpyAPI.Interfaces.Services
 
 		public Task<Intake> SearchIntakeByEmailAndDate(string email, DateTime createdAt);
 
+		public Task<Intake> GetIntakeWithCalculatedCaloriesById(string id);
 	}
 }
