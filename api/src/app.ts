@@ -35,7 +35,7 @@ async function makeApp(): Promise<Application> {
     metadataProvider: ReflectMetadataProvider,
     cache: { enabled: false },
     entities: entities,
-    dbName: env.DB_NAME,
+    dbName: env.TEST_DB_NAME,
     clientUrl: env.MONGO_URL,
     type: 'mongo'
   });

@@ -46,6 +46,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
+  userTargetCalories: number = 0;
 
   user: IUser | null = null;
 
@@ -111,6 +112,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
     if (this.user) {
       this.isAuthenticated = this.userService.isAuthenticated;
       this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
+      this.userTargetCalories = this.userService.authenticatedUserTargetCalories;
       log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
 

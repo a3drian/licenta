@@ -26,6 +26,7 @@ export class IntakesComponent implements OnInit {
   user: IUser | null = null;
   isAuthenticated: boolean = false;
   authenticatedUserEmail: string = '';
+  authenticatedUserTargetCalories: number = 0;
 
   currentTime: Date = new Date();
 
@@ -49,6 +50,7 @@ export class IntakesComponent implements OnInit {
     if (this.user) {
       this.isAuthenticated = this.userService.isAuthenticated;
       this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
+      this.authenticatedUserTargetCalories = this.userService.authenticatedUserTargetCalories;
       log('intakes.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
     }
     this.intakesService

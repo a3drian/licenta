@@ -8,6 +8,7 @@ export class UserService {
    public user: IUser | null = null;
    public isAuthenticated: boolean = false;
    public authenticatedUserEmail: string = '';
+   public authenticatedUserTargetCalories: number = 0;
 
    constructor(private authService: AuthService) {
       // log('user.service.ts', 'constructor()', 'called autoLogin()');

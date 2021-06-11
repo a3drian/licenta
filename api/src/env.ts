@@ -15,6 +15,7 @@ export const env = Object.freeze(
 
 		MONGO_URL: CLUSTER_URI,
 		DB_NAME: 'FoodSpyDb',
+		TEST_DB_NAME: 'FoodSpyDbTest',
 
 		USERS_ROUTE: '/db/users',
 

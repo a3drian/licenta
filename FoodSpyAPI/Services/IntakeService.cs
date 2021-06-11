@@ -105,10 +105,12 @@ namespace FoodSpyAPI.Services
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
 			Intake intake = await GetIntakeByGuid(id);
+			/*
 			if (intake == null) {
 				_logger.LogInformation($"Intake with id '{id}' was not found!");
 				return null;
 			}
+			*/
 
 			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
 			intake.Meals = populatedMeals;
@@ -123,10 +125,12 @@ namespace FoodSpyAPI.Services
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
 			Intake intake = await GetIntakeByGuid(id);
+			/*
 			if (intake == null) {
 				_logger.LogInformation($"Intake with id '{id}' was not found!");
 				return null;
 			}
+			*/
 
 			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
 			intake.Meals = populatedMeals;

@@ -5,7 +5,7 @@ export class User implements IUser {
     constructor(
         public email: string,
         public id: string,
-        public _targetCalories: number,
+        private _targetCalories: number,
         private _token: string,
         private _tokenExpirationDate: Date,
     ) { }

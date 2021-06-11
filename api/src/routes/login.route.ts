@@ -76,6 +76,7 @@ async function loginUser(
                 authResponseData.email = response.email;
                 authResponseData.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
                 authResponseData.id = response.id;
+                authResponseData.targetCalories = response.targetCalories;
                 authResponseData.expiresIn = FIFTEEN_MINUTES;
 
                 log('login.route.ts', `${loginUser.name}^`, '');

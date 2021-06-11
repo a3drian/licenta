@@ -28,8 +28,21 @@
    </p>
    -->
 
+   <div *ngFor="let food of foods">
+      <p>
+         <b>Name</b>:
+         {{ food.name }}
+      </p>
+      <p>
+         Energy:
+         {{ food.energy }} g
+      </p>
+   </div>
+
+   <!-- 
    <div *ngFor="let mealFood of meal.mealFoods">
       {{ mealFood.mfid }}, {{ mealFood.quantity }} {{ mealFood.unit }}
    </div>
+   -->
 
 </div>

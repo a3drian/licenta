@@ -61,7 +61,8 @@ async function registerUser(
         const registeredUser = new User(
             {
                 email: req.body.email,
-                password: encryptPassword(req.body.password)
+                password: encryptPassword(req.body.password),
+                targetCalories: req.body.targetCalories
             }
         );
 

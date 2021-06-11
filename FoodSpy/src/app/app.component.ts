@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
         if (user) {
           this.userService.isAuthenticated = true;
           this.userService.authenticatedUserEmail = user.email;
+          this.userService.authenticatedUserTargetCalories = user.targetCalories;
         }
       }
     )

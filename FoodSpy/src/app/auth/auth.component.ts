@@ -70,6 +70,7 @@ export class AuthComponent {
 
         const email = form.email;
         const password = form.password;
+        const targetCalories = form.targetCalories;
 
         this.isLoading = true;
 
@@ -79,7 +80,7 @@ export class AuthComponent {
         if (this.isInLoginMode) {
             authObservable = this.authService.login(email, password);
         } else {
-            authObservable = this.authService.register(email, password);
+            authObservable = this.authService.register(email, password, targetCalories);
         }
 
         authObservable

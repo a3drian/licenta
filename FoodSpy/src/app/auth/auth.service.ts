@@ -69,13 +69,14 @@ export class AuthService {
         localStorage.setItem(this.LOCAL_STORAGE_USER_DATA_KEY, JSON.stringify(user));
     }
 
-    register(_email: string, _password: string): Observable<IAuthResponseData> {
+    register(_email: string, _password: string, _targetCalories: number): Observable<IAuthResponseData> {
         return this.http
             .post<AuthResponseData>(
                 this.REGISTER_URL,
                 {
                     email: _email,
-                    password: _password
+                    password: _password,
+                    targetCalories: _targetCalories
                 }
             )
             .pipe(
@@ -139,7 +140,7 @@ export class AuthService {
         const localUserData: {
             email: string;
             id: string;
-            _targetCalories: string;
+            _targetCalories: number;
             _token: string;
             _tokenExpirationDate: string
         } = JSON.parse(localStorageUserData);
@@ -151,7 +152,7 @@ export class AuthService {
         const loadedUser = new User(
             localUserData.email,
             localUserData.id,
-            Constants.TARGET_CALORIES,
+            localUserData._targetCalories,
             localUserData._token,
             new Date(localUserData._tokenExpirationDate)
         );
