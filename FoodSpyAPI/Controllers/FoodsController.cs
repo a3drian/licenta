@@ -89,7 +89,7 @@ namespace FoodSpyAPI.Controllers
 				Food addedFood = await _foodService.AddFood(food);
 
 				string location = _linkGenerator.GetPathByAction(
-					 "GetFoodById",
+					 nameof(GetFoodById),
 					 "Foods",
 					 new { id = addedFood.Id }
 				);

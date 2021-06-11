@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Compile Remove="Common\Constants.cs" />
-    <Compile Remove="Common\FoodUnit.cs" />
     <Compile Remove="Common\FoodUnits.cs" />
     <Compile Remove="DTOs\Models\MealFood.cs" />
     <Compile Remove="Interfaces\IFoodMeal.cs" />
@@ -22,6 +21,7 @@
     <Compile Remove="Models\FoodModel.cs" />
     <Compile Remove="Models\IntakeModel.cs" />
     <Compile Remove="Models\MealModel.cs" />
+    <Compile Remove="Profiles\MealModelToMealProfile.cs" />
     <Compile Remove="Services\IIntakeService.cs" />
   </ItemGroup>
 

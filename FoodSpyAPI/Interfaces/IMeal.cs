@@ -1,7 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using FoodSpyAPI.DTOs.Models;
 
 namespace FoodSpyAPI.Interfaces
 {
@@ -9,6 +7,6 @@ namespace FoodSpyAPI.Interfaces
 	{
 		DateTime CreatedAt { get; set; }
 		string Type { get; set; }
-		//List<MealFoodModel> MealFoods { get; set; }
+		//	List<MealFoodModel> MealFoods { get; set; }
 	}
 }

@@ -13,6 +13,8 @@ namespace FoodSpyAPI.Interfaces.Services
 
 		public Task<Intake> GetIntakeById(string id);
 
+		public Task<Intake> GetUnpopulatedIntakeById(string id);
+
 		public Task<Intake> AddIntake(Intake intake);
 
 		public Task<bool> UpdateIntake(Intake intake);

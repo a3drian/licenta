@@ -46,7 +46,7 @@ namespace FoodSpyAPI.Services
 
 		#region GET
 
-		public async Task<List<Meal>> GetMeals()
+		public async Task<List<Meal>> GetUnpopulatedMeals()
 		{
 			_logger.LogInformation($"Fetching meals...");
 
@@ -55,7 +55,7 @@ namespace FoodSpyAPI.Services
 			return mealsList;
 		}
 
-		public async Task<List<Meal>> GetMealsWithFoods()
+		public async Task<List<Meal>> GetMeals()
 		{
 			_logger.LogInformation($"Fetching meals...");
 
@@ -80,11 +80,13 @@ namespace FoodSpyAPI.Services
 
 		#region GET/:id
 
-		public async Task<Meal> GetMealById(string id)
+		public async Task<Meal> GetUnpopulatedMealById(string id)
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
 
-			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id.ToString() == id);
+			Guid guid = new Guid(id);
+
+			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(meal => meal.Id.Equals(guid));
 			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
 			Meal meal = mealSingleOrDefault.Result;
 
@@ -93,7 +95,7 @@ namespace FoodSpyAPI.Services
 			return meal;
 		}
 
-		public async Task<Meal> GetMealByIdWithFoods(string id)
+		public async Task<Meal> GetMealById(string id)
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
 
@@ -166,7 +168,7 @@ namespace FoodSpyAPI.Services
 
 			ReplaceOneResult result = await _meals
 				 .ReplaceOneAsync<Meal>(
-					  filter: n => n.Id == meal.Id,
+					  filter: m => m.Id.Equals(meal.Id),
 					  replacement: meal
 				 );
 
@@ -192,7 +194,7 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Deleting meal with id '{meal.Id}' ...");
 
-			DeleteResult result = await _meals.DeleteOneAsync(n => n.Id == meal.Id);
+			DeleteResult result = await _meals.DeleteOneAsync(m => m.Id.Equals(meal.Id));
 
 			bool deleted = result.IsAcknowledged;
 			_logger.LogInformation($"{result.ToJson()}");
@@ -208,9 +210,15 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Searching by type of '{type}' ...");
 
+			string SEARCH_BY_TYPE = nameof(Meal.Type);
+
+			FilterDefinition<Meal> typeFilter = Builders<Meal>
+				.Filter
+				.Regex(SEARCH_BY_TYPE, new BsonRegularExpression(type, "i"));
+
 			IAsyncCursor<Meal> meals = await _meals
 				 .FindAsync<Meal>(
-					  filter: meal => meal.Type.Equals(type)
+					  filter: typeFilter
 				 );
 
 			if (meals == null) {
@@ -219,11 +227,6 @@ namespace FoodSpyAPI.Services
 			}
 
 			List<Meal> mealsList = meals.ToList();
-
-			_logger.LogInformation($"Meals of type: '{type}' ...");
-			foreach (Meal meal in mealsList) {
-				Console.WriteLine(meal);
-			}
 
 			return mealsList;
 		}

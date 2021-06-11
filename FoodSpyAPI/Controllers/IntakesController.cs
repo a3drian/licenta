@@ -119,7 +119,7 @@ namespace FoodSpyAPI.Controllers
 				Intake addedIntake = await _intakeService.AddIntake(mapFromModel);
 
 				string location = _linkGenerator.GetPathByAction(
-					 "GetIntakeById",
+					 nameof(GetIntakeById),
 					 "Intakes",
 					 new { id = addedIntake.Id }
 				);
@@ -157,7 +157,7 @@ namespace FoodSpyAPI.Controllers
 					return validateIntake;
 				}
 
-				Intake oldIntake = await _intakeService.GetIntakeById(id);
+				Intake oldIntake = await _intakeService.GetUnpopulatedIntakeById(id);
 				if (oldIntake == null) {
 					return NotFound($"Intake with id '{id}' was not found!");
 				}
@@ -195,7 +195,7 @@ namespace FoodSpyAPI.Controllers
 					return validateID;
 				}
 
-				Intake intake = await _intakeService.GetIntakeById(id);
+				Intake intake = await _intakeService.GetUnpopulatedIntakeById(id);
 				if (intake == null) {
 					return NotFound($"Intake with id '{id}' was not found!");
 				}
@@ -293,17 +293,11 @@ namespace FoodSpyAPI.Controllers
 			if (!Validator.IsValidGuidArray(intake.MealIDs)) {
 				return BadRequest($"'{nameof(intake.MealIDs)}' is missing, is invalid or contains duplicates!");
 			}
-
-			List<Guid> mealIDs = intake.MealIDs;
-			foreach (Guid mealID in mealIDs) {
-				string mealGuid = mealID.ToString();
-				if (!Validator.IsValidAndNotEmptyString(mealGuid)) {
-					return BadRequest($"'{nameof(mealID)}' parameter: '{mealID}' is invalid!");
-				}
-				if (!Validator.IsValidGuid(mealGuid)) {
-					return BadRequest($"'{nameof(mealID)}' parameter: '{mealID}' is not a valid 24 digit hex string!");
-				}
+			/*
+			if (!Validator.IsValidIntakeCalories(intake.Calories)) {
+				return BadRequest($"'{nameof(intake.Calories)}' is missing or is invalid!");
 			}
+			*/
 
 			return result;
 		}

@@ -9,7 +9,11 @@ namespace FoodSpyAPI.Interfaces.Services
 	{
 		public Task<List<Meal>> GetMeals();
 
+		public Task<List<Meal>> GetUnpopulatedMeals();
+
 		public Task<Meal> GetMealById(string id);
+
+		public Task<Meal> GetUnpopulatedMealById(string id);
 
 		public Task<Meal> AddMeal(Meal meal);
 
@@ -19,11 +23,8 @@ namespace FoodSpyAPI.Interfaces.Services
 
 		public Task<List<Meal>> SearchMealsByType(string type);
 
-		public Task<List<Meal>> GetMealsWithFoods();
+		public double CalculateCalories(Meal result);
 
-		public Task<Meal> GetMealByIdWithFoods(string id);
-
-		double CalculateCalories(Meal result);
-		double CalculateCalories(List<Meal> meals);
+		public double CalculateCalories(List<Meal> meals);
 	}
 }

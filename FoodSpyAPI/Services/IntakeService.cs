@@ -81,11 +81,34 @@ namespace FoodSpyAPI.Services
 
 		#region GET/:id
 
+		public async Task<Intake> GetUnpopulatedIntakeById(string id)
+		{
+			_logger.LogInformation($"Fetching intake with id '{id}' ...");
+
+			Guid guid = new Guid(id);
+			IAsyncCursor<Intake> findResult = await _intakes.FindAsync<Intake>(i => i.Id.Equals(guid));
+			Task<Intake> intakeSingleOrDefault = findResult.SingleOrDefaultAsync();
+			Intake intake = intakeSingleOrDefault.Result;
+
+			if (intake == null) {
+				_logger.LogInformation($"Intake with id '{id}' was not found!");
+				return null;
+			}
+
+			_logger.LogInformation($"Intake with id '{id}' ...\n{intake}");
+
+			return intake;
+		}
+
 		public async Task<Intake> GetIntakeById(string id)
 		{
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
 			Intake intake = await GetIntakeByGuid(id);
+			if (intake == null) {
+				_logger.LogInformation($"Intake with id '{id}' was not found!");
+				return null;
+			}
 
 			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
 			intake.Meals = populatedMeals;
@@ -100,6 +123,10 @@ namespace FoodSpyAPI.Services
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
 			Intake intake = await GetIntakeByGuid(id);
+			if (intake == null) {
+				_logger.LogInformation($"Intake with id '{id}' was not found!");
+				return null;
+			}
 
 			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
 			intake.Meals = populatedMeals;
@@ -148,7 +175,7 @@ namespace FoodSpyAPI.Services
 
 			ReplaceOneResult result = await _intakes
 				 .ReplaceOneAsync<Intake>(
-					  filter: n => n.Id == intake.Id,
+					  filter: i => i.Id.Equals(intake.Id),
 					  replacement: intake
 				 );
 
@@ -174,7 +201,7 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Deleting intake with id '{intake.Id}' ...");
 
-			DeleteResult result = await _intakes.DeleteOneAsync(n => n.Id == intake.Id);
+			DeleteResult result = await _intakes.DeleteOneAsync(i => i.Id.Equals(intake.Id));
 
 			bool deleted = result.IsAcknowledged;
 			_logger.LogInformation($"{result.ToJson()}");
@@ -259,6 +286,9 @@ namespace FoodSpyAPI.Services
 
 			intake.Meals = orderedMeals;
 
+			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
+			intake.Meals = populatedMeals;
+
 			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt.Print()}' ...");
 			Console.WriteLine(intake);
 
@@ -286,6 +316,7 @@ namespace FoodSpyAPI.Services
 				)
 				.As<Intake>()
 				.SingleOrDefaultAsync();
+
 			return intake;
 		}
 
@@ -295,7 +326,7 @@ namespace FoodSpyAPI.Services
 			List<Meal> populatedMeals = new List<Meal>();
 			foreach (Meal m in meals) {
 				string mealID = m.Id.ToString();
-				Task<Meal> task = _mealService.GetMealByIdWithFoods(mealID);
+				Task<Meal> task = _mealService.GetMealById(mealID);
 				Meal result = task.Result;
 				populatedMeals.Add(result);
 			}
