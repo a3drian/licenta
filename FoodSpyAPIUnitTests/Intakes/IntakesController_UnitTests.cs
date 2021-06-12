@@ -127,7 +127,7 @@ namespace FoodSpyAPIUnitTests.Intakes
 		public async Task GetIntakeById_ShouldReturnBadRequest_Test(string id)
 		{
 			// Act
-			var result = await _intakesController.GetIntakeById(id);
+			var result = await _intakesController.GetIntakeWithCalculatedCaloriesById(id);
 
 			// Assert
 			Assert.That(result.Result, Is.TypeOf(typeof(BadRequestObjectResult)));
@@ -153,7 +153,7 @@ namespace FoodSpyAPIUnitTests.Intakes
 				.Returns(intakeModel);
 
 			// Act
-			var result = await _intakesController.GetIntakeById(intakeExistingId);
+			var result = await _intakesController.GetIntakeWithCalculatedCaloriesById(intakeExistingId);
 
 			// Assert
 			Assert.That(result.Value, Is.TypeOf(typeof(IntakeModel)));

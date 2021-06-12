@@ -106,7 +106,7 @@ namespace FoodSpyAPI.Services
 			DeleteResult result = await _foods.DeleteOneAsync(f => f.Id.Equals(food.Id));
 
 			bool deleted = result.IsAcknowledged;
-			_logger.LogInformation($"{result.ToJson()}");
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
 
 			return deleted;
 		}

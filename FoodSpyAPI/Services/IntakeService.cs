@@ -91,7 +91,7 @@ namespace FoodSpyAPI.Services
 			Intake intake = intakeSingleOrDefault.Result;
 
 			if (intake == null) {
-				_logger.LogInformation($"Intake with id '{id}' was not found!");
+				_logger.LogError($"Intake with id '{id}' was not found!");
 				return null;
 			}
 
@@ -105,14 +105,12 @@ namespace FoodSpyAPI.Services
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
 			Intake intake = await GetIntakeByGuid(id);
-			/*
 			if (intake == null) {
 				_logger.LogInformation($"Intake with id '{id}' was not found!");
 				return null;
 			}
-			*/
 
-			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
+			List<Meal> populatedMeals = PopulateIntakeMealsWithFoodInfo(intake);
 			intake.Meals = populatedMeals;
 
 			_logger.LogInformation($"Intake with id '{id}' ...\n{intake}");
@@ -125,14 +123,12 @@ namespace FoodSpyAPI.Services
 			_logger.LogInformation($"Fetching intake with id '{id}' ...");
 
 			Intake intake = await GetIntakeByGuid(id);
-			/*
 			if (intake == null) {
 				_logger.LogInformation($"Intake with id '{id}' was not found!");
 				return null;
 			}
-			*/
 
-			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
+			List<Meal> populatedMeals = PopulateIntakeMealsWithFoodInfo(intake);
 			intake.Meals = populatedMeals;
 
 			double calories = _mealService.CalculateCalories(populatedMeals);
@@ -157,6 +153,13 @@ namespace FoodSpyAPI.Services
 		public async Task<Intake> AddIntake(Intake intake)
 		{
 			_logger.LogInformation($"Adding new intake...\n{intake}");
+
+			/*
+			List<Meal> populatedMeals = PopulateIntakeMealsWithFoodInfo(intake);
+
+			double calories = _mealService.CalculateCalories(populatedMeals);
+			intake.Calories = calories;
+			*/
 
 			await _intakes.InsertOneAsync(intake);
 			return intake;
@@ -205,10 +208,20 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Deleting intake with id '{intake.Id}' ...");
 
+			List<Guid> mealIDs = intake.MealIDs;
+			foreach (Guid guid in mealIDs) {
+				string mealID = guid.ToString();
+				Task<bool> task = _mealService.DeleteMeal(mealID);
+				bool deletedMeal = task.Result;
+				if (!deletedMeal) {
+					_logger.LogError($"Could not delete meal with id '{mealID}' ...");
+				}
+			}
+
 			DeleteResult result = await _intakes.DeleteOneAsync(i => i.Id.Equals(intake.Id));
 
 			bool deleted = result.IsAcknowledged;
-			_logger.LogInformation($"{result.ToJson()}");
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
 
 			return deleted;
 		}
@@ -290,8 +303,11 @@ namespace FoodSpyAPI.Services
 
 			intake.Meals = orderedMeals;
 
-			List<Meal> populatedMeals = PopulateIntakeMeals(intake);
+			List<Meal> populatedMeals = PopulateIntakeMealsWithFoodInfo(intake);
 			intake.Meals = populatedMeals;
+
+			double calories = _mealService.CalculateCalories(populatedMeals);
+			intake.Calories = calories;
 
 			_logger.LogInformation($"Intake with email '{email}' and created at '{createdAt.Print()}' ...");
 			Console.WriteLine(intake);
@@ -310,7 +326,7 @@ namespace FoodSpyAPI.Services
 			IAggregateFluent<Intake> aggregationMatch = _intakes
 				.Aggregate()
 				.Match<Intake>(intake => intake.Id.Equals(guid));
-
+			/*
 			Intake intake = await aggregationMatch
 				.Lookup(
 					MEALS_FOREIGN_COLLECTION_NAME,
@@ -320,19 +336,25 @@ namespace FoodSpyAPI.Services
 				)
 				.As<Intake>()
 				.SingleOrDefaultAsync();
+			*/
+			Intake intake = await aggregationMatch.SingleOrDefaultAsync();
 
 			return intake;
 		}
 
-		private List<Meal> PopulateIntakeMeals(Intake intake)
+		private List<Meal> PopulateIntakeMealsWithFoodInfo(Intake intake)
 		{
-			List<Meal> meals = intake.Meals;
+			List<Guid> mealIDs = intake.MealIDs;
 			List<Meal> populatedMeals = new List<Meal>();
-			foreach (Meal m in meals) {
-				string mealID = m.Id.ToString();
+			foreach (Guid guid in mealIDs) {
+				string mealID = guid.ToString();
 				Task<Meal> task = _mealService.GetMealById(mealID);
 				Meal result = task.Result;
-				populatedMeals.Add(result);
+				if (result == null) {
+					_logger.LogError($"intake with id '{intake.Id}' references invalid meal id '{mealID}' !");
+				} else {
+					populatedMeals.Add(result);
+				}
 			}
 
 			return populatedMeals;

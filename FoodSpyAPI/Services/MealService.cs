@@ -116,11 +116,17 @@ namespace FoodSpyAPI.Services
 				.As<Meal>()
 				.SingleOrDefaultAsync();
 
+			if (meal == null) {
+				_logger.LogError($"Could not find meal (of intake) with id '{id}' ...\n{meal}");
+				return null;
+			}
+
 			// workaround
 			List<MealFood> mealFoods = meal.MealFoods;
 			List<MealFood> sortedMealFoods = mealFoods.OrderBy(m => m.Mfid).ToList();
 			List<Food> sortedFoods = meal.Foods.OrderBy(m => m.Id).ToList();
 
+			// add food info to property "Food" of "MealFood"
 			for (int i = 0; i < sortedFoods.Count; i++) {
 				sortedMealFoods[i].Food = sortedFoods[i];
 			}
@@ -197,7 +203,20 @@ namespace FoodSpyAPI.Services
 			DeleteResult result = await _meals.DeleteOneAsync(m => m.Id.Equals(meal.Id));
 
 			bool deleted = result.IsAcknowledged;
-			_logger.LogInformation($"{result.ToJson()}");
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
+
+			return deleted;
+		}
+
+		public async Task<bool> DeleteMeal(string id)
+		{
+			_logger.LogInformation($"Deleting meal (of intake) with id '{id}' ...");
+
+			Guid guid = new Guid(id);
+			DeleteResult result = await _meals.DeleteOneAsync(m => m.Id.Equals(guid));
+
+			bool deleted = result.IsAcknowledged;
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
 
 			return deleted;
 		}
@@ -256,10 +275,19 @@ namespace FoodSpyAPI.Services
 				foreach (MealFood mealFood in mealFoods) {
 					Food food = mealFood.Food;
 					double energy = food.Energy;
-					c += energy;
+					double quantity = mealFood.Quantity;
+					double cal = GetCaloriesPerQuantity(energy, quantity);
+					c += cal;
 				}
 				calories += c;
 			}
+			return calories;
+		}
+
+		public double GetCaloriesPerQuantity(double energy, double quantity)
+		{
+			double value = energy * quantity / 100;
+			double calories = Math.Floor(value);
 			return calories;
 		}
 

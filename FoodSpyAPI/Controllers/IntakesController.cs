@@ -53,6 +53,7 @@ namespace FoodSpyAPI.Controllers
 
 		#region GET/:id
 
+		/*
 		[HttpGet("{id}")]
 		public async Task<ActionResult<IntakeModel>> GetIntakeById(string id)
 		{
@@ -76,9 +77,11 @@ namespace FoodSpyAPI.Controllers
 				return LogDatabaseException(e);
 			}
 		}
+		*/
 
-		[HttpGet("calculate/{id}")]
-		public async Task<ActionResult<IntakeModel>> GetIntakeAndCaloriesById(string id)
+		//[HttpGet("calculate/{id}")]
+		[HttpGet("{id}")]
+		public async Task<ActionResult<IntakeModel>> GetIntakeWithCalculatedCaloriesById(string id)
 		{
 			try {
 
@@ -119,7 +122,7 @@ namespace FoodSpyAPI.Controllers
 				Intake addedIntake = await _intakeService.AddIntake(mapFromModel);
 
 				string location = _linkGenerator.GetPathByAction(
-					 nameof(GetIntakeById),
+					 nameof(GetIntakeWithCalculatedCaloriesById),
 					 "Intakes",
 					 new { id = addedIntake.Id }
 				);
