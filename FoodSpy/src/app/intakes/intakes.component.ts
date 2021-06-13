@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 // Interfaces:
-import { IUser } from 'foodspy-shared';
+import { IIntake, IUser } from 'foodspy-shared';
 // Services:
 import { IntakesService } from '../services/intakes.service';
 import { UserService } from '../auth/user.service';
@@ -23,10 +23,13 @@ export class IntakesComponent implements OnInit {
 
   errorResponse: HttpErrorResponse | null = null;
 
+  DASHBOARD_URL: string = Constants.DASHBOARD_URL;
+  ADD_MEAL_URL: string = Constants.ADD_MEAL_URL;
+
   user: IUser | null = null;
   isAuthenticated: boolean = false;
-  authenticatedUserEmail: string = '';
-  authenticatedUserTargetCalories: number = 0;
+  userEmail: string = '';
+  userTargetCalories: number = 0;
 
   currentTime: Date = new Date();
 
@@ -49,12 +52,12 @@ export class IntakesComponent implements OnInit {
     this.user = this.userService.user;
     if (this.user) {
       this.isAuthenticated = this.userService.isAuthenticated;
-      this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
-      this.authenticatedUserTargetCalories = this.userService.authenticatedUserTargetCalories;
-      log('intakes.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+      this.userEmail = this.userService.authenticatedUserEmail;
+      this.userTargetCalories = this.userService.authenticatedUserTargetCalories;
+      log('intakes.ts', this.ngOnInit.name, 'this.userEmail:', this.userEmail);
     }
     this.intakesService
-      .getIntakesByEmail(this.authenticatedUserEmail)
+      .getIntakesByEmail(this.userEmail)
       .subscribe(
         (intakes) => {
           this.intakes = intakes;
@@ -86,6 +89,44 @@ export class IntakesComponent implements OnInit {
         );
     } else {
       log('intakes.ts', this.viewIntakeDetails.name, 'User is not authenticated!');
+    }
+  }
+
+  private reloadPage(caller: string): void {
+    // reloads the page by navigating silently to 'dashboard/add'
+    this.router
+      .navigateByUrl(this.ADD_MEAL_URL, { skipLocationChange: true })
+      .then(() => {
+        this.router
+          .navigate([this.DASHBOARD_URL])
+          .catch(
+            (error) => {
+              log('intakes.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.DASHBOARD_URL}`, error);
+            }
+          );
+      })
+      .catch(
+        (error) => {
+          log('intakes.ts', this.reloadPage.name, `Called from '${caller}'. Could not navigate to: ${this.ADD_MEAL_URL}`, error);
+        }
+      );
+  }
+
+  deleteIntake(intake: IIntake): void {
+    log('intakes.ts', this.deleteIntake.name, `Attempting to delete intake with id: '${intake.id}'`);
+    if (this.isAuthenticated) {
+      this.intakesService
+        .deleteIntake(intake)
+        .subscribe(
+          () => { },
+          (error: HttpErrorResponse) => {
+            log('intakes.ts', this.deleteIntake.name, 'Error occurred when deleting intake, error:', error);
+            this.errorResponse = error;
+          }
+        );
+      this.reloadPage(this.deleteIntake.name);
+    } else {
+      log('intakes.ts', this.deleteIntake.name, 'User is not authenticated!');
     }
   }
 

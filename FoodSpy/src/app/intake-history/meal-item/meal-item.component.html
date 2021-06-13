@@ -17,7 +17,7 @@
 
    <p>
       Created at:
-      {{ meal.createdAt | date: 'short' }}
+      {{ meal.createdAt | date: 'MMM d, y HH:mm' }}
    </p>
 
    <!--
@@ -31,7 +31,7 @@
    <div *ngFor="let food of foods">
       <p>
          <b>Name</b>:
-         {{ food.name }}
+         {{ food.displayName }}
       </p>
       <p>
          Energy:
@@ -39,7 +39,11 @@
       </p>
    </div>
 
-   <!-- 
+   <!--
+   <div *ngFor="let mealFood of meal.foods">
+      TEST> {{ mealFood.displayName }}
+   </div>
+
    <div *ngFor="let mealFood of meal.mealFoods">
       {{ mealFood.mfid }}, {{ mealFood.quantity }} {{ mealFood.unit }}
    </div>

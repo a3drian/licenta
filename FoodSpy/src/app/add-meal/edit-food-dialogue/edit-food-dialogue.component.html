@@ -1,12 +1,17 @@
 <p *ngIf="isInDebugMode"><b>edit-food-dialogue</b> works!</p>
 
-<h2 mat-dialog-title>{{food.name}}</h2>
+<h2 mat-dialog-title>{{food.displayName}}</h2>
 
 <div mat-dialog-content style="width: 500px; height: 500px;">
    <form [formGroup]="editFoodForm">
       <div>
          <label for="quantity">Quantity</label>
          <input formControlName="quantity" type="number" id="quantity" required>
+         <p class="qtyError">
+            <mat-error *ngIf="!isQuantityValid()">
+               Please use a value between {{ minMealQuantity }} and {{ maxMealQuantity }} {{ defaultUnit }}.
+            </mat-error>
+         </p>
       </div>
       <mat-form-field appearance="outline">
          <mat-label for="unit">Select unit</mat-label>

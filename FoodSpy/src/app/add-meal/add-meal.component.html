@@ -1,6 +1,6 @@
 <p *ngIf="isInDebugMode"><b>add-meal</b> works!</p>
 
-<p *ngIf="isInDebugMode">{{ intake.createdAt | date: 'short' }}</p>
+<p *ngIf="isInDebugMode">CreatedAt: {{ intake.createdAt | date: 'MMM d, y HH:mm' }}.</p>
 
 <div *ngIf="isLoading" class="loading-spinner">
     <app-loading-spinner></app-loading-spinner>
@@ -16,6 +16,11 @@
         (click)="viewIntakeDetails()">
         View
     </button>
+</div>
+
+<div *ngIf="!errorResponse">
+    <h2>Daily intake goal: {{ userTargetCalories }} calories</h2>
+    <h3>{{ intakeCaloriesConsumedText }}</h3>
 </div>
 
 <form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">

@@ -31,7 +31,7 @@ export class IntakeHistoryComponent implements OnInit {
   intakeId: string = '';
 
   user: IUser | null = null;
-  authenticatedUserEmail: string = '';
+  userEmail: string = '';
 
   constructor(
     private intakesService: IntakesService,
@@ -73,8 +73,8 @@ export class IntakeHistoryComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.userService.user;
     if (this.user) {
-      this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
-      log('intake-history.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+      this.userEmail = this.userService.authenticatedUserEmail;
+      log('intake-history.ts', this.ngOnInit.name, 'this.userEmail:', this.userEmail);
     }
     this.intakesService
       .getIntakeById(this.intakeId)

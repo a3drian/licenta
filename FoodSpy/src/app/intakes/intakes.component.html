@@ -3,13 +3,13 @@
 <!-- TO DO -->
 <!-- Calendar -->
 
-<h2>{{ currentTime | date: 'short' }}</h2>
+<h2>{{ currentTime | date: 'MMM d, y HH:mm' }}</h2>
 
 <div *ngIf="isLoading" class="loading-spinner">
    <app-loading-spinner></app-loading-spinner>
 </div>
 
-<h2>Daily intake goal: {{ authenticatedUserTargetCalories }} calories</h2>
+<h2>Daily intake goal: {{ userTargetCalories }} calories</h2>
 
 <div *ngIf="errorResponse">
    <app-error-response [errorResponse]="errorResponse"></app-error-response>
@@ -46,7 +46,7 @@
       <!-- CreatedAt -->
       <ng-container matColumnDef="createdAt">
          <th mat-header-cell *matHeaderCellDef> Created at </th>
-         <td mat-cell *matCellDef="let element"> {{ element.createdAt | date: 'short' }} </td>
+         <td mat-cell *matCellDef="let element"> {{ element.createdAt | date: 'MMM d, y HH:mm' }} </td>
       </ng-container>
 
       <!-- Details -->
@@ -55,6 +55,9 @@
          <td mat-cell *matCellDef="let element">
             <button class="button" mat-stroked-button color="primary" (click)="viewIntakeDetails(element.id)">
                View
+            </button>
+            <button class="button" mat-stroked-button color="secondary" (click)="deleteIntake(element)">
+               Delete
             </button>
          </td>
       </ng-container>
@@ -69,7 +72,7 @@
 </div>
 
 <!-- Add new meal -->
-<div>
+<div *ngIf="!errorResponse">
    <button (click)="addNewMeal()">
       Add new meal to daily intake
    </button>

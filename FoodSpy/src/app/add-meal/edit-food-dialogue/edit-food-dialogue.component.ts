@@ -11,6 +11,7 @@ import { UnitsService } from 'src/app/services/units.service';
 import { positiveIntegerValidator } from 'src/app/shared/validators/positiveIntegerValidator';
 // Shared:
 import { Constants } from '../../shared/Constants';
+import { foodQuantityValidator } from 'src/app/shared/validators/foodQuantityValidator';
 
 @Component({
   selector: 'app-edit-food-dialogue',
@@ -21,8 +22,12 @@ export class EditFoodDialogueComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
-  defaultQuantity: number = 100;
-  defaultUnit: string = 'grams';
+  defaultQuantity: number = 0;
+  defaultUnit: string = '';
+  minMealQuantity: number = 0;
+  maxMealQuantity: number = 0;
+
+  quantityLabel = 'quantity';
 
   editFoodForm: FormGroup;
 
@@ -34,12 +39,16 @@ export class EditFoodDialogueComponent implements OnInit {
     private formBuilder: FormBuilder,
     private unitsService: UnitsService
   ) {
+    this.defaultQuantity = Constants.DEFAULT_QUANTITY;
+    this.defaultUnit = Constants.DEFAULT_UNIT;
+    this.minMealQuantity = Constants.MIN_MEAL_QUANTITY;
+    this.maxMealQuantity = Constants.MAX_MEAL_QUANTITY;
     this.editFoodForm = this.formBuilder
       .group(
         {
           quantity: [
             this.defaultQuantity,
-            [Validators.required, positiveIntegerValidator()]
+            [Validators.required, foodQuantityValidator()]
           ],
           unit: [this.defaultUnit, Validators.required]
         }
@@ -71,6 +80,10 @@ export class EditFoodDialogueComponent implements OnInit {
 
   isFormValid(): boolean {
     return this.editFoodForm.valid;
+  }
+
+  isQuantityValid(): boolean {
+    return this.editFoodForm.controls[this.quantityLabel].valid;
   }
 
 }

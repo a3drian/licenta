@@ -4,6 +4,7 @@ export { Constants };
 
 class Constants {
    static IN_DEBUG_MODE: boolean = true;
+
    static APIEndpoints =
       {
          REGISTER_URL: environment.REGISTER_URL,
@@ -22,5 +23,17 @@ class Constants {
          INTAKES_SEARCH_URL: '/api/db/intakes/search/',
          INTAKES_SEARCH_BY_EMAIL_AND_DATE: '/api/db/intakes/searchByEmailAndCreatedAt'
       };
+
+   static DASHBOARD_URL: string = '/dashboard';
+   static ADD_MEAL_URL: string = Constants.DASHBOARD_URL + '/add';
+
    static TARGET_CALORIES: number = 2000;
+
+   static MIN_MEAL_QUANTITY: number = 0.1;
+   static MAX_MEAL_QUANTITY: number = 1000.0;
+   static MIN_CALORIES: number = 1;
+   static MAX_CALORIES: number = 10000.0;
+
+   static DEFAULT_QUANTITY: number = 100;
+   static DEFAULT_UNIT: string = 'grams';
 }

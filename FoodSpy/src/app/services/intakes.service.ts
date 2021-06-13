@@ -128,4 +128,24 @@ export class IntakesService {
 
       return request;
    }
+
+   // DELETE
+   deleteIntake(intake: IIntake): Observable<string> {
+      const url = `${this.BASE_URL}/${intake.id}`;
+      log('intakes.service.ts', this.deleteIntake.name, 'URL:', url);
+
+      const request = this.http.delete(url, { responseType: 'text' })
+         .pipe(
+            tap(
+               () => {
+                  log('intake.service.ts', this.deleteIntake.name, `Intake '${intake.id}' was deleted!`);
+               },
+               (error: HttpErrorResponse) => {
+                  log('intakes.service.ts', this.deleteIntake.name, 'Error:', error);
+               }
+            )
+         );
+
+      return request;
+   }
 }

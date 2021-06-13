@@ -45,24 +45,27 @@ export class AddMealComponent implements OnInit, OnDestroy {
   errorResponse: HttpErrorResponse | null = null;
 
   isAuthenticated: boolean = false;
-  authenticatedUserEmail: string = '';
+  userEmail: string = '';
   userTargetCalories: number = 0;
 
   user: IUser | null = null;
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
+
   intake: IIntake = <IIntake>{};
   intakeId: string = '';
   existingIntake: boolean = false;
   intakeText: string = '';
+  intakeCaloriesConsumed: number = 0;
+  intakeCaloriesConsumedText: string = '';
 
   existingMealInIntake: boolean = false;
   existingMealTypes: string[] = [];
   selectedMealType: string = '';
 
-  DASHBOARD_URL: string = '/dashboard';
-  ADD_MEAL_URL: string = this.DASHBOARD_URL + '/add';
+  DASHBOARD_URL: string = Constants.DASHBOARD_URL;
+  ADD_MEAL_URL: string = Constants.ADD_MEAL_URL;
 
   addedMealFoods: IMealFood[] = [];
 
@@ -111,13 +114,13 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.user = this.userService.user;
     if (this.user) {
       this.isAuthenticated = this.userService.isAuthenticated;
-      this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
+      this.userEmail = this.userService.authenticatedUserEmail;
       this.userTargetCalories = this.userService.authenticatedUserTargetCalories;
-      log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+      log('add-meal.ts', this.ngOnInit.name, 'this.userEmail:', this.userEmail);
     }
 
     this.intakesService
-      .getIntakeByEmailAndCreatedAt(this.authenticatedUserEmail, this.today)
+      .getIntakeByEmailAndCreatedAt(this.userEmail, this.today)
       .subscribe(
         (intake: IIntake) => {
           if (intake) {
@@ -129,13 +132,14 @@ export class AddMealComponent implements OnInit, OnDestroy {
             log('add-meal.ts', this.ngOnInit.name, '(intake) this.existingMealTypes:', this.existingMealTypes);
             this.intakeId = intake.id;
             this.intake.mealIDs = intake.mealIDs;
-            this.intake.targetCalories = Constants.TARGET_CALORIES;  // TO DO: take target from user preferences
+            this.intake.targetCalories = this.userTargetCalories;
           } else {
             this.initializeIntake();
             log('add-meal.ts', this.ngOnInit.name, '(!intake) (intake should be initialized with defaults) this.intake:', this.intake);
           }
           this.isLoading = false;
           this.changeIntakeText();
+          this.changeCaloriesConsumedText();
         },
         (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error), error:', error);
@@ -205,10 +209,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
     const initalMealIDs: string[] = [];
     const initalMeals: IMeal[] = [];
     this.intake = new Intake({
-      email: this.authenticatedUserEmail,
+      email: this.userEmail,
       mealIDs: initalMealIDs,
       meals: initalMeals,
       createdAt: this.today,
+      targetCalories: this.userTargetCalories,
+      calories: 0
     });
   }
 
@@ -470,6 +476,18 @@ export class AddMealComponent implements OnInit, OnDestroy {
       } else {
         log('add-meal.ts', this.changeIntakeText.name, 'this.intake.mealIDs is not defined');
         this.intakeText = 'No meals added today.';
+      }
+    }
+  }
+
+  changeCaloriesConsumedText(): void {
+    if (!this.isLoading) {
+      if (this.intake) {
+        if (this.intake.calories === 0) {
+          this.intakeCaloriesConsumedText = 'No calories burnt today.';
+        } else {
+          this.intakeCaloriesConsumedText = `Calories burnt: ${this.intake.calories}.`;
+        }
       }
     }
   }
