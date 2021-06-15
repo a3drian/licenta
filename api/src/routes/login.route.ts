@@ -1,5 +1,8 @@
 import { Router, Response, NextFunction } from 'express';
 import { EntityManager } from '@mikro-orm/core';
+// JWT:
+import * as jwt from 'jsonwebtoken';
+import { env } from '../env';
 // Interfaces:
 import { IAuthResponseData } from 'foodspy-shared';
 import { IExpressRequest } from '../interfaces/IExpressRequest';
@@ -20,9 +23,11 @@ function setLoginRoute(router: Router): Router {
     return router;
 }
 
-const THIRTY_MINUTES: number = 1800;    // in seconds
-const FIVE_MINUTES: number = 300;    // in seconds
-const FIFTEEN_MINUTES: number = 900;    // in seconds
+// in seconds
+const SIXTY_MINUTES: number = 3600;
+const THIRTY_MINUTES: number = 1800;
+const FIVE_MINUTES: number = 300;
+const FIFTEEN_MINUTES: number = 900;
 
 // POST
 async function loginUser(
@@ -74,10 +79,21 @@ async function loginUser(
                 log('login.route.ts', loginUser.name, 'Passwords match! Signing user in...');
                 let authResponseData: IAuthResponseData = new AuthResponseData;
                 authResponseData.email = response.email;
-                authResponseData.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+
+                const accessToken: string = jwt
+                    .sign(
+                        { ...response },
+                        env.TOKEN_SECRET,
+                        {
+                            expiresIn: '1h',
+                        }
+                    );
+                log('login.route.ts', loginUser.name, 'accessToken:', accessToken);
+
+                authResponseData.token = accessToken;
                 authResponseData.id = response.id;
                 authResponseData.targetCalories = response.targetCalories;
-                authResponseData.expiresIn = FIFTEEN_MINUTES;
+                authResponseData.expiresIn = SIXTY_MINUTES;
 
                 log('login.route.ts', `${loginUser.name}^`, '');
                 console.log('');

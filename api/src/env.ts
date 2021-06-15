@@ -6,6 +6,8 @@ log('env.ts', 'global call', `require('dotenv').config():`, require('dotenv').co
 import { Constants } from './shared/Constants';
 
 const CLUSTER_URI = process.env.ENV_MONGO_URI;
+const ENV_TOKEN_SECRET: string = process.env.ENV_TOKEN_SECRET ?
+	process.env.ENV_TOKEN_SECRET : '';
 
 export const env = Object.freeze(
 	{
@@ -20,6 +22,8 @@ export const env = Object.freeze(
 		USERS_ROUTE: '/db/users',
 
 		REGISTER_ROUTE: Constants.APIEndpoints.REGISTER_URL,
-		LOGIN_ROUTE: Constants.APIEndpoints.LOGIN_URL
+		LOGIN_ROUTE: Constants.APIEndpoints.LOGIN_URL,
+
+		TOKEN_SECRET: ENV_TOKEN_SECRET,
 	}
 );
