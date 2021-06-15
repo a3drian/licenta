@@ -1,14 +1,15 @@
 $primary: hsl(176, 56%, 55%);
 $secondary: hsl(212, 14%, 19%);
 $ternary: hsl(212, 14%, 59%);
-$accent: rgb(255, 107, 107);
+$red: rgb(255, 107, 107);
 $white: rgb(247, 255, 247);
 $gold: rgb(255, 230, 109);
+$green: hsl(69, 50%, 44%);
 
-$valid: yellowgreen;
-$invalid: orangered;
+$valid: $green;
+$invalid: $red;
 
 $text: $primary;
 
-$text-color: #afafaf;
+$text-color: $white;
 $autofill: $secondary;

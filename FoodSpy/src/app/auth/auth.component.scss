@@ -135,8 +135,18 @@ input[type="number"] {
   width: 100%;
 }
 
+.message {
+  height: 40px;
+  width: $authFormWidth;
+  // border: red 2px solid;
+}
+
 .error {
   color: $invalid;
+}
+
+.info {
+  color: $valid;
 }
 
 .valid {

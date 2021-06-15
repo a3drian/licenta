@@ -2,8 +2,13 @@
 
     <h1>FoodSpy</h1>
 
-    <div class="error" *ngIf="error">
-        <p>{{ error }}</p>
+    <div class="message">
+        <div class="error" *ngIf="error">
+            <p>{{ error }}</p>
+        </div>
+        <div class="info" *ngIf="info">
+            <p>{{ info }}</p>
+        </div>
     </div>
 
     <!--

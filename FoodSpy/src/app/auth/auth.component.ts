@@ -22,11 +22,11 @@ export class AuthComponent implements OnInit, OnDestroy {
 
     isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
-    DASHBOARD_URL: string = Constants.DASHBOARD_URL;
-    defaultTargetCalories: number;
+    defaultTargetCalories: number = Constants.DEFAULT_TARGET_CALORIES;
     defaultPasswordLength: number = Constants.MIN_PASSWORD_LENGTH;
     defaultMinCalories = Constants.MIN_CALORIES;
     defaultMaxCalories = Constants.MAX_CALORIES;
+
     showPassword: boolean = false;
     targetCaloriesFormControlName: string = 'targetCalories';
     emailFormControlName: string = 'email';
@@ -45,6 +45,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     noAccountButtonText: string = 'No account? Register';
 
     error: string | null = null;
+    info: string | null = null;
     errorResponse: HttpErrorResponse | null = null;
 
     onSwitchBetweenLoggedInAndOut(): void {
@@ -86,9 +87,11 @@ export class AuthComponent implements OnInit, OnDestroy {
                 .valueChanges
                 .subscribe(
                     (targetCalories: number) => {
-                        if (targetCalories === null) {
-                            log('auth.ts', this.targetCaloriesFormControlValueChanged.name, 'targetCalories is null');
-                            this.authForm.patchValue({ 'targetCalories': this.defaultMinCalories });
+                        if (!this.isInLoginMode) {
+                            if (targetCalories === null) {
+                                log('auth.ts', this.targetCaloriesFormControlValueChanged.name, 'targetCalories is null');
+                                this.authForm.patchValue({ 'targetCalories': this.defaultMinCalories });
+                            }
                         }
                     }
                 );
@@ -102,7 +105,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     ) {
         this.error = null;
         this.errorResponse = null;
-        this.defaultTargetCalories = Constants.DEFAULT_TARGET_CALORIES;
+        this.info = null;
         this.authForm = this.formBuilder
             .group(
                 {
@@ -165,13 +168,26 @@ export class AuthComponent implements OnInit, OnDestroy {
                     log('auth.ts', this.onSubmit.name, 'Response data for log in / sign up request:', responseData);
                     this.isLoading = false;
                     // navigation from inside the code, not from inside the template
-                    this.router
-                        .navigate([this.DASHBOARD_URL])
-                        .catch(
-                            (error) => {
-                                log('add-meal.ts', this.onSubmit.name, `Could not navigate to: ${this.DASHBOARD_URL}`, error);
-                            }
-                        );
+                    if (this.isInLoginMode) {
+                        this.router
+                            .navigate([Constants.DASHBOARD_URL])
+                            .catch(
+                                (error) => {
+                                    log('add-meal.ts', this.onSubmit.name, `Could not navigate to: ${Constants.DASHBOARD_URL}`, error);
+                                }
+                            );
+                    } else {
+                        this.router
+                            .navigate([Constants.APIEndpoints.AUTH_URL])
+                            .catch(
+                                (error) => {
+                                    log('add-meal.ts', this.onSubmit.name, `Could not navigate to: ${Constants.APIEndpoints.AUTH_URL}`, error);
+                                }
+                            );
+                        this.info = 'Account created! You can log in now!';
+                        this.error = null;
+                        this.isInLoginMode = true;
+                    }
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
                 (error: HttpErrorResponse) => {
@@ -182,6 +198,7 @@ export class AuthComponent implements OnInit, OnDestroy {
                         this.error = error.error.message;
                         this.errorResponse = error;
                     }
+                    this.info = null;
                     this.isLoading = false;
                 }
             );
