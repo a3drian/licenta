@@ -1,0 +1,28 @@
+@import "../intakes.component.scss";
+
+.test {
+  height: 100px;
+  width: 50px;
+}
+
+.pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: $black;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
+}
+.pin-fill {
+  width: 0;
+  height: 0;
+  // border-left: 10px solid transparent;
+  // border-right: 10px solid transparent;
+  // border-top: 20px solid $gold;
+  background-color: $gold;
+  position: absolute;
+  left: -5px;
+  bottom: 0px;
+}

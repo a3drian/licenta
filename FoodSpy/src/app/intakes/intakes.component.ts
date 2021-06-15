@@ -145,8 +145,7 @@ export class IntakesComponent implements OnInit {
     }
   }
 
-  canShowIntakesTable(): boolean {
-
+  canShowIntakesCards(): boolean {
     if (this.intakesLoaded) {
       if (this.intakes) {
         if (this.intakes.length !== 0) {

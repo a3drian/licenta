@@ -112,7 +112,7 @@ button {
   font-weight: bold;
   border: 2px solid $primary;
   color: $primary;
-  border-radius: 5px;
+  border-radius: $border-radius;
   background: transparent;
   transition: all 1000ms;
 }

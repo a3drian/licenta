@@ -37,6 +37,9 @@ import { MealItemComponent } from './intake-history/meal-item/meal-item.componen
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 import { ErrorResponseComponent } from './shared/error-response/error-response.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
+import { IntakeCardComponent } from './intakes/intake-card/intake-card.component';
+import { AddIntakeCardComponent } from './intakes/add-intake-card/add-intake-card.component';
+import { IntakesListComponent } from './intakes/intakes-list/intakes-list.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +57,10 @@ import { NotFoundPageComponent } from './not-found-page/not-found-page.component
     FoodItemComponent,
     MealItemComponent,
     ErrorResponseComponent,
-    NotFoundPageComponent
+    NotFoundPageComponent,
+    IntakeCardComponent,
+    AddIntakeCardComponent,
+    IntakesListComponent
   ],
   imports: [
     BrowserModule,

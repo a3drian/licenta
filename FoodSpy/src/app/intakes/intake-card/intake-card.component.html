@@ -1,0 +1,95 @@
+<p *ngIf="isInDebugMode"><b>intake-card</b> works!</p>
+
+<!-- <mat-card>
+
+   <mat-card-header>
+      <mat-card-title>
+         {{intake.createdAt}}
+      </mat-card-title>
+   </mat-card-header>
+
+   <mat-card-content>
+      <p>
+         {{intake.mealIDs.length}}
+      </p>
+      <p style="color:pink;">
+         Author: {{ intake.email }}
+      </p>
+   </mat-card-content>
+
+</mat-card>
+
+<div class="buttons-div">
+
+   <button mat-mini-fab (click)="viewIntakeDetails(intake)">
+      <mat-icon>edit</mat-icon>
+   </button>
+
+   <button mat-mini-fab (click)="deleteIntake(intake)">
+      <mat-icon>delete</mat-icon>
+   </button>
+</div> -->
+
+<main>
+   <article class="card">
+      <header class="card-header">
+         <p>{{ intake.createdAt | date: 'MMMM d, y' }}</p>
+         <h2 (click)="viewIntakeDetails(intake)">Meals: {{ intake.mealIDs.length }}</h2>
+
+         <p>
+            Calorie intake: {{ intake.calories }} / {{ userTargetCalories }} kCal
+         </p>
+
+         <!--
+         <p>
+            Fats:<br>
+            Saturates:<br>
+            Carbohydrates:<br>
+            Sugars:<br>
+         </p>
+         -->
+
+         <p *ngIf="isInDebugMode">
+            ID: {{ intake.id }}
+            E-mail: {{ intake.email }}
+         </p>
+
+      </header>
+
+      <!-- <div class="test">
+      <div class='pin'>
+         <div class="pin-fill"></div>
+      </div>
+   </div> -->
+
+      <!--
+   <div class="card-author">
+      <a class="author-avatar" href="#">
+         <img src="https://api.adorable.io/avatars/172/b.png" />
+      </a>
+      <svg class="half-circle" viewBox="0 0 106 57">
+         <path d="M102 4c0 27.1-21.9 49-49 49S4 31.1 4 4"></path>
+      </svg>
+
+      <div class="author-name">
+         <div class="author-name-prefix">Author</div>
+         Francis Drake
+      </div>
+   </div>
+   -->
+
+      <div class="tags">
+         <a (click)="viewIntakeDetails(intake)">Details...</a>
+         <a (click)="deleteIntake(intake)">Delete</a>
+         <!--
+         <button class="button" (click)="viewIntakeDetails(intake)">
+            Details...
+         </button>
+         <button class="button" (click)="deleteIntake(intake)">
+            Delete
+         </button>
+         -->
+      </div>
+
+   </article>
+</main>

@@ -1,5 +1,250 @@
 @import "../styles/classes.scss";
+@import "../styles/colors.scss";
+@import "../styles/measurements.scss";
 
-table th {
-   width: 300px;
+// table th {
+//   width: 300px;
+// }
+
+.intakes-section {
+  margin-left: auto;
+  margin-right: auto;
 }
+
+a {
+  text-decoration: none;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: $secondary;
+  color: $white;
+  //   font-family: "DM Mono", monospace;
+}
+
+main {
+  padding: 0;
+  margin: 0;
+  background-color: $secondary;
+  color: $white;
+}
+
+/*
+.card-list {
+  display: flex; // puts items into a row
+  padding: 3rem;
+  overflow-x: scroll; // to be able to change the ugly scrollbar
+}
+*/
+
+.card-style {
+  color: $white;
+  height: $card-height;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: $secondary;
+  box-shadow: -1rem 0 3rem $black; // offset on X makes the shadow be placed on right side of the card => makes it look like it's hovering
+  margin: 0;
+}
+
+// each card is a column within that row, within ".card-list"
+.card {
+  @extend .card-style;
+  width: $card-width;
+
+  display: flex; // to be used as a column
+  flex-direction: column; // makes content flow vertically
+  transition: transform 0.2s; // makes the card move smoother
+  clear: both;
+  position: relative;
+}
+
+// animations
+// start with the card that is hovered on
+.card:hover {
+  transform: translateY(-1rem);
+}
+
+.card-header {
+  margin-bottom: auto;
+}
+
+.card-header p {
+  font-size: 14px;
+  margin: 0 0 1rem;
+  color: $ternary;
+}
+
+.card-header h2 {
+  font-size: 20px;
+  margin: 0.25rem 0 auto;
+  text-decoration: none;
+  color: inherit;
+  border: 0;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.card-header h2:hover {
+  color: $primary;
+}
+
+/*
+.card-author {
+  margin: 3rem 0 0;
+  display: grid;
+  grid-template-columns: 75px 1fr;
+  align-items: center;
+  position: relative;
+}
+
+.author-avatar {
+  grid-area: auto;
+  align-self: start;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.author-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  filter: grayscale(100%);
+  display: block;
+  overflow: hidden;
+  margin: 16px 10px;
+}
+
+.author-name {
+  grid-area: auto;
+  box-sizing: border-box;
+}
+
+.author-name-prefix {
+  font-style: normal;
+  font-weight: 700;
+  color: $ternary;
+}
+*/
+
+.half-circle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 48px;
+  fill: none;
+  stroke: $red;
+  stroke-width: 8;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.tags {
+  margin: 1rem 0 2rem;
+  padding: 0.5rem 0 1rem;
+  line-height: 2;
+  margin-bottom: 0;
+}
+
+.tags a {
+  font-style: normal;
+  font-weight: 700;
+  color: $text;
+  // text-transform: uppercase;
+  font-size: 0.75em;
+  border: 2px solid $ternary;
+  border-radius: $border-radius;
+  padding: 0.2rem 0.85rem 0.25rem;
+  position: relative;
+  margin-right: 5px;
+}
+
+.tags a:hover {
+  background: $secondary;
+  text-shadow: none;
+  // -webkit-text-fill-color: transparent;
+  // -webkit-background-clip: text;
+  // -webkit-box-decoration-break: clone;
+  // background-clip: text;
+  border-color: $primary;
+}
+
+.card-div-position {
+  float: left;
+  margin: 10px;
+}
+
+// intakes:
+.card-div {
+  @extend .card-div-position;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+/*
+.mat-mini-fab {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+button {
+  margin: 5px;
+}
+
+mat-card {
+  color: white;
+  background-color: $secondary;
+
+  width: 200px;
+  height: 200px;
+
+  border-radius: 0;
+
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+mat-card-title {
+  height: 40px;
+}
+
+.buttons-div {
+  background-color: $secondary;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+button:disabled {
+  color: $primary !important;
+  background-color: $secondary !important;
+}
+
+button:hover {
+  color: $primary !important;
+}
+
+button:active {
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+#search-box {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  width: 274px;
+  height: 30px;
+  margin-bottom: 30px;
+}
+
+.search-div {
+  margin-left: 10px;
+}
+*/

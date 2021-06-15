@@ -74,6 +74,13 @@ namespace FoodSpyAPI.Services
 				.As<Intake>()
 				.ToListAsync();
 
+			foreach (Intake intake in intakesList) {
+				List<Meal> populatedMeals = PopulateIntakeMealsWithFoodInfo(intake);
+				intake.Meals = populatedMeals;
+				double calories = _mealService.CalculateCalories(populatedMeals);
+				intake.Calories = calories;
+			}
+
 			return intakesList;
 		}
 
@@ -254,9 +261,13 @@ namespace FoodSpyAPI.Services
 				);
 			List<Intake> intakesList = intakes.ToList();
 
-			_logger.LogInformation($"Intakes with email: '{email}' ...");
+			_logger.LogInformation($"There are {intakesList.Count} intakes with email: '{email}' ...");
+
 			foreach (Intake intake in intakesList) {
-				Console.WriteLine(intake);
+				List<Meal> populatedMeals = PopulateIntakeMealsWithFoodInfo(intake);
+				intake.Meals = populatedMeals;
+				double calories = _mealService.CalculateCalories(populatedMeals);
+				intake.Calories = calories;
 			}
 
 			return intakesList;
