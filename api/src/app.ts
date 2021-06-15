@@ -5,20 +5,23 @@ const cors = require('cors');
 
 const express = require('express');
 import { Application, Router, Request, Response, NextFunction } from 'express';
+import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
 
 import { env } from './env';
 
+// Interfaces:
 import { IExpressError } from './interfaces/IExpressError';
 import { IExpressRequest } from './interfaces/IExpressRequest';
-import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
+// Entities:
 import entities from './entities';
-
-import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
-
 import { setUserRoute } from './routes/users.route';
 // Authentication:
+import jwt from 'express-jwt';
 import { setRegisterRoute } from './routes/register.route';
 import { setLoginRoute } from './routes/login.route';
+// Shared:
+import { Constants } from './shared/Constants';
+import { ERROR_MESSAGES, STATUS_CODES } from 'foodspy-shared';
 import { log } from './shared/Logger';
 
 let app: Application;
@@ -54,10 +57,26 @@ async function makeApp(): Promise<Application> {
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
 
+  if (env.NODE_ENV === Constants.PRODUCTION_MODE) {
+    // JWT
+    app.use(
+      jwt(
+        {
+          secret: env.TOKEN_SECRET,
+          algorithms: ['HS256'],
+        }
+      ).unless({ path: [Constants.APIEndpoints.LOGIN_URL, Constants.APIEndpoints.REGISTER_URL] })
+    );
+  }
+
   // routes
   app.use(env.USERS_ROUTE, setUserRoute(Router()));
   app.use(env.REGISTER_ROUTE, setRegisterRoute(Router()));
   app.use(env.LOGIN_ROUTE, setLoginRoute(Router()));
+
+  if (env.NODE_ENV === Constants.PRODUCTION_MODE) {
+    
+  }
 
   // 404
   app.use(
@@ -73,7 +92,7 @@ async function makeApp(): Promise<Application> {
     (err: IExpressError, _req: Request, res: Response, _next: NextFunction) => {
       res
         .status(err.status || STATUS_CODES.SERVER_ERROR)
-        .send(env.NODE_ENV === 'development' ? err : {});
+        .send(env.NODE_ENV === Constants.PRODUCTION_MODE ? {} : err);
     }
   );
 

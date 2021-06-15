@@ -9,4 +9,7 @@ class Constants {
          REGISTER_URL: environment.REGISTER_URL,
          LOGIN_URL: environment.LOGIN_URL,
       };
+
+   static PRODUCTION_MODE: string = 'production';
+   static DEVELOPMENT_MODE: string = 'development';
 }
