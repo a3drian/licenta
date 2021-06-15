@@ -33,7 +33,7 @@
         </mat-select>
     </mat-form-field>
 
-    <br>
+    <!-- <br> -->
 
     <button type="submit" [disabled]="!isFormValid()">
         Add meal
@@ -118,6 +118,7 @@
     </button>
 </div>
 
+<app-header></app-header>
 <router-outlet></router-outlet>
 
 <div *ngIf="isInDebugMode">
