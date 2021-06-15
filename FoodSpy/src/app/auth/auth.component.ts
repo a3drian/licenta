@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 // rxjs:
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 // Models:
 import { AuthResponseData } from '../models/AuthResponseData';
 // Services:
@@ -11,22 +11,33 @@ import { AuthService } from './auth.service';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
+import { STATUS_CODES } from 'foodspy-shared';
 
 @Component({
     selector: 'app-auth',
     templateUrl: './auth.component.html',
     styleUrls: ['./auth.component.scss']
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit, OnDestroy {
 
     isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
-    DASHBOARD_URL: string = '';
+    DASHBOARD_URL: string = Constants.DASHBOARD_URL;
+    defaultTargetCalories: number;
+    defaultPasswordLength: number = Constants.MIN_PASSWORD_LENGTH;
+    defaultMinCalories = Constants.MIN_CALORIES;
+    defaultMaxCalories = Constants.MAX_CALORIES;
+    showPassword: boolean = false;
+    targetCaloriesFormControlName: string = 'targetCalories';
+    emailFormControlName: string = 'email';
+    passwordFormControlName: string = 'password';
 
     authForm: FormGroup;
 
     isLoading: boolean = false;
     isInLoginMode: boolean = false;
+
+    targetCaloriesSubscription: Subscription = new Subscription();
 
     loginButtonText: string = 'Log in';
     registerButtonText: string = 'Register';
@@ -40,8 +51,48 @@ export class AuthComponent {
         this.isInLoginMode = !this.isInLoginMode;
     }
 
+    onShowPassword(): void {
+        this.showPassword = !this.showPassword;
+    }
+
     isFormValid(): boolean {
         return this.authForm.valid;
+    }
+
+    emailValid(): boolean {
+        const email = this.authForm.get(this.emailFormControlName);
+        if (email) {
+            if (email.errors) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    hasTypedPassword(): boolean {
+        const password = this.authForm.get(this.passwordFormControlName);
+        if (password) {
+            if (password.value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private targetCaloriesFormControlValueChanged() {
+        const calories: AbstractControl | null = this.authForm.get(this.targetCaloriesFormControlName);
+        if (calories) {
+            this.targetCaloriesSubscription = calories
+                .valueChanges
+                .subscribe(
+                    (targetCalories: number) => {
+                        if (targetCalories === null) {
+                            log('auth.ts', this.targetCaloriesFormControlValueChanged.name, 'targetCalories is null');
+                            this.authForm.patchValue({ 'targetCalories': this.defaultMinCalories });
+                        }
+                    }
+                );
+        }
     }
 
     constructor(
@@ -49,14 +100,39 @@ export class AuthComponent {
         private authService: AuthService,
         private router: Router
     ) {
+        this.error = null;
+        this.errorResponse = null;
+        this.defaultTargetCalories = Constants.DEFAULT_TARGET_CALORIES;
         this.authForm = this.formBuilder
             .group(
                 {
-                    email: ['', Validators.required],
-                    password: ['', Validators.required],
-                    targetCalories: [Constants.TARGET_CALORIES, Validators.required]
+                    email: ['',
+                        [
+                            Validators.required,
+                            Validators.email,
+                            Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
+                        ]
+                    ],
+                    password: ['',
+                        [
+                            Validators.required,
+                            Validators.minLength(this.defaultPasswordLength)
+                        ]
+                    ],
+                    targetCalories: [this.defaultTargetCalories, Validators.required]
                 }
             );
+    }
+
+    ngOnInit(): void {
+        this.targetCaloriesFormControlValueChanged();
+    }
+
+    ngOnDestroy(): void {
+        if (this.targetCaloriesSubscription) {
+            log('add-meal.ts', this.ngOnDestroy.name, 'Unsubscribing from target calories subscription...');
+            this.targetCaloriesSubscription.unsubscribe();
+        }
     }
 
     onSubmit(): void {
@@ -98,11 +174,14 @@ export class AuthComponent {
                         );
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here
-                (errorMessage) => {
-                    log('auth.ts', this.onSubmit.name, 'Error when trying to log in / sign up:', errorMessage);
-
-                    this.error = errorMessage;
-                    this.errorResponse = errorMessage;
+                (error: HttpErrorResponse) => {
+                    log('auth.ts', this.onSubmit.name, 'Error when trying to log in / sign up:', error);
+                    if (error.status == STATUS_CODES.GATEWAY_TIMEOUT) {
+                        this.error = 'Error connecting to the FoodSpy servers!';
+                    } else {
+                        this.error = error.error.message;
+                        this.errorResponse = error;
+                    }
                     this.isLoading = false;
                 }
             );

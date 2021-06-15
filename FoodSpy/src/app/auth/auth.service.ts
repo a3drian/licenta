@@ -13,6 +13,7 @@ import { User } from '../models/User';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
+import { STATUS_CODES } from 'foodspy-shared';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -37,20 +38,9 @@ export class AuthService {
         private router: Router
     ) { }
 
-    // /*
     private handleError(errorResponse: HttpErrorResponse) {
-        let errorMessage: string = 'Unexpected error occurred when registering an user which is not connected to the API!';
-        if (!errorResponse.error) {
-            return throwError(errorMessage);
-        }
-        errorMessage = errorResponse.error.message;
-        return throwError(errorMessage);
+        return throwError(errorResponse);
     }
-    // */
-
-    // private handleError(errorResponse: HttpErrorResponse) {
-    //     return throwError(errorResponse);
-    // }
 
     private handleAuthentication(responseData: AuthResponseData): void {
         const timeNow = new Date().getTime();
@@ -81,7 +71,8 @@ export class AuthService {
             )
             .pipe(
                 catchError(
-                    (errorResponse) => {
+                    (errorResponse: HttpErrorResponse) => {
+                        log('auth.service.ts', this.register.name, '(errorResponse), errorResponse:', errorResponse);
                         return this.handleError(errorResponse);
                     }
                 ),
@@ -103,7 +94,12 @@ export class AuthService {
                 }
             )
             .pipe(
-                catchError(this.handleError),
+                catchError(
+                    (errorResponse: HttpErrorResponse) => {
+                        log('auth.service.ts', this.login.name, '(errorResponse), errorResponse:', errorResponse);
+                        return this.handleError(errorResponse);
+                    }
+                ),
                 tap(
                     (responseData) => {
                         return this.handleAuthentication(responseData);
