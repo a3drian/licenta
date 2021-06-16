@@ -33,25 +33,23 @@
 <main>
    <article class="card">
       <header class="card-header">
-         <p>{{ intake.createdAt | date: 'MMMM d, y' }}</p>
+         <p><b>{{ intake.createdAt | date: 'MMMM d, y' }}</b></p>
          <h2 (click)="viewIntakeDetails(intake)">Meals: {{ intake.mealIDs.length }}</h2>
 
          <p>
-            Calorie intake: {{ intake.calories }} / {{ userTargetCalories }} kCal
+            <b>Calorie intake</b>: {{ intake.calories }} / {{ userTargetCalories }} kCal ({{ percentage }} %)
          </p>
 
-         <!--
          <p>
-            Fats:<br>
-            Saturates:<br>
-            Carbohydrates:<br>
-            Sugars:<br>
+            <b>Fats</b>: {{ fats | number : '1.0-2' }} g<br>
+            <b>Saturates</b>: {{ saturates | number : '1.0-2' }} g<br>
+            <b>Carbohydrates</b>: {{ carbs | number : '1.0-2' }} g<br>
+            <b>Sugars</b>: {{ sugars | number : '1.0-2' }} g
          </p>
-         -->
 
          <p *ngIf="isInDebugMode">
-            ID: {{ intake.id }}
-            E-mail: {{ intake.email }}
+            <b>ID</b>: {{ intake.id }}
+            <b>E-mail</b>: {{ intake.email }}
          </p>
 
       </header>
@@ -79,16 +77,14 @@
    -->
 
       <div class="tags">
-         <a (click)="viewIntakeDetails(intake)">Details...</a>
-         <a (click)="deleteIntake(intake)">Delete</a>
-         <!--
+         <!-- <a (click)="viewIntakeDetails(intake)">Details...</a> -->
+         <!-- <a (click)="deleteIntake(intake)">Delete</a> -->
          <button class="button" (click)="viewIntakeDetails(intake)">
             Details...
          </button>
          <button class="button" (click)="deleteIntake(intake)">
             Delete
          </button>
-         -->
       </div>
 
    </article>

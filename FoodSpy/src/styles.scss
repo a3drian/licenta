@@ -91,7 +91,7 @@ select,
 textarea {
   font-family: inherit;
   font-size: inherit;
-  padding: 0.4em;
+  padding: 0.4rem;
   margin: 0 0 0.5em 0;
   box-sizing: border-box;
   border: 1px solid $ternary;
@@ -109,17 +109,46 @@ input[type="range"] {
 button {
   margin-top: 1rem;
   padding: 10px 10px;
-  font-weight: bold;
-  border: 2px solid $primary;
-  color: $primary;
+  // font-weight: bold;
+  border: 2px solid $ternary;
+  color: $text;
+  font-size: 1rem;
   border-radius: $border-radius;
   background: transparent;
-  transition: all 1000ms;
+  transition: all 100ms;
 }
 button:disabled {
   border-color: $ternary;
   color: $ternary;
 }
+button:hover:not(:disabled) {
+  border-color: $primary;
+  background: $secondary;
+  text-shadow: none;
+}
+
+/*
+.button {
+  margin-top: 1rem;
+  padding: 10px 10px;
+  // font-weight: bold;
+  border: 2px solid $ternary;
+  color: $text;
+  font-size: 1rem;
+  border-radius: $border-radius;
+  background: transparent;
+  transition: all 100ms;
+}
+.button:disabled {
+  border-color: $ternary;
+  color: $ternary;
+}
+.button:hover:not(:disabled) {
+  border-color: $primary;
+  background: $secondary;
+  text-shadow: none;
+}
+*/
 
 /*
 button {

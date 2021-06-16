@@ -1,31 +1,36 @@
 <p *ngIf="isInDebugMode"><b>intakes</b> works!</p>
 
-<!-- TO DO -->
-<!-- Calendar -->
+<div class="mainDiv">
 
-<h2>{{ currentTime | date: 'MMM d, y HH:mm' }}</h2>
+   <h2 *ngIf="isInDebugMode">{{ currentTime | date: 'MMM d, y HH:mm:ss' }}</h2>
+   <h2 *ngIf="!isInDebugMode">{{ currentTime | date: 'MMM d, y HH:mm' }}</h2>
 
-<div *ngIf="isLoading" class="loading-spinner">
-   <app-loading-spinner></app-loading-spinner>
+   <div *ngIf="isLoading" class="loading-spinner">
+      <app-loading-spinner></app-loading-spinner>
+   </div>
+
+   <h2>Daily intake goal: {{ userTargetCalories }} calories</h2>
+
+   <div *ngIf="errorResponse">
+      <app-error-response [errorResponse]="errorResponse"></app-error-response>
+   </div>
+
+   <!-- Intake history -->
+   <h3 class="history" *ngIf="canShowIntakesCards()">Intake history:</h3>
+   <h3 class="history" *ngIf="!canShowIntakesCards()">You have no intake history.</h3>
+
 </div>
 
-<h2>Daily intake goal: {{ userTargetCalories }} calories</h2>
-
-<div *ngIf="errorResponse">
-   <app-error-response [errorResponse]="errorResponse"></app-error-response>
-</div>
-
-<!-- Intake history -->
-<label><b>History:</b></label>
-
-<div class="intakes-section" *ngIf="!canShowIntakesCards() && !isLoading">
-   You have no intake history.
+<div class="intakes-section" *ngIf="!canShowIntakesCards()">
    <app-add-intake-card></app-add-intake-card>
 </div>
 
-<div class="intakes-section" *ngIf="canShowIntakesCards() && !isLoading">
+<div class="intakes-section" *ngIf="canShowIntakesCards()">
    <app-intakes-list [intakes]="intakes"></app-intakes-list>
    <app-add-intake-card></app-add-intake-card>
+</div>
+
+<div class="lastDiv">
 </div>
 
 <!-- Add new meal -->

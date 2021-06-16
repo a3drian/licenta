@@ -1,10 +1,28 @@
 @import "../styles/classes.scss";
 @import "../styles/colors.scss";
 @import "../styles/measurements.scss";
+@import "../../styles.scss";
 
 // table th {
 //   width: 300px;
 // }
+
+.history {
+  margin-bottom: 1rem;
+}
+
+.lastDiv {
+  @extend .intakes-section;
+  height: 0.5rem;
+  width: 3rem;
+  clear: both;
+  margin-bottom: 0.5rem;
+}
+
+.mainDiv {
+  @extend .intakes-section;
+  padding: 0.5rem;
+}
 
 .intakes-section {
   margin-left: auto;
@@ -142,18 +160,19 @@ main {
 }
 
 .tags {
-  margin: 1rem 0 2rem;
-  padding: 0.5rem 0 1rem;
-  line-height: 2;
-  margin-bottom: 0;
+  // margin: 1rem 0 2rem;
+  // padding: 0.5rem 0 1rem;
+  // line-height: 2;
+  // margin-bottom: 0;
 }
 
+/*
 .tags a {
   font-style: normal;
   font-weight: 700;
   color: $text;
   // text-transform: uppercase;
-  font-size: 0.75em;
+  font-size: 0.75rem;
   border: 2px solid $ternary;
   border-radius: $border-radius;
   padding: 0.2rem 0.85rem 0.25rem;
@@ -170,6 +189,21 @@ main {
   // background-clip: text;
   border-color: $primary;
 }
+*/
+
+.tags button {
+  padding: 0.2rem 0.85rem 0.25rem;
+  position: relative;
+  margin-right: 5px;
+}
+
+/*
+.tags button:hover {
+  border-color: $primary;
+  background: $secondary;
+  text-shadow: none;
+}
+*/
 
 .card-div-position {
   float: left;
@@ -183,6 +217,7 @@ main {
   justify-content: center;
   flex-direction: column;
 }
+
 /*
 .mat-mini-fab {
   -webkit-box-shadow: none;
