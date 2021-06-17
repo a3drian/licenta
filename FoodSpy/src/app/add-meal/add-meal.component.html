@@ -16,116 +16,121 @@
         <h3>{{ intakeCaloriesConsumedText }}</h3>
     </div>
 
-    <div *ngIf="!isLoading">
+    <div id="intakeDetails" *ngIf="!isLoading">
         {{ intakeText }}
         <button *ngIf="canShowIntakeHistoryButton()" (click)="viewIntakeDetails()">
             View
         </button>
     </div>
-</div>
 
-<form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">
-    <mat-form-field>
-        <mat-label>Select meal type</mat-label>
-        <mat-select formControlName="mealType"
-            (selectionChange)="onSelectedMealType($event)">
-            <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
-                {{ mealType }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+    <div id="mealTypeForm">
+        <form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">
+            <mat-form-field>
+                <mat-label>Select meal type</mat-label>
+                <mat-select formControlName="mealType" (selectionChange)="onSelectedMealType($event)">
+                    <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
+                        {{ mealType }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-    <!-- <br> -->
+            <!-- <br> -->
 
-    <button type="submit" [disabled]="!isFormValid()">
-        Add meal
-    </button>
-</form>
-
-<div class="searchMain">
-    <div class="search" *ngIf="canSearch()">
-        <input class="input" #searchBox type="text" id="search-box" name="searchBox" (input)="search(searchBox.value)"
-            placeholder=" " pattern="[A-Za-z0-9]+" />
-        <label class="label" for="searchBox">Look for food...</label>
+            <button type="submit" [disabled]="!isFormValid()">
+                Add meal
+            </button>
+        </form>
     </div>
-    <!-- <button type="submit" class="searchButton">
+
+    <div id="formFields">
+        <div class="field" *ngIf="canSearch()">
+            <input class="input" #searchBox type="text" id="search-box" name="searchBox"
+                (input)="search(searchBox.value)" placeholder=" " pattern="[A-Za-z0-9]+" />
+            <label class="label" for="searchBox">Look for food...</label>
+        </div>
+        <!-- <button type="submit" class="searchButton">
         Search
     </button> -->
+    </div>
 </div>
 
-<table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading && hasSearchResults()">
+<div class="mainDiv">
+    <table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading && hasSearchResults()">
 
-    <!-- ID -->
-    <ng-container matColumnDef="id" *ngIf="isInDebugMode">
-        <th mat-header-cell *matHeaderCellDef> ID </th>
-        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-    </ng-container>
+        <!-- ID -->
+        <ng-container matColumnDef="id" *ngIf="isInDebugMode">
+            <th mat-header-cell *matHeaderCellDef> ID </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
 
-    <!-- Name -->
-    <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td class="displayName" mat-cell *matCellDef="let element"> {{element.displayName}} </td>
-    </ng-container>
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td class="displayName" mat-cell *matCellDef="let element"> {{element.displayName}} </td>
+        </ng-container>
 
-    <!-- Energy -->
-    <ng-container matColumnDef="energy">
-        <th mat-header-cell *matHeaderCellDef> Energy (kCal) </th>
-        <td mat-cell *matCellDef="let element"> {{element.energy}} </td>
-    </ng-container>
+        <!-- Energy -->
+        <ng-container matColumnDef="energy">
+            <th mat-header-cell *matHeaderCellDef> Energy (kCal) </th>
+            <td mat-cell *matCellDef="let element"> {{element.energy}} </td>
+        </ng-container>
 
-    <!-- Fats -->
-    <ng-container matColumnDef="fats">
-        <th mat-header-cell *matHeaderCellDef> Fats (g) </th>
-        <td mat-cell *matCellDef="let element"> {{element.fats}} </td>
-    </ng-container>
+        <!-- Fats -->
+        <ng-container matColumnDef="fats">
+            <th mat-header-cell *matHeaderCellDef> Fats (g) </th>
+            <td mat-cell *matCellDef="let element"> {{element.fats}} </td>
+        </ng-container>
 
-    <!-- Carbs -->
-    <ng-container matColumnDef="carbs">
-        <th mat-header-cell *matHeaderCellDef> Carbs (g) </th>
-        <td mat-cell *matCellDef="let element"> {{element.carbohydrates}} </td>
-    </ng-container>
+        <!-- Carbs -->
+        <ng-container matColumnDef="carbs">
+            <th mat-header-cell *matHeaderCellDef> Carbs (g) </th>
+            <td mat-cell *matCellDef="let element"> {{element.carbohydrates}} </td>
+        </ng-container>
 
-    <!-- Proteins -->
-    <ng-container matColumnDef="proteins">
-        <th mat-header-cell *matHeaderCellDef> Proteins (g) </th>
-        <td mat-cell *matCellDef="let element"> {{element.proteins}} </td>
-    </ng-container>
+        <!-- Proteins -->
+        <ng-container matColumnDef="proteins">
+            <th mat-header-cell *matHeaderCellDef> Proteins (g) </th>
+            <td mat-cell *matCellDef="let element"> {{element.proteins}} </td>
+        </ng-container>
 
-    <!-- Selection checkbox -->
-    <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef> Add to meal </th>
-        <td mat-cell *matCellDef="let food">
-            <!-- <mat-checkbox (change)="selectRow(food)" [checked]="checkIsRowSelected(food)"></mat-checkbox> -->
-            <!--  routerLink="/edit/{{ food }}" -->
-            <button class="plusButton" (click)="openDialog(food)">
-                +
-            </button>
-        </td>
-    </ng-container>
+        <!-- Selection checkbox -->
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef> Add food </th>
+            <td mat-cell *matCellDef="let food">
+                <!-- <mat-checkbox (change)="selectRow(food)" [checked]="checkIsRowSelected(food)"></mat-checkbox> -->
+                <!--  routerLink="/edit/{{ food }}" -->
+                <button class="plusButton" (click)="openDialog(food)">
+                    +
+                </button>
+            </td>
+        </ng-container>
 
-    <!-- Table headers -->
-    <ng-container>
-        <tr mat-header-row *matHeaderRowDef="foodsColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: foodsColumns;"></tr>
-    </ng-container>
+        <!-- Table headers -->
+        <ng-container>
+            <tr mat-header-row *matHeaderRowDef="foodsColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: foodsColumns;"></tr>
+        </ng-container>
 
-</table>
-
-<h3 class="result" *ngIf="canShowFoodsTable() && !isLoading && !hasSearchResults()">
-    No foods found.
-</h3>
-
-<div *ngIf="canScanBarcode()">
-    <button (click)="scanBarcode()">
-        Scan barcode
-    </button>
+    </table>
 </div>
 
-<!-- Go back button -->
-<div>
-    <button [routerLink]="['/dashboard']">
-        Back
-    </button>
+<div class="mainDiv">
+    <h3 class="result" *ngIf="canShowFoodsTable() && !isLoading && !hasSearchResults()">
+        No foods found.
+    </h3>
+
+    <div *ngIf="canScanBarcode()">
+        <button (click)="scanBarcode()">
+            Scan barcode
+        </button>
+    </div>
+
+    <!-- Go back button -->
+    <div>
+        <button [routerLink]="['/dashboard']">
+            Back
+        </button>
+    </div>
 </div>
 
 <router-outlet></router-outlet>

@@ -239,7 +239,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
         EditFoodDialogueComponent,
         {
           data: food,
-          panelClass: 'custom-dialog-container'
+          panelClass: 'custom-dialog-container',
+          height: '650px',
+          width: '550px'
         }
       );
     this.dialogueSubscription = dialogRef

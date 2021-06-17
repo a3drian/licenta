@@ -2,7 +2,8 @@
 
 <h2 mat-dialog-title>{{food.displayName}}</h2>
 
-<div mat-dialog-content style="width: 400px; height: 550px;">
+<!-- <div mat-dialog-content style="width: 400px; height: 550px;"> -->
+<main>
    <form [formGroup]="editFoodForm">
       <div class="foodInfo">
          <p><b>Energy</b>: {{ food.energy }} kCal</p>
@@ -13,12 +14,26 @@
          <p><b>Proteins</b>: {{ food.proteins }} g </p>
          <p><b>Salt</b>: {{ food.salt }} g </p>
       </div>
+      <!--
       <div>
-         <label for="quantity">Quantity</label>
-         <input formControlName="quantity" type="number" name="quantity" pattern="[0-9]+" required>
+         <label for="aux">Quantity</label>
+         <input formControlName="aux" type="number" name="aux" pattern="[0-9]+" required>
          <p class="qtyError">
             <mat-error *ngIf="!isQuantityValid()">
                Please use a value between {{ minMealQuantity }} and {{ maxMealQuantity }} {{ defaultUnit }}.
+            </mat-error>
+         </p>
+      </div>
+      -->
+      <div id="formFields">
+         <div class="field">
+            <input class="input" formControlName="quantity" type="number" id="quantity" name="quantity" placeholder=" "
+               required min="{{minMealQuantity}}" max="{{maxMealQuantity}}" />
+            <label class="label" for="quantity">Food quantity</label>
+         </div>
+         <p>
+            <mat-error class="qtyError" *ngIf="!isQuantityValid()">
+               Use a value between {{ minMealQuantity }} and {{ maxMealQuantity }} {{ defaultUnit }}.
             </mat-error>
          </p>
       </div>
@@ -40,5 +55,5 @@
       <p>Form value:<br>{{ editFoodForm.value | json }}</p>
       <p>Form status:<br>{{ editFoodForm.status }}</p>
    </div>
-
-</div>
+</main>
+<!-- </div> -->

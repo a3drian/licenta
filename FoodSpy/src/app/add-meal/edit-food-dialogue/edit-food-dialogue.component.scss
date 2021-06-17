@@ -1,4 +1,6 @@
 @import "../../styles/colors.scss";
+// @import "../../auth/auth.component.scss";
+@import "../../styles/measurements.scss";
 
 .qtyError {
   height: 1rem;
@@ -9,9 +11,179 @@ mat-dialog-actions {
 }
 
 .foodInfo {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 h2 {
   color: $primary;
+}
+
+// NEW
+
+.field {
+  width: 100%;
+  position: relative; // can use "top", "left", "right", "bottom" to control where this element sits relative to its normal position
+  border-bottom: 2px solid $ternary;
+  margin: 4rem auto 1rem; // top, left and right, bottom
+}
+
+.label {
+  color: $ternary;
+  font-size: 1.2rem;
+}
+
+// sits inside the container, while its parent, the "field" class will handle all animation related stuff
+.input {
+  outline: none;
+  border: none;
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  padding: 0.25rem 0;
+  background: none;
+  color: $text;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: border 500ms;
+}
+
+// based on the type of the input, some validation is run automatically by the browser
+// this means we can use below pseudo-selectors to color the text based on valid / invalid input
+/*
+.input:valid {
+  color: $valid;
+}
+*/
+.input:invalid {
+  color: $invalid;
+}
+
+// animations
+
+// will display the border underneath the field
+// can use transforms to apply animations
+.field::after {
+  content: "";
+  position: relative;
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: $primary;
+  transform: scaleX(
+    0
+  ); // hides the field; only "X" to preserve height when unhiding it
+  transform-origin: 0%; // animates from left to right
+  opacity: 0;
+  transition: transform 500ms ease;
+  top: 2px;
+}
+
+// state change resulting in basically an animation
+// :focus-within is active when child has focus, in our case when the "input" has focus
+.field:focus-within {
+  border-color: transparent;
+}
+
+.field:focus-within::after {
+  transform: scaleX(1); // makes the border slide in from left "0" to right "1"
+  opacity: 1;
+}
+
+// move the label outside the input
+.label {
+  z-index: 0; // makes the label look as though it's behind the "form" element
+  // means it's relative to the entire document OR relative to the next positioned element in the tree
+  // in our case, it's the "<field>" element which contains the "<input>"
+  position: absolute;
+  transform: translateY(-2rem);
+  transform-origin: 0%;
+  transition: transform 400ms;
+}
+
+// ":placeholder-shown" only works because we've put "<label>" after the "<input>"
+.field:focus-within .label,
+.input:not(:placeholder-shown) + .label {
+  transform: scale(0.8) translateY(-5rem); // smaller and further up the "Y" axis
+  opacity: 1;
+}
+
+.toggle-password {
+  position: absolute;
+  cursor: pointer;
+  font-size: 0.5rem;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  box-shadow: 0 0 0 30px $secondary inset;
+}
+
+main {
+  // display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  text-align: left;
+}
+h1 {
+  font-weight: 400;
+  font-style: normal;
+}
+
+mat-label {
+  color: $primary;
+}
+
+// removes spinners from "<input type="number">"
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.formButton {
+  width: $authFormWidth;
+}
+
+#formFields {
+  height: 100px;
+  width: 180px;
+  margin-bottom: 1rem;
+}
+
+#formButtons {
+  width: 100%;
+}
+
+.message {
+  height: 40px;
+  width: $authFormWidth;
+  // border: red 2px solid;
+}
+
+.error {
+  color: $invalid;
+}
+
+.info {
+  color: $valid;
+}
+
+.valid {
+  @extend .input;
+  color: $text;
+}
+
+.invalid {
+  @extend .input;
+  color: $invalid;
+}
+
+.validField {
+  @extend .field;
+}
+
+.invalidField {
+  @extend .field;
+  //   border-bottom: 2px solid $invalid;
 }
