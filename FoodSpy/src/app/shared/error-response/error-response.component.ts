@@ -20,7 +20,7 @@ export class ErrorResponseComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.errorMessage = `An error occured! ${this.errorResponse.status} ${this.errorResponse.statusText}`;
+    this.errorMessage = `An error occured! ${this.errorResponse.status} ${this.errorResponse.statusText}. Please try again later...`;
   }
 
 }

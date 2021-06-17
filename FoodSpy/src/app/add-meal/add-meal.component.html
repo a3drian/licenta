@@ -23,11 +23,11 @@
         </button>
     </div>
 
-    <h3 class="guide" *ngIf="!isLoading">
+    <h3 class="guide" *ngIf="!errorResponse && isLoading">
         To add a meal, select a meal type and then add foods using the search bar.
     </h3>
 
-    <div id="mealTypeForm">
+    <div id="mealTypeForm" *ngIf="!errorResponse">
         <form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">
             <mat-form-field>
                 <mat-label>Select meal type</mat-label>
@@ -46,7 +46,7 @@
         </form>
     </div>
 
-    <div id="formFields">
+    <div id="formFields" *ngIf="!errorResponse">
         <div class="field" *ngIf="canSearch()">
             <input class="input" #searchBox type="text" id="search-box" name="searchBox"
                 (input)="search(searchBox.value)" placeholder=" " pattern="[A-Za-z0-9 ]+" />
@@ -61,7 +61,7 @@
 </div>
 
 <!-- Foods table -->
-<div class="mainDiv">
+<div class="mainDiv" *ngIf="!errorResponse">
     <table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading && hasSearchResults()">
 
         <!-- ID -->
@@ -123,7 +123,7 @@
 
 <div class="mainDiv">
 
-    <h3 class="result" *ngIf="!isLoading && !showNoResults">
+    <h3 class="result" *ngIf="!errorResponse && !isLoading && !showNoResults">
         No matching foods found.
     </h3>
 

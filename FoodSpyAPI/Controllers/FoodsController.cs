@@ -180,7 +180,7 @@ namespace FoodSpyAPI.Controllers
 
 				if (!Validator.IsValidFoodName(name)) {
 					// TO DO: return BAD REQUEST
-					return await GetFoods();
+					return new List<FoodModel>();
 				}
 
 				string convertedName = CharacterConverter.ConvertDiacritics(name);

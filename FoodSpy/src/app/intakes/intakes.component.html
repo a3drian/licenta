@@ -16,16 +16,16 @@
    </div>
 
    <!-- Intake history -->
-   <h3 class="history" *ngIf="canShowIntakesCards()">Intake history:</h3>
-   <h3 class="history" *ngIf="!canShowIntakesCards()">You have no intake history.</h3>
+   <h3 class="history" *ngIf="!errorResponse && canShowIntakesCards()">Intake history:</h3>
+   <h3 class="history" *ngIf="!errorResponse && !canShowIntakesCards()">You have no intake history.</h3>
 
 </div>
 
-<div class="intakes-section" *ngIf="!canShowIntakesCards()">
+<div class="intakes-section" *ngIf="!errorResponse && !canShowIntakesCards()">
    <app-add-intake-card></app-add-intake-card>
 </div>
 
-<div class="intakes-section" *ngIf="canShowIntakesCards()">
+<div class="intakes-section" *ngIf="!errorResponse && canShowIntakesCards()">
    <app-intakes-list [intakes]="intakes"></app-intakes-list>
    <app-add-intake-card></app-add-intake-card>
 </div>
