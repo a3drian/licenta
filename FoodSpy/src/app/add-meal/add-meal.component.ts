@@ -38,9 +38,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
   isLoading: boolean = true;
-  areFoodsLoading: boolean = true;
-  isSearchLoading: boolean = true;
-  foodsLoaded: boolean = false;
+  // areFoodsLoading: boolean = true;
+  // isSearchLoading: boolean = true;
+  // foodsLoaded: boolean = false;
 
   errorResponse: HttpErrorResponse | null = null;
 
@@ -84,6 +84,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   dialogueSubscription: Subscription = new Subscription();
   today: Date = new Date();
+  showNoResults: boolean = true;
 
   constructor(
     private foodsService: FoodsService,
@@ -163,38 +164,47 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.databaseFoods = data;
-          this.areFoodsLoading = false;
+          if (data.length === 0) {
+            this.showNoResults = false;
+          }
+          // this.areFoodsLoading = false;
         },
         (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.searchTerms.subscribe(error) error:', error);
-          this.areFoodsLoading = false;
+          // this.areFoodsLoading = false;
           this.errorResponse = error;
         }
       );
     // Foods
-    this.foodsService
-      .getFoods()
-      .subscribe(
-        (data) => {
-          if (data) {
-            this.databaseFoods = data;
-            this.foodsLoaded = true;
-            this.isSearchLoading = false;
-          }
-        },
-        (error: HttpErrorResponse) => {
-          log('add-meal.ts', this.ngOnInit.name, 'this.foodsService.subscribe(error) error:', error);
-          this.foodsLoaded = false;
-          this.isSearchLoading = false;
-          this.errorResponse = error;
-        }
-      );
+    // this.getAllFoods();
+    this.databaseFoods = [];
+    this.hasSearched = false;
     // Meals:
     this.mealTypes = this.mealsService
       .getMealTypes()
       .map(
         (meals) => {
           return meals.type;
+        }
+      );
+  }
+
+  private getAllFoods() {
+    this.foodsService
+      .getFoods()
+      .subscribe(
+        (data) => {
+          if (data) {
+            this.databaseFoods = data;
+            // this.foodsLoaded = true;
+            // this.isSearchLoading = false;
+          }
+        },
+        (error: HttpErrorResponse) => {
+          log('add-meal.ts', this.ngOnInit.name, 'this.foodsService.subscribe(error) error:', error);
+          // this.foodsLoaded = false;
+          // this.isSearchLoading = false;
+          this.errorResponse = error;
         }
       );
   }
@@ -515,36 +525,36 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   canShowFoodsTable(): boolean {
-
-    if (this.foodsLoaded) {
+    if (this.hasSearched) {
+      // if (this.foodsLoaded) {
       if (this.databaseFoods) {
         // if (this.databaseFoods.length !== 0) { // cannot use this because the user can search for something that returns 0 results
         return true;
         // }
       }
+      // }
     }
-
     return false;
   }
 
   hasSearchResults(): boolean {
-    if (this.foodsLoaded) {
+    let hasResults: boolean = true;
+    if (this.hasSearched) {
       if (this.databaseFoods) {
         if (this.databaseFoods.length === 0) {
-          return false;
+          hasResults = false;
         }
       }
-    }
-
-    return true;
+    };
+    return hasResults;
   }
 
   canSearch(): boolean {
-    return this.canShowFoodsTable();
+    return true;
   }
 
   canSelectMealType(): boolean {
-    return this.canShowFoodsTable();
+    return true;
   }
 
   canScanBarcode(): boolean {
@@ -560,6 +570,9 @@ export class AddMealComponent implements OnInit, OnDestroy {
       return;
     }
     if (term.length < 3) {
+      this.hasSearched = false;
+      this.showNoResults = true;
+      this.databaseFoods = [];
       return;
     }
     this.searchTerm = term;

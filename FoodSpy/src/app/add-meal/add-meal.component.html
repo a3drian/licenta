@@ -23,6 +23,10 @@
         </button>
     </div>
 
+    <h3 class="guide" *ngIf="!isLoading">
+        To add a meal, select a meal type and then add foods using the search bar.
+    </h3>
+
     <div id="mealTypeForm">
         <form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">
             <mat-form-field>
@@ -45,15 +49,18 @@
     <div id="formFields">
         <div class="field" *ngIf="canSearch()">
             <input class="input" #searchBox type="text" id="search-box" name="searchBox"
-                (input)="search(searchBox.value)" placeholder=" " pattern="[A-Za-z0-9]+" />
+                (input)="search(searchBox.value)" placeholder=" " pattern="[A-Za-z0-9 ]+" />
             <label class="label" for="searchBox">Look for food...</label>
         </div>
-        <!-- <button type="submit" class="searchButton">
-        Search
-    </button> -->
+        <!--
+        <button type="button" class="searchButton" (click)="searchManually()">
+            Search
+        </button>
+        -->
     </div>
 </div>
 
+<!-- Foods table -->
 <div class="mainDiv">
     <table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading && hasSearchResults()">
 
@@ -115,15 +122,18 @@
 </div>
 
 <div class="mainDiv">
-    <h3 class="result" *ngIf="canShowFoodsTable() && !isLoading && !hasSearchResults()">
-        No foods found.
+
+    <h3 class="result" *ngIf="!isLoading && !showNoResults">
+        No matching foods found.
     </h3>
 
+    <!--
     <div *ngIf="canScanBarcode()">
         <button (click)="scanBarcode()">
             Scan barcode
         </button>
     </div>
+    -->
 
     <!-- Go back button -->
     <div>
