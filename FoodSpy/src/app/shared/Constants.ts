@@ -3,7 +3,7 @@ import { environment } from 'foodspy-shared';
 export { Constants };
 
 class Constants {
-   static IN_DEBUG_MODE: boolean = true;
+   static IN_DEBUG_MODE: boolean = false;
 
    static APIEndpoints =
       {
@@ -29,7 +29,7 @@ class Constants {
 
    static DEFAULT_TARGET_CALORIES: number = 2000;
 
-   static MIN_MEAL_QUANTITY: number = 0.1;
+   static MIN_MEAL_QUANTITY: number = 1;
    static MAX_MEAL_QUANTITY: number = 1000.0;
    static MIN_CALORIES: number = 100;
    static MAX_CALORIES: number = 10000;

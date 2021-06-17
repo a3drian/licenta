@@ -63,6 +63,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
   existingMealInIntake: boolean = false;
   existingMealTypes: string[] = [];
   selectedMealType: string = '';
+  hasSearched: boolean = false;
 
   DASHBOARD_URL: string = Constants.DASHBOARD_URL;
   ADD_MEAL_URL: string = Constants.ADD_MEAL_URL;
@@ -237,7 +238,8 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .open(
         EditFoodDialogueComponent,
         {
-          data: food
+          data: food,
+          panelClass: 'custom-dialog-container'
         }
       );
     this.dialogueSubscription = dialogRef
@@ -523,6 +525,18 @@ export class AddMealComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  hasSearchResults(): boolean {
+    if (this.foodsLoaded) {
+      if (this.databaseFoods) {
+        if (this.databaseFoods.length === 0) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   canSearch(): boolean {
     return this.canShowFoodsTable();
   }
@@ -543,8 +557,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
     if (!isValidSearchTerm(term)) {
       return;
     }
+    if (term.length < 3) {
+      return;
+    }
     this.searchTerm = term;
     this.searchTerms.next(term);
+    this.hasSearched = true;
   }
 
   scanBarcode(): void {

@@ -1,3 +1,17 @@
+@import "../../styles/colors.scss";
+
 .qtyError {
   height: 1rem;
+}
+
+mat-dialog-actions {
+  background: $secondary;
+}
+
+.foodInfo {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: $primary;
 }

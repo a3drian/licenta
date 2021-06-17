@@ -2,31 +2,33 @@
 
 <p *ngIf="isInDebugMode">CreatedAt: {{ intake.createdAt | date: 'MMM d, y HH:mm' }}.</p>
 
-<div *ngIf="isLoading" class="loading-spinner">
-    <app-loading-spinner></app-loading-spinner>
-</div>
+<div class="mainDiv">
+    <div *ngIf="isLoading" class="loading-spinner">
+        <app-loading-spinner></app-loading-spinner>
+    </div>
 
-<div *ngIf="errorResponse">
-    <app-error-response [errorResponse]="errorResponse"></app-error-response>
-</div>
+    <div *ngIf="errorResponse">
+        <app-error-response [errorResponse]="errorResponse"></app-error-response>
+    </div>
 
-<div *ngIf="!isLoading">
-    {{ intakeText }}
-    <button *ngIf="canShowIntakeHistoryButton()" class="button" mat-stroked-button color="primary"
-        (click)="viewIntakeDetails()">
-        View
-    </button>
-</div>
+    <div *ngIf="!errorResponse">
+        <h2>Daily intake goal: {{ userTargetCalories }} calories</h2>
+        <h3>{{ intakeCaloriesConsumedText }}</h3>
+    </div>
 
-<div *ngIf="!errorResponse">
-    <h2>Daily intake goal: {{ userTargetCalories }} calories</h2>
-    <h3>{{ intakeCaloriesConsumedText }}</h3>
+    <div *ngIf="!isLoading">
+        {{ intakeText }}
+        <button *ngIf="canShowIntakeHistoryButton()" (click)="viewIntakeDetails()">
+            View
+        </button>
+    </div>
 </div>
 
 <form [formGroup]="addMealForm" *ngIf="canSelectMealType()" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="outline">
+    <mat-form-field>
         <mat-label>Select meal type</mat-label>
-        <mat-select formControlName="mealType" (selectionChange)="onSelectedMealType($event)">
+        <mat-select formControlName="mealType"
+            (selectionChange)="onSelectedMealType($event)">
             <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
                 {{ mealType }}
             </mat-option>
@@ -40,14 +42,18 @@
     </button>
 </form>
 
-<div class="search" *ngIf="canSearch()">
-    <input #searchBox type="text" id="search-box" (input)="search(searchBox.value)" placeholder="Look for food..." />
-    <button type="submit" class="searchButton">
+<div class="searchMain">
+    <div class="search" *ngIf="canSearch()">
+        <input class="input" #searchBox type="text" id="search-box" name="searchBox" (input)="search(searchBox.value)"
+            placeholder=" " pattern="[A-Za-z0-9]+" />
+        <label class="label" for="searchBox">Look for food...</label>
+    </div>
+    <!-- <button type="submit" class="searchButton">
         Search
-    </button>
+    </button> -->
 </div>
 
-<table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading">
+<table mat-table [dataSource]="databaseFoods" *ngIf="canShowFoodsTable() && !isLoading && hasSearchResults()">
 
     <!-- ID -->
     <ng-container matColumnDef="id" *ngIf="isInDebugMode">
@@ -58,7 +64,7 @@
     <!-- Name -->
     <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.displayName}} </td>
+        <td class="displayName" mat-cell *matCellDef="let element"> {{element.displayName}} </td>
     </ng-container>
 
     <!-- Energy -->
@@ -91,8 +97,8 @@
         <td mat-cell *matCellDef="let food">
             <!-- <mat-checkbox (change)="selectRow(food)" [checked]="checkIsRowSelected(food)"></mat-checkbox> -->
             <!--  routerLink="/edit/{{ food }}" -->
-            <button class="button" mat-stroked-button color="accent" (click)="openDialog(food)">
-                Add to meal
+            <button class="plusButton" (click)="openDialog(food)">
+                +
             </button>
         </td>
     </ng-container>
@@ -104,6 +110,10 @@
     </ng-container>
 
 </table>
+
+<h3 class="result" *ngIf="canShowFoodsTable() && !isLoading && !hasSearchResults()">
+    No foods found.
+</h3>
 
 <div *ngIf="canScanBarcode()">
     <button (click)="scanBarcode()">
@@ -118,7 +128,6 @@
     </button>
 </div>
 
-<app-header></app-header>
 <router-outlet></router-outlet>
 
 <div *ngIf="isInDebugMode">

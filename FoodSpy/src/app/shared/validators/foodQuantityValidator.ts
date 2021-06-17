@@ -15,7 +15,7 @@ export function foodQuantityValidator(): ValidatorFn {
       if (typeof value === 'number') {
          validType = true;
          if (
-            value > Constants.MIN_MEAL_QUANTITY &&
+            value >= Constants.MIN_MEAL_QUANTITY &&
             value <= Constants.MAX_MEAL_QUANTITY
          ) {
             validValue = true;

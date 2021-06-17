@@ -2,21 +2,30 @@
 
 <h2 mat-dialog-title>{{food.displayName}}</h2>
 
-<div mat-dialog-content style="width: 500px; height: 500px;">
+<div mat-dialog-content style="width: 400px; height: 550px;">
    <form [formGroup]="editFoodForm">
+      <div class="foodInfo">
+         <p><b>Energy</b>: {{ food.energy }} kCal</p>
+         <p><b>Fats</b>: {{ food.fats }} g </p>
+         <p><b>Saturates</b>: {{ food.saturates }} g </p>
+         <p><b>Carbohydrates</b>: {{ food.carbohydrates }} g </p>
+         <p><b>Sugars</b>: {{ food.sugars }} g </p>
+         <p><b>Proteins</b>: {{ food.proteins }} g </p>
+         <p><b>Salt</b>: {{ food.salt }} g </p>
+      </div>
       <div>
          <label for="quantity">Quantity</label>
-         <input formControlName="quantity" type="number" id="quantity" required>
+         <input formControlName="quantity" type="number" name="quantity" pattern="[0-9]+" required>
          <p class="qtyError">
             <mat-error *ngIf="!isQuantityValid()">
                Please use a value between {{ minMealQuantity }} and {{ maxMealQuantity }} {{ defaultUnit }}.
             </mat-error>
          </p>
       </div>
-      <mat-form-field appearance="outline">
+      <mat-form-field>
          <mat-label for="unit">Select unit</mat-label>
          <mat-select formControlName="unit">
-            <mat-option *ngFor="let unit of units" [value]="unit">
+            <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let unit of units" [value]="unit">
                {{ unit }}
             </mat-option>
          </mat-select>

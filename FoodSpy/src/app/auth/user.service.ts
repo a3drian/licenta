@@ -13,5 +13,19 @@ export class UserService {
    constructor(private authService: AuthService) {
       // log('user.service.ts', 'constructor()', 'called autoLogin()');
       // this.authService.autoLogin();
+      if (this.authService.user) {
+         authService.user.subscribe(
+            (user) => {
+               if (user) {
+                  this.user = user;
+                  this.isAuthenticated = true;
+                  this.authenticatedUserEmail = user.email;
+                  this.authenticatedUserTargetCalories = user.targetCalories;
+                  log('user.service.ts', 'authService.user.subscribe()', 'user:', user);
+               }
+            }
+         );
+
+      }
    }
 }
