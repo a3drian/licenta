@@ -4,14 +4,17 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 // Interfaces:
-import { IIntake } from 'foodspy-shared';
+import { IIntake, IMeal } from 'foodspy-shared';
 // Models:
+import { FoodDetail } from '../models/Food';
+import { MealFood } from '../models/MealFood';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
 import { SearchByEmailAndDate } from '../models/searchOptions/SearchByEmailAndDate';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { STATUS_CODES } from 'foodspy-shared';
 import { log } from '../shared/Logger';
+import { MealFoodsService } from './mealFoods.service';
 
 @Injectable({
    providedIn: 'root'
@@ -22,7 +25,10 @@ export class IntakesService {
    readonly SEARCH_URL: string = Constants.APIEndpoints.INTAKES_SEARCH_URL;
    readonly SEARCH_BY_EMAIL_AND_DATE: string = Constants.APIEndpoints.INTAKES_SEARCH_BY_EMAIL_AND_DATE;
 
-   constructor(private http: HttpClient) { }
+   constructor(
+      private http: HttpClient,
+      private mealFoodsService: MealFoodsService,
+   ) { }
 
    // ADD
    addIntake(intake: IIntake): Observable<IIntake> {
@@ -147,5 +153,53 @@ export class IntakesService {
          );
 
       return request;
+   }
+
+
+   populateIntakeDetails(intake: IIntake): FoodDetail {
+      const meals: IMeal[] = intake.meals;
+      let f: FoodDetail = new FoodDetail(
+         {
+            energy: 0,
+            fats: 0,
+            saturates: 0,
+            carbohydrates: 0,
+            sugars: 0,
+            proteins: 0,
+            salt: 0,
+         });
+      if (meals) {
+         meals.forEach(
+            (meal: IMeal) => {
+               const mealFoods: MealFood[] = meal.mealFoods;
+               if (mealFoods) {
+                  mealFoods.forEach(
+                     (mealFood: MealFood) => {
+                        const food = this.mealFoodsService.calculateMealFoodDetails(mealFood);
+                        if (food) {
+                           f.energy += food.energy;
+                           f.fats += food.fats;
+                           f.saturates += food.saturates;
+                           f.carbohydrates += food.carbohydrates;
+                           f.sugars += food.sugars;
+                           f.proteins += food.proteins;
+                           f.salt += food.salt;
+                        } else {
+                           log('intakes.service.ts', this.populateIntakeDetails.name, 'if (food) returned null');
+                        }
+                     }
+                  );
+               }
+            }
+         );
+      }
+      return f;
+   }
+
+   getPercentage(intake: IIntake, userTargetCalories: number): number {
+      const x = userTargetCalories;
+      const y = intake.calories;
+      const calories = y / x;
+      return calories * 100;
    }
 }

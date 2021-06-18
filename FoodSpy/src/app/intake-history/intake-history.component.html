@@ -1,53 +1,74 @@
 <p *ngIf="isInDebugMode"><b>intake-history</b> works!</p>
 
-<h1>
-   Intake information
-</h1>
+<div class="mainDiv">
+   <h2 class="primary-text">
+      Details for {{ intake.createdAt | date: 'MMMM d, y' }}
+   </h2>
 
-<h2>
-   {{ userEmail }}
-</h2>
+   <div *ngIf="errorResponse">
+      <app-error-response [errorResponse]="errorResponse"></app-error-response>
+   </div>
 
-<div *ngIf="errorResponse">
-   <app-error-response [errorResponse]="errorResponse"></app-error-response>
-</div>
+   <div *ngIf="isLoading" class="loading-spinner">
+      <app-loading-spinner></app-loading-spinner>
+   </div>
 
-<div *ngIf="isLoading" class="loading-spinner">
-   <app-loading-spinner></app-loading-spinner>
-</div>
+   <div *ngIf="intakeWasFound && !isLoading">
 
-<div *ngIf="intakeWasFound && !isLoading">
+      <div *ngIf="isInDebugMode">
+         <p>
+            Intake email: {{ intake.email }}.
+         </p>
+         <p>
+            Created at: {{ intake.createdAt | date: 'MMMM d, y HH:mm' }}.
+         </p>
+      </div>
 
-   <div *ngIf="isInDebugMode">
       <p>
-         Intake email: {{ intake.email }}.
+         <b><span>Calorie intake</span></b>: {{ intake.calories }} / {{ userTargetCalories }} kCal
+      </p>
+
+      <div class="progress aqua" [attr.data-width]="progress" (click)="fillGraph()">
+         <div class="progress-text">{{progress}}</div>
+         <div class="progress-bar" [style.width]="progress">
+            <div class="progress-text">{{progress}}</div>
+         </div>
+      </div>
+
+      <div id="graph">
+         <p>
+            <b><span>Fats</span></b>: {{ fats | number : '1.0-2' }} g<br>
+            <b><span>Saturates</span></b>: {{ saturates | number : '1.0-2' }} g<br>
+            <b><span>Carbohydrates</span></b>: {{ carbohydrates | number : '1.0-2' }} g<br>
+            <b><span>Sugars</span></b>: {{ sugars | number : '1.0-2' }} g<br>
+            <b><span>Proteins</span></b>: {{ proteins | number : '1.0-2' }} g<br>
+            <b><span>Salt</span></b>: {{ salt | number : '1.0-2' }} g
+         </p>
+      </div>
+
+      <div>
+         <label><b>Meals:</b></label>
+         <app-meal-item *ngFor="let food of intake.meals" [meal]="food">
+         </app-meal-item>
+      </div>
+
+      <p *ngFor="let food of mealFoods">
+         {{ food.mfid }}
+         {{ food.quantity }}
+      </p>
+
+   </div>
+
+   <div *ngIf="!intakeWasFound && !isLoading">
+      <p>
+         Intake was not found!
       </p>
    </div>
 
+   <!-- Go back button -->
    <div>
-      <p>
-         Created at: {{ intake.createdAt | date: 'MMM d, y HH:mm' }}.
-      </p>
+      <button [routerLink]="['/dashboard']">
+         Back
+      </button>
    </div>
-
-   <div>
-      <label><b>Meals:</b></label>
-      <app-meal-item *ngFor="let food of intake.meals" [meal]="food">
-      </app-meal-item>
-   </div>
-
-
-</div>
-
-<div *ngIf="!intakeWasFound && !isLoading">
-   <p>
-      Intake was not found!
-   </p>
-</div>
-
-<!-- Go back button -->
-<div>
-   <button [routerLink]="['/dashboard']">
-      Back
-   </button>
 </div>

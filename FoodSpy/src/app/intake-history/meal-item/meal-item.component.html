@@ -12,12 +12,7 @@
 <div *ngIf="!isLoading">
    <p>
       Meal type:
-      <b>{{ meal.type }}</b>
-   </p>
-
-   <p>
-      Created at:
-      {{ meal.createdAt | date: 'MMM d, y HH:mm' }}
+      <b>{{ meal.type }} <span>@</span> {{ meal.createdAt | date: 'HH:mm' }}</b>
    </p>
 
    <!--

@@ -37,7 +37,7 @@ export class IntakeCardComponent implements OnInit {
   // intake details:
   fats: number = 0;
   saturates: number = 0;
-  carbs: number = 0;
+  carbohydrates: number = 0;
   sugars: number = 0;
 
   constructor(
@@ -55,7 +55,7 @@ export class IntakeCardComponent implements OnInit {
       log('intake-card.ts', this.ngOnInit.name, 'this.userEmail:', this.userEmail);
     }
     this.populateIntakeDetails();
-    this.percentage = Math.floor(this.getPercentage(this.intake));
+    this.percentage = Math.floor(this.intakesService.getPercentage(this.intake, this.userTargetCalories));
   }
 
   private populateIntakeDetails() {
@@ -67,12 +67,12 @@ export class IntakeCardComponent implements OnInit {
           if (mealFoods) {
             mealFoods.forEach(
               (mealFood: MealFood) => {
-                const food: IFood | undefined = mealFood.food;
-                if (food) {
-                  this.fats += food.fats;
-                  this.saturates += food.saturates;
-                  this.carbs += food.carbohydrates;
-                  this.sugars += food.sugars;
+                const f = this.intakesService.populateIntakeDetails(this.intake);
+                if (f) {
+                  this.fats = f.fats;
+                  this.saturates = f.saturates
+                  this.carbohydrates = f.carbohydrates;
+                  this.sugars = f.sugars
                 }
               }
             );
@@ -80,13 +80,6 @@ export class IntakeCardComponent implements OnInit {
         }
       );
     }
-  }
-
-  getPercentage(intake: IIntake): number {
-    const x = this.userTargetCalories;
-    const y = intake.calories;
-    const calories = y / x;
-    return calories * 100;
   }
 
   viewIntakeDetails(intake: IIntake): void {
