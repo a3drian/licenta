@@ -33,7 +33,7 @@ export class IntakeHistoryComponent implements OnInit {
 
   intake: IIntake = <IIntake>{};
   intakeId: string = '';
-  mealFoods: IMealFood[] = [];
+  mealFoods: MealFood[] = [];
 
   energy!: number;
   fats!: number;
