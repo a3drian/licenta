@@ -2,4 +2,22 @@
 % \section{Concluzii și perspective de dezvoltare}
 
 \section{Concluzii}
+”FoodSpy” este o aplicație web simplă, dezvoltată cu singurul scop de a permite amatorilor interesați de domeniul nutriției să mențină un jurnal al mâncărurilor consumate zi de zi. Simplitatea aplicației ”FoodSpy” este ceea ce îi conferă acesteia un caracter robust și un caracter prietenos și ușor de folosit determinat de interfață grafică accesibilă și intuitivă.
+
 \section{Perspective de dezvoltare}
+Această aplicație, deși simplă, poate reprezenta punctul de plecare către o aplicație mult mai complexă care poate ajunge să concureze cu soluțiile deja existente pe piață. Pentru asta, este nevoie în primul rând de colectarea unui număr cât mai mare de mâncăruri pentru a putea oferi utilizatorilor o gamă largă de produse pe care să le poată adăuga meselor.
+Colectarea datelor se poate dovedi costisitoare de resurse, atât materiale, cât și de timp, de aceea o idee poate fi implicarea utilizatorilor în extinderea bazei de date.
+\\ \\
+Pentru a putea implica utilizatorii însă, este nevoie ca aplicația să le pună la dispoziție o serie de unelte care să ușureze pe cât posibil procesul de colectare a datelor. Una dintre aceste unelte poate fi posibilitatea de a scana alimente din magazin folosind codul de bare. Acest cod de bare poate fi împerechat în baza de date alături de alimentul de care aparține, pentru ca, ulterior, utilizatorii să poată extrage direct informațiile nutriționale folosind codul de bare.
+\\ \\
+A doua unealtă folositoare este capabilitatea aplicației de a extrage informațiile nutriționale ale unui aliment din tabelul de valori nutriționale înscris pe ambalaj. Pentru asta însă, este nevoie ca aplicația să fie în stare să interpreteze multiplele forme pe care acest tabel le poate lua și, de asemenea, să ia în considerare faptul că alimentele au compuși nutriționali diferiți înscriși pe ambalaj, compuși care nu sunt aplicabili tuturor alimentelor.
+\\ \\
+Aplicația poate fi dezvoltată să recomande utilizatorilor un aliment (sau 2, 3, .., n alimente) pentru a ajunge la obiectivul caloric propus. De exemplu, dacă până la sfârșitul zilei (sau până la o anumită oră) un utilizator mai are de consumat 500 de calorii, aplicația ar putea recomanda 250 de grame de piept de pui. Sau 300 de grame de ton în ulei. Posibilitățile dezvoltării în această direcție sunt multe și se poate chiar ajunge la o recomandare bazată pe metoda Greedy - se prezintă utilizatorului o listă de alimente, ordonate în funcție de valoarea lor nutrițională care îl interesează cel mai mult, fie ea cantitatea de proteine, cantitatea de zaharuri, și așa mai departe.
+\\ \\
+Din punct de vedere funcțional, la momentul adăugării unui aliment la o masă, aplicație ar trebui să ofere un feedback vizual și să actualizeze automat valorile nutriționale ale alimentului, raportat la cantitatea introdusă de utilizator. De exemplu, cum toate informațiile mâncărurilor din aplicație sunt raportate la cantitatea de 100 de grame, valorile se schimbă dacă utilizatorul consumă mai mult sau mai puțin de 100 de grame și utilizatorul ar trebui să poată vedea în timp real această schimbare.
+\\ \\
+De asemenea, aplicația poate fi extinsă funcțional astfel încât să prezinte utilizatorilor statistici, grafice sau, de exemplu, numărul mediu de calorii consumat într-o anumită perioadă. Perioada poate fi setată de către utilizator și mai poate include timpul zilei în care utilizatorul are cel mai mare aport caloric sau care sunt mâncărurile consumate în funcție de anotimp sau sezon. Cu un număr suficient de mare de date colectate despre un utilizator, se poate chiar propune un model de recomandare mai performant și mai aproape de preferințele utilizatorului.
+\\ \\
+Din punct de vedere estetic, pentru aplicație se poate defini un mod de zi și un mod de noapte, pentru acomodarea unui număr cât mai mare de utilizatori. Mai mult, se poate pune la dispoziția acestora mai multe teme de culoare, în funcție de preferințele fiecăruia.
+\\ \\
+Implementarea aplicației, cu partea de client care prezintă utilizatorilor interfața grafică separată complet de partea de interfață de programare, suportă astfel o arhitectură ”mobile”. Deși aplicația poate fi accesată de pe un telefon, aceasta nu rulează în mod nativ pe sistemele de operare mobile și ar putea avea de câștigat dacă ar include masa aceasta de utilizatori, mai ales dacă se poate folosi în mod ”offline”.

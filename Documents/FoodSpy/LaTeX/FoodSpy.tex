@@ -10,6 +10,7 @@
 \usepackage[a4paper, width=150mm, top=25mm, bottom=25mm, bindingoffset=6mm]{geometry}
 \usepackage{fancyhdr}
 \usepackage[hidelinks]{hyperref}
+\def\UrlBreaks{\do\/\do-}
 \usepackage{nameref}
 \usepackage[style=numeric, citestyle=authortitle]{biblatex}
 \usepackage{algorithm,algcompatible}
@@ -17,6 +18,7 @@
 \usepackage{algorithmicx}
 \usepackage{float}
 \usepackage{adjustbox}
+\usepackage{url}
 
 %% Fonts
 % main
@@ -69,39 +71,37 @@ BoldItalicFeatures={FakeSlant=0.1},
 \begin{document}
 	\input{titlepage}
 	
-	\chapter*{Abstract}
+	%\chapter*{Abstract}
 	
-	\chapter*{Mențiuni}
+	%\chapter*{Mențiuni}
 	
-	\tableofcontents
+	%\tableofcontents
 	
 	\chapter{Introducere}
-	%\input{chapters/00_Introduction}
+	\input{Chapters/02_Introducere}
 	
 	\chapter{Aplicații web - noțiuni teoretice}
-	%\input{chapters/01_TheoreticalTerms}
+	\input{Chapters/03_Teorie}
 	
-	\chapter{Limbaje de programare}
-	\input{chapters/04_Limbaje}
+	%\chapter{Limbaje de programare}
+	%\input{Chapters/04_Limbaje}
+	%
+	%\chapter{Framework-uri web}
+	%\input{Chapters/05_Framework-uri_web}
+	%
+	%\chapter{Tehnologii}
+	%\input{Chapters/06_Tehnologii}
+	%
+	%\chapter{Descrierea aplicației}
+	%\input{Chapters/07_Descrierea}
+	%
+	%\chapter{Utilizarea aplicației}
+	%\input{Chapters/08_Utilizarea}
+	%
+	%\chapter{Concluzii și perspective de dezvoltare}
+	%\input{Chapters/09_Concluzii}
 	
-	\chapter{Framework-uri web}
-	\input{chapters/05_Framework-uri_web}
-	
-	\chapter{Tehnologii}
-	\input{chapters/06_Tehnologii}
-	
-	\chapter{Descrierea aplicației}
-	\input{chapters/07_Descrierea}
-	
-	\chapter{Utilizarea aplicației}
-	%\input{chapters/04_UserGuide}
-	
-	\chapter{Concluzii}
-	%\input{chapters/04_UserGuide}
-	
-	\chapter{Perspective de dezvoltare}
-	%\input{chapters/04_UserGuide}
-	
-	\printbibliography
+	%\chapter{Bibliografie}
+	%\input{Chapters/10_Bibliografie}
 	
 \end{document}

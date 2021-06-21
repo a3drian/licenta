@@ -137,7 +137,7 @@ După executarea oricăruia dintre cele 2 scenarii descrise mai sus, se reîncar
 	\label{fig:610}
 \end{figure}
 
-Prezent deasupra tuturor celorlalte componente, ”Header” reprezintă antetul aplicației. Acesta afișează e-mail-ul utilizatorului autentificat, logo-ul aplicației și un buton pe care utilizatorul îl poate folosi pentru deconectare și redirecționare la componenta ”Auth”.
+Prezent deasupra tuturor celorlalte componente, ”Header” (Fig. \ref{fig:611}) reprezintă antetul aplicației. Acesta afișează e-mail-ul utilizatorului autentificat, logo-ul aplicației și un buton pe care utilizatorul îl poate folosi pentru deconectare și redirecționare la componenta ”Auth”.
 
 \begin{figure}[!htb]
 	\centering
@@ -360,3 +360,23 @@ Serviciile mai sunt folosite și pentru a executa anumite operații auxiliare as
 \end{figure}
 
 Directorul ”Settings” conține interfețe și clase care facilitează accesul la colecțiile ”Foods”, ”Meals” și ”Intakes” din baza de date. Clasele conțin informații despre numele colecției, string-ul de conexiune și numele bazei de date, în acest caz ”FoodSpyDb”.
+
+
+\section{Baza de date}
+Baza de date a aplicației este ilustrată în (Fig. \ref{fig:629}).
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.9\textwidth]
+	{../LaTeX/Images/db_collections.PNG}
+	\caption{Colecțiile din baza de date}
+	\label{fig:629}
+\end{figure}
+
+Baza de date conține 4 colecții de date. ”Foods” este colecția în care se rețin mâncărurile pe care utilizatorii le pot folosi pentru a le adăuga la o masă. Aceste mese sunt salvate în colecția ”Meals”. Mesele intră în componența unei zile din jurnal. O astfel de zi poartă numele de ”Intake” și este persistată în colecția ”Intakes”.
+\\ \\
+Există o relație între o entitate de tip ”Food” și o entitate de tip ”Meal” care nu este asociată cu niciun tabel în nivelul de persistență a datelor. Această relație poartă numele de ”MealFood” și are practic rolul unui tabel de legătură între ”Meal” și ”Food”. În relația ”MealFood” avem câmpurile ”mfid”, care reprezintă identificatorul unic al unei entități din ”Foods” și ”quantity” sau cantitatea acestui aliment exprimată în grame.
+\\ \\
+Cu ajutorul acestei relații, putem defini mai ușor mâncărurile care fac parte dintr-o masă. Dacă am fi salvat proprietatea de ”quantity” în entitatea ”Food”, nu am fi putut particulariza per masă în parte - toate mesele ar fi avut aceeași cantitate de mâncare definită în baza de date, iar utilizatorul nu ar fi putut introduce o cantitate diferită.
+\\ \\
+”user” este colecția în care sunt salvate datele despre utilizatori, respectiv e-mail-ul fiecăruia, parolele criptate folosind biblioteca ”bcrypt” și obiectivul caloric propus.
