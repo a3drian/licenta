@@ -1,0 +1,534 @@
+
+LUCRARE DE LICENȚĂ
+
+
+LUCRARE DE LICENȚĂ
+FoodSpy
+Aplicație web pentru evidența aportului zilnic de calorii
+
+
+Conținut
+
+Abstract (1 pag) (?)
+Introducere (5 pag) (?)
+Motivarea alegerii temei
+Soluții existente
+Obiective propuse
+Aplicații web - noțiuni teoretice (5 pag) (?)
+Scurt istoric
+Arhitectura client-server
+HTTP și REST
+Limbaje de programare (10 pag)
+JavaScript / TypeScript
+C\#
+HTML și CSS / SCSS
+Framework-uri web (10 pag)
+Angular
+Components
+Templates
+Dependency Injection
+ASP.NET Core
+Tehnologii (10 pag?)
+MikroORM și ORM
+MongoDB și MongoDB Atlas
+Node.js
+Express
+NPM (publicarea pachetului FoodSpy-shared)
+Heroku
+Utilitare (Postman, Git și GitHub)
+Descrierea aplicației
+Clientul
+API pentru administrarea utilizatorilor
+API pentru gestiunea jurnalelor utilizatorilor
+Baza de date
+Securitate (Angular Guards și JWOT)
+Testare
+Utilizarea aplicației
+Concluzii
+Posibilități de dezvoltare
+Bibliografie
+
+
+Mențiuni
+Mulțumiri lui Monescu, Ferenc, Zsoltan, Florin, Sergiu..
+
+
+1. Abstract
+FoodSpy este o aplicație web care are ca scop menținerea unui jurnal al aportului zilnic de calorii.
+FoodSpy este o aplicație web care vine în ajutorul persoanelor care 
+Aplicația este versatilă deoarece poate fi folosită de pe orice dispozitiv, mobil sau desktop fiind construită.
+
+
+2. Introducere
+a. Motivarea alegerii temei
+Aplicația își propune să îndeplinească un singur rol - acela de jurnal de nutriție.
+FoodSpy permite utilizatorilor construirea unui profil simplu folosind doar două bucăți de informație: e-mail-ul și obiectivul caloric zilnic.
+
+b. Soluții existente
+Eat & Track
+O aplicație care ”este mai mult decât un simplu calculator de calorii” [*]. Eat & Track oferă în mod exclusiv alimente care se găsesc în magazinele din România, alături de rețete de mâncăruri și posibilitatea de a colabora cu specialiști în nutriție. De asemenea, permite urmărirea progresului spre obiectivele setate de utilizator. Un avantaj al aplicației este faptul că produsele pot fi scanate folosind camera telefonului și adăugate în jurnal; mai mult, scanând produsele, utilizatorii pot contribui și popula baza de date.
+Eat & Track oferă mult peste nevoile utilizatorului obișnuit, tocmai pentru a încearca să-l convertească într-un client al abonamentului PRO care promite atingerea mult mai ușoară a obiectivelor.
+
+MyFitnessPal
+Scopul principal este să slăbești și nu conține alimente disponibile în România și este cunoscut faptul că baza de date a mâncărurilor nu beneficiază de actualizări periodice, (?).
+
+c. Obiective propuse
+FoodSpy își propune să pună la dispoziția utilizatorilor o interfață prietenoasă, intuitivă și ușor de folosit.
+FoodSpy permite partajarea de mese între utilizatori prin funcțiile ”Import” și ”Export”.
+FoodSpy este o aplicație care nu necesită instalare, ci o simplă conectare la www.a3drian.com/FoodSpy, din orice browser, de pe orice dispozitiv.
+FoodSpy nu colectează date despre utilizator, iar e-mail-ul și obiectivul caloric zilnic sunt folosite pentru motive strict funcționale.
+
+
+3. Aplicații web - noțiuni teoretice
+a. Scurt istoric
+Deși se accesează în același fel și arată la fel, o aplicație web nu este un website.
+O aplicație web este construită cu scopul de a interacționa cu utilizatorul, în timp ce un website doar servește conținut static, conținut care nu poate fi afectat de către vizitator.
+Website-ul este structurat pe mai multe pagini care au adrese web diferite și care indică resurse web diferite, în timp ce, de regulă, o aplicație web ”rescrie” în mod dinamic pagina curentă pe care se află utilizatorul; această ”rescriere” stă la baza așa numitelor ”single-page application”.
+Pentru a putea interacționa cu aplicația web, un utilizator trebuie autentificat și autorizat [*], în vreme ce vizitatorul unui website poate cel mult să se înscrie pe o listă de corespondență de unde poate primi notificări din partea administratorul website-ului.
+[*] Dacă luăm un exemplu cu un club, prin autentificare se înțelege procesul de identificare a vârstei unui petrecăreț, pe baza unui buletin, în vreme ce prin autorizare se înțelege acordarea unor privilegii speciale acestui petrecăreț, accesul în zona VIP, în zona DJ-ului, și așa mai departe.
+
+
+4. Tehnologii
+a. JavaScript / TypeScript
+JavaScript este un limbaj de programare care permite implementarea unor funcționalități complexe în paginile web. Câteva dintre aceste funcționalități sunt actualizarea conținutului paginilor web în mod dinamic, animarea de grafice 2D sau 3D și afișarea hărților interactive. Alături de HTML [*] și CSS [*], JavaScript este unul dintre tehnologiile web standard.
+JavaScript este un limbaj multi-platformă, poate fi folosit pe partea de client, dar și pe partea de server, este ușor de învățat și este dinamic și flexibil. Această dinamicitate este însă și unul din dezavantajele limbajului. De exemplu, JavaScript pune la dispoziție variabile primitive de tip ”string” sau ”number”, dar pentru că nu este necesară compilarea codului, nu se verifică folosirea corectă a acestor variabile, programatorul putând folosi o variabilă ”title” pentru a reține un ”string” (Fig. 1), dar care mai târziu poate va fi suprascrisă și se poate reține (în variabilă) un ”number”, fără niciun fel de avertizare din partea mediului de programare, putând conduce la bug-uri și la comportamente neprevăzute.
+
+ts_title-1.png
+(Fig. 1 - Definirea variabilei ”title”)
+
+Aici intervine TypeScript, un superset al limbajului JavaScript ce adaugă ”siguranța de tip” necesară pentru evitarea situațiilor neplăcute precum este cea descrisă mai sus. TypeScript încurajează scrierea codului în stil declarativ, asemănător limbajelor C\# sau Java prin facilități ca interfețe, clase și inferența de tip a variabilelor.
+Este necesară compilarea codului scris în limbaj TypeScript, dar acest lucru poate fi văzut ca un avantaj pentru că mediul de programare poate astfel scoate în evidență comportamentul neașteptat al codului și prin urmare poate duce la detecția mult mai rapidă a bug-urilor. Referindu-ne la situația neplăcută descrisă mai sus [*], dacă variabila ”title” ar fi adnotată cu tipul ”string”, atunci nu va putea fi suprascrisă de o valoare pretabilă unei variabile de tip ”number”.
+
+ts_title-2.png
+(Fig. 2 - Adnotarea previne suprascrierea variabilei ”title”)
+
+TypeScript vine în ajutorul programatorilor care sunt deja obișnuiți cu limbaje de programare cu stil declarativ și propune astfel o alternativă față de JavaScript care nu oferă niciun suport pentru ”siguranța de tip”. Deși o mai bună înțelegere a limbajului JavaScript este recomandată, TypeScript se poate învăța și folosi în mod independent, fără a cunoaște toate dedesubturile JavaScript. Mai mult, un bonus pentru programatorii cu experiență în C\# este faptul că autorul limbajului TypeScript este arhitectul limbajului C\#, deci, din punct de vedere sintactic, TypeScript și C\# împărtășesc multe similitudini.
+
+ts_similar-1.png sau ts_similar_2.png
+(Fig. 3 - Asemănări între C\# și TypeScript)
+
+Față de JavaScript, TypeScript întinde o plasă de siguranță care poate prinde defectele de programare introduse prin modificări majore ale codului. TypeScript nu va înlătura necesitatea depanării programelor, dar ”siguranța de tip” va ajuta fără echivoc la detectarea din timp ale defectelor. Mai mult, TypeScript beneficiază de sugestii și avertizări din partea mediului de programare încă de la compile-time, în timp ce erorile în JavaScript pot fi descoperite abia la run-time.
+Printre alte avantaje ale TypeScript includem și posibilitatea re-factorizării într-un mod mai sigur deoarece se cunoaște codul la nivel semantic și capabilitățile TypeScript care permit construirea aplicațiilor de mărime foarte mare, în completă antiteză cu JavaScript care a fost gândit ca un limbaj folosit strict pentru modificarea dinamică a paginilor web.
+
+b. C\#
+C\# este un limbaj de programare orientat pe obiect, simplu, dar puternic și este gândit pentru dezvoltarea de aplicații pe platforma .NET Framework. Moștenește părțile bune ale limbajului C++ și Visual Basic, dar fără anumite inconsistențe [*](ca footnote) și anacronisme ceea ce duc la un limbaj mai logic și mai puțin complicat.
+La fel cum pentru o variabilă, simbolul ”++” înseamnă incrementarea cu 1 după ce variabila a fost evaluată, pentru C\#, simbolul ”\#” semnifică o incrementare a limbajului C++.
+[*](ca footnote) O astfel de inconsistență în C++ este accesul la un element dintr-un ”std::vector”. În C++ se poate folosi operatorul ”[]” pentru a ajunge la elemente care nu sunt de fapt elementele ale vectorului, ci sunt bucăți de informație conținute la adresele de memorie adiacente memoriei alocate vectorului. Deoarece nu se face niciun fel de verificare a indicelui elementului pe care încercăm să-l accesăm, operatorul ”[]” va întoarce ceea ce se află la locația de memorie vecină memoriei alocate vectorului.
+Prima versiune a apărut în 2001. Odată cu versiunea 2.0 au apărut lucrul cu generice [*], iteratori și metode anonime. În versiunea 3.0 au debutat metodele de extensie [*], expresiile lambda și cel mai important, LINQ sau Language-INtegrated Query [*]. Versiunea 5.0 a venit cu suport nativ pentru operațiile asincron prin introducerea operatorului ”await” și modificatorului de funcție ”async”.
+
+Lucrul cu clase și metode generice reprezintă un concept care face posibilă proiectarea de clase și metode ale căror tipuri se cunoaște doar la momentul declarării sau instanțierii. Acest concept combină reutilizarea codului, ”siguranța de tip” și eficiența într-un mod în care nu este posibil prin proiectarea specifică.
+”GenericList” din Fig. 4 este un exemplu de clasă generică care modelează o listă simplu înlănțuită capabilă să memoreze obiecte de tip ”Node” de orice tip, inclusiv ”int”, ”double” sau ”string”.
+
+csharp_generics.png
+(Fig. 4 - Exemplu de clasă generică)
+
+Parametrul de tip ”T” ia locul declarării tipului explicit și este folosit ca parametru în metoda ”AddHead(T t)”, ca parametru de retur al proprietății ”Data” și ca tip de membru privat, cum este cazul membrului ”T data”. La momentul instanțierii clasei ”GenericList<T>”, fiecare apariție a lui ”T” va fi înlocuită de tipul specificat între ”<>”.
+Se pot crea interfețe, clase, metode, evenimente și delegați generici.
+
+Metodele de extensie sunt o funcționalitate a limbajului C\# care permit adăugarea de metode tipurilor deja existente. Metodele de extensie sunt metode statice care sunt apelate ca și cum ar fi membre ale clasei, cum este de exemplu metoda ”ToString()”, membră a clasei ”Object”.
+O metodă de extensie are cel puțin un parametru, ”this” care reprezintă obiectul curent peste care operează metoda. Din cauza aceasta, când se apelează o metodă de extensie de către un obiect, obiectul nu trebuie trimis ca parametru.
+”WordCount” din Fig. 5 este o metodă de extensie care numără caracterele dintr-un obiect de tip ”string”. Se observă că ”WordCount” este definită pentru obiecte din clasa ”System.String” deoarece parametrul ”str” este prefixat de ”this string”.
+
+csharp_extension-1.png
+(Fig. 5 - Exemplu de metodă de extensie)
+
+Apelul metodei de extensie se poate observa în Fig. 6.
+
+csharp_extension-2.png
+(Fig. 6 - Apelul unei metode de extensie)
+
+O definiție simplistă pentru LINQ este următoarea: modalitatea prin care se poate interoga o bază de date folosind un limbaj de interogare apropiat de SQL, dar care este compilat în interiorul unei aplicații care rulează pe platforma .NET.
+Prin ”bază de date” se înțelege un spectru larg de surse de date, printre care baze de date SQL, baze de date ”in-memory” sau reprezentări XML.
+LINQ permite scrierea unei interogări sub forma unei structuri SQL, după cum se poate observa în Fig. 7. Această structură are avantajul că variabila ”name” este ”scoped”, adică nu trebuie definită din nou pentru fiecare clauză din interogare.
+
+csharp_linq-1.png
+(Fig. 7 - Exemplu de interogare LINQ)
+
+Un alt avantaj este claritatea originii variabilei ”name” - chiar din primul rând (linia 11) se distinge faptul că ”name” provine din susa de date ”names”, spre deosebire de interogarea SQL clasică, unde clauza ”from” ar fi fost declarată ultima.
+
+LINQ nu ar fi fost un concept realizabil dacă nu s-ar fi implementat în prealabil funcționalități precum metodele de extensie [*], tipurile anonime [*](ca footnote), tipurile implicite [*](ca footnote) și expresiile lambda.
+
+(footnote):
+List<string> names = new List<string>() { "Teodor", "Adrian", "Manghiuc" };
+[*](ca footnote) Din construirea unei variabile, compilatorul are la dispoziție suficiente informații pentru a pune la dispoziție un tip de date care să modeleze variabila.
+var anonymousType = names.Select(n => new { Name = n,
+                                               Capitalized = n.ToUpper() });
+[*](ca footnote) Din inițializarea unei variabile, compilatorul are la dispoziție suficiente informații pentru a infera tipul acesteia.
+var inference = names.Select(n => n);
+devine
+IEnumerable<string> inference = names.Select(n => n);
+
+c. HTML și CSS / SCSS
+Acronimul HTML vine de la Hypertext Markup Language și reprezintă limbajul care permite structurarea conținutului unei pagini web prin construirea de secțiuni, definirea de rubrici, paragrafe și link-uri.
+HTML nu este un limbaj de programare, deci nu permite construirea de conținut cu funcționalitate dinamică, dar face posibilă organizarea și formatarea paginilor web, asemenea documentelor scrise în Microsoft Word.
+HTML este format dintr-o colecție de elemente folosite pentru a ”înfășura” bucățile de conținut astfel încât să arate sau să se comporte într-un anume fel. De exemplu, folosind elementul ”<a>” putem crea un link către o altă pagină web, cu ”<i>” putem scrie înclinat, iar cu ”<h1>” putem defini o rubrică.
+În Fig. 8, este ilustrat elementul ”<p>”.
+
+html_element.png
+(Fig. 8 - Exemplu de element HTML)
+
+”p” vine de la paragraf. ”<p>” se mai numește ”opening tag” și definește punctul de intrare al elementului de tip paragraf și se poate observa că este închis între simbolurile ”<” și ”>”. ”</p>” reprezintă ”closing tag” și marchează punctul de ieșire al elementului, care, spre deosebire de punctul de intrare, mai are în componență simbolul ”/”. Textul sau conținutul paragrafului este definit între punctul de intrare și cel de ieșire. Un element HTML este format din toate cele 3 părți descrise mai sus.
+
+Acronimul CSS vine de la Cascading Style Sheets și reprezintă limbajul care permite determinarea aspectului unei pagini web, din punct de vedere vizual, schematic și 
+estetic. Dacă HTML este planul unei case, CSS precizează stilul acesteia, Victorian sau Art Deco, Post-modern sau Gotic.
+CSS schimbă aspectul paginii web interacționând cu elementele HTML. După cum am observat în Fig. 8, un paragraf este un asemenea element HTML. Dacă vrem ca textul paragrafului să fie de culoare roz și cu scris îngroșat, vom scrie codul CSS ilustrat în Fig. 9.
+
+css_paragraph.png
+(Fig. 9 - Exemplu de stilizare CSS)
+
+”p” se numește ”selector” și indică elementul HTML căruia îi vom schimba aspectul folosind reguli definite în CSS. ”color” și ”font-weight” sunt câteva dintre proprietățile de stilizare care se pot aplica selectorului de tip ”p”. Alte proprietăți ale acestuia sunt dimensiunea textului, adică ”font-size” sau ”text-transform” care poate transforma textul paragrafului în litere de tipar dacă se folosește împreună cu valoarea ”uppercase”.
+Codul CSS poate fi adăugat unei pagini web în 3 moduri: intern, extern sau inline. În modul intern, codul CSS este scris în elementul HTML ”<style>”, ilustrat în Fig. 11.
+
+css_internal.png
+(Fig. 11 - Modul intern de legare a codului CSS)
+
+Extern înseamnă scrierea codului într-un fișier separat salvat cu extensia ”.css”. Legătura dintre pagina web și regulile de stilizare din fișier se creează folosind elementul ”<link>”, după cum se poate observa în Fig. 12.
+
+css_external.png
+(Fig. 12 - Modul extern de legare a codului CSS)
+
+Codul ”inline” este codul CSS scris înăuntrul elementelor HTML, folosind proprietatea ”style”, reprezentat în Fig. 13.
+
+css_inline.png
+(Fig. 13 - Modul inline de legare a codului CSS)
+
+Se preferă scrierea regulilor de stilizare într-un fișier separat deoarece astfel rezultă o separare între structura paginii web, elementele HTML și aspectul acesteia, regulile CSS. Codul este mai ușor de citit, mai ușor de întreținut și actualizat și permite o detectare mai ușoară a erorilor.
+
+SCSS vine de la Sassy CSS și este un limbaj de preprocesare al cărui rezultat de compilare este cod CSS. În CSS este dificilă scrierea de reguli organizate și ușor de menținut deoarece lipsește suportul pentru cod imbricate (din engl. ”nested”), funcții și moștenire. Folosind SCSS se poate evita scrierea codului duplicat, prin construirea de bucăți de cod reutilizabile și se pot scrie secvențe de cod imbricate, care sunt structurate și ușor de citit (Fig. 14).
+
+scss_nesting.png
+(Fig. 14 - Secvență de cod ”nested”)
+
+Simbolul ”.” din ”.class” reprezintă o clasă de reguli de stilizare care se poate aplica unuia sau mai multor elemente HTML, spre deosebire de simbolul ”\#” care definește o regulă aplicabilă în mod unic unui singur element.
+După cum se poate observa în Fig. 14, codul ”nested” evită dublarea selectorului ”.class” atunci când se face referire la elementul ”<a>”, de tip ancoră.
+SCSS oferă suport pentru așa numitele ”directive de control”, care pot defini o regulă de stilizare dacă o anumită condiție este îndeplinită. Una dintre aceste directive este ”@if” care funcționează asemenea structurilor alternative din limbajele de programare precum C\#. Folosind ”@if”, se aplică unui element ”<div>” o margine albă de grosime de 1 pixel, dacă rezultatul condiției este egal cu 4, după cum este ilustrat în Fig. 15.
+
+scss_if-1.png
+(Fig. 15 - Directiva de control ”@if”)
+
+După evaluarea condiției din ”@if” și compilarea codului, rezultă regula de stilizare reprezentată în Fig. 16.
+
+scss_if-2.png
+(Fig. 16 - Rezultatul compilării directivei de control ”@if”)
+
+
+5. Framework-uri web
+a. Angular
+Numele ”Angular” vine de la caracterele ”<” și ”>” (în engleză, ”angled brackets”) care delimitează numele tuturor tag-urilor din HTML, de exemplu ”<a>” sau ”<div>”.
+Angular este o platformă de dezvoltare, bazată pe limbajul TypeScript [*], care este un superset al limbajului JavaScript. Angular este un framework care face posibilă implementarea într-un mod trivial a cerințelor complexe ale aplicațiilor web, cum ar fi animații sau ”data binding”.
+Platforma Angular oferă un mod de lucru bazat pe componente individuale care duce cu ușurință la construirea de aplicații web scalabile, dar și la posibilitatea reutilizării acestor componente în alte aplicații.
+Angular vine integrat cu o multitudine de biblioteci care acoperă o gamă largă de cazuri de utilizare, printre care comunicarea cu un server și validarea formularelor HTML, Fig. 1 (?).
+
+angular_hero-form-2.png
+(Fig. 1 - Validarea câmpului ”Name” din formular)
+
+Mai mult, Angular este gândit să faciliteze actualizarea cât mai ușoară a aplicației, de aceea pune la dispoziție o suită de unelte care ajută la dezvoltarea, testarea și actualizarea codului printre care și ”Live Reload”, o funcționalitate prin care aplicația web este recompilată și deservită la orice modificare a codului-sursă.
+
+i. Components
+Asemenea blocurilor de LEGO, componentele Angular sunt puse laolaltă pentru a construi o aplicație web. O componentă (Fig. 2) este formată dintr-o clasă TypeScript, adnotată cu decoratorul ”@Component”, un șablon HTML și opțiuni de stilizare.
+În clasa TypeScript este scris codul care determină funcționalitatea componentei, șablonul HTML spune cum este structurată componenta, iar opțiunile de stilizare definesc aspectul acesteia. Această separare ajută la testarea mai ușoară a codului și lizibilitatea acestuia.
+
+angular_components.png
+(Fig. 2 - O componentă Angular)
+
+Componenta se folosește printr-un apel după numele descris sub proprietatea ”selector”, în cazul acesta ”<hello-world></hello-world>”.
+
+ii. Templates
+”Template” sau ”șablonul” descrie felul în care este structurată componenta folosind limbaj HTML. Limbajul HTML poate fi scris ”inline”, cum se vede în Fig. 2 (?) sub proprietatea ”template” sau poate fi scris într-un fișier separat cu extensia ”.html”.
+Angular extinde capabilitățile limbajului HTML oferind așa numitele ”directives”, care sunt clase ce pot modifica în mod dinamic structura aplicației. De exemplu, ”*ngIf” poate fi folosit pe un ”<div>” (dar și alte tag-uri HTML) pentru a-l afișa sau nu în funcție de valoarea unei variabile de tip ”boolean”, astfel:
+
+<div *ngIf=”showDiv”>
+    <p> Dacă ”showDiv” este ”true” atunci ”<div>” este vizibil în pagină </p>
+</div>
+
+<div *ngIf=”!showDiv”>
+<p> Dacă ”showDiv” este ”false” atunci ”<div>” nu este vizibil în pagină </p>
+</div>
+
+De reținut este faptul că ”showDiv” este o variabilă ce a fost definită în clasa TypeScript a componentei.
+
+iii. Dependency Injection
+Prin ”dependency injection” a se înțelege un design pattern prin care este posibilă scrierea de cod-sursă mai flexibil și mai ușor de testat. În Angular, prin ”dependency injection”, într-o clasă se pot declara dependințe către alte clase, fără să fie necesară instanțierea explicită a lor - instanțierea se efectuează în mod automat.
+O clasă către care este definită o dependință din altă clasă trebuie să fie adnotată cu decoratorul ”@Injectable”, astfel:
+
+angular_injectable.png
+(Fig. 4 - ”Logger” este o clasă ce poate fi ”injectată”)
+
+Funcția ”writeCount()” din clasa ”Logger” este folosită mai departe în interiorul clasei ”HelloWorldDependencyInjectionComponent”, după cum se vede în Fig. 5.
+
+angular_dependency-injection.png
+(Fig. 5 - ”HelloWorldDependencyInjectionComponent” cu membrul ”private logger”)
+
+A se observa constructorul clasei ”HelloWorldDependencyInjectionComponent”, unde s-a definit o dependință către clasa ”Logger” prin membrul ”private logger”.
+
+b. ASP.NET Core
+ASP.NET Core este un framework web, care rulează pe platforma .NET și .NET Core. Bazat pe limbajul de programare C\# [*], ASP.NET Core suportă construirea serviciilor REST [*] (așa numitele API-uri web).
+Un ”request” sau o ”cerere” venită către un asemenea serviciu REST este tratată de către un controller. În ASP.NET Core, un controller este o clasă ce derivă din clasa de bază ”ControllerBase”.
+
+asp_controller-1.png
+(Fig. 6 - ”PeopleController” este un exemplu de controller)
+
+Deoarece ”PeopleController” este adnotat cu atributul ”[HttpGet("people/all")]”, acesta este capabil să răspundă cererilor metodei ”GET” efectuate la URL-ul ”/people/all”.
+”people/all” se mai numește ”endpoint” și intrinsec este configurat să răspundă într-un mod serializabil, sub forma unui JSON, după cum se poate observa în Fig 7.
+
+asp_response.png
+(Fig. 7 - Exemplu de răspuns dat de un controller)
+
+După cum se poate observa și în exemplele de mai sus, ASP.NET Core permite definirea ”inline” a endpoint-urilor și metodelor REST prin adnotări, folosind atribute.
+Un exemplu de controller capabil să răspundă la metodele ”GET” și ”POST” este ilustrat în Fig. 8.
+
+asp_controller-2.png
+(Fig. 8 - Exemplu controller)
+
+În practică deci, un web API construit folosind ASP.NET Core nu este altceva decât o colecție de unul sau mai multe controller-e care sunt capabile să răspundă cererilor venite din partea interfeței-utilizator (și nu numai).
+
+
+6. Tehnologii
+a. MikroORM și ORM
+ORM sau Object-Relational Mapping este o tehnică de a interoga și manipula datele dintr-o bază de date folosind o paradigmă orientată pe obiect. MikroORM este o bibliotecă TypeScript care implementează această tehnică.
+MikroORM încapsulează codul necesar manevrării datelor și astfel nu mai este nevoie de scrierea explicită a interogărilor. Mai mult, biblioteca permite interacțiunea directă cu obiectele din baza de date folosind același limbaj în care este scris codul-sursă al aplicației - în cazul nostru, TypeScript.
+MikroORM prezintă o serie de avantaje printre care faptul că utilizarea procedurilor stocate sau a tranzacțiilor se face la fel de simplu precum un apel de funcție, dar și faptul că modelul de date este definit o singură dată, ceea ce îl face ușor de actualizat și menținut. Un exemplu de model de date este ”User”. ”User” modelează utilizatorul aplicației, prin câmpuri precum ”email”, și este reprezentat în Fig. 1.
+
+mikroorm_user.png
+(Fig. 1 - Model de date MikroORM)
+
+b. MongoDB și MongoDB Atlas
+MongoDB este un sistem de gestiune a bazelor de date orientat pe document. Deoarece un document este asemenea unui obiect JSON, câmpurile conținute în acesta pot să difere de la document la document și de asemenea, structura acestuia se poate modifica de-a lungul timpului. MongoDB permite o asociere directă între documentul din baza de date și obiectul din codul-sursă al aplicației, oferind programatorului posibilitatea de a manipula datele cu ușurință.
+
+mongodb_document.png
+(Fig. 2 - Document MongoDB)
+
+La rădăcini, MongoDB este un sistem de gestiune scalabil și pretabil pentru a rula pe sisteme distribuite - aici intervine MongoDB Atlas care este serviciul MongoDB găzduit în cloud. Atlas pune la dispoziție toate funcționalitățile serviciului MongoDB, dar în același timp automatizează partea de administrare a bazei de date, de la configurarea acesteia până la efectuarea operației de ”backup”.
+În oferta de găzduire în cloud există și un nivel gratis, așa numitul ”M0 Sandbox”, care poate fi folosit pentru acomodare cu serviciul MongoDB, pentru prototipare și pentru primele implementări ale bazei de date.
+
+c. Node.js
+Node.js este un mediu de rulare JavaScript construit pe engine-ul V8 din Chrome. Este folosit pentru a rula aplicații web în afara browser-ului clientului. Deoarece folosește un mediu de rulare asincron, bazat pe evenimente, Node.js este gândit pentru scalabilitatea aplicațiilor de rețea, fiind capabil să administreze un număr mare de conexiuni în mod concurent.
+Un modul Node.js este asemenea unei librării JavaScript care poate fi inclus înăuntrul unei aplicații pentru a facilita anumite funcționalități. De exemplu, în Fig. 3 este ilustrată utilizarea modului HTTP care face posibil crearea unui server web, care ascultă pe portul 2000.
+
+nodejs_http.png
+(Fig. 3 - Modulul HTTP din Node.js)
+
+Față de mediul de rulare convențional, bazat pe thread-uri, Node.js are avantajul că funcțiile nu execută operații de input / output, deci procesul de rulare al aplicației nu este blocat niciodată. Mai mult, librăria Express din Node.js poate fi utilizată în diferite scenarii, de la aplicații de chat în timp real până la API-uri REST.
+
+d. Express
+Node.js nu oferă suport pentru diferitele verbe HTTP, precum GET, POST sau DELETE. De asemenea, nu poate servi fișiere statice și nici nu poate trata cererile care pot veni la diferite URL-uri, așa numitele ”rute” sau ”endpoint”-uri. Pentru aceste cazuri, este necesară implementarea manuală sau folosirea unui framework web, în speță, Express.
+Express adresează neajunsurile Node.js enumerate mai sus prin pachete ”middleware” și mai mult decât atât, aceste pachete pot fi folosite pentru lucrul cu sesiuni sau cookie-uri, extragerea parametrilor din URL sau a datelor transmise prin corpul cererilor POST.
+
+express_hello.png
+(Fig. 4 - ”Hello World” în Express)
+
+Inițial, se importă modulul Express prin ”require(‘express’)”. Aplicația Express se instanțiază prin ”const app = express()”. Cu ajutorul ”app” definim ”endpoint”-urile tratate de API. În cazul prezentat în Fig. 4, ”app.get()” definește o funcție care va fi apelată atunci când se face un request GET la URL-ul rădăcină, adică ”/”. Răspunsul se trimite înapoi folosind ”send()” și va întoarce string-ul ”Hello World”. Cu ”app.listen()” se pornește server-ul care ascultă pe portul 3000 și care poate fi accesat la adresa ”localhost:3000”.
+
+e. NPM (publicarea pachetului FoodSpy-shared)
+NPM este manager-ul de pachete pentru Node.js. A fost creat în 2009 ca un proiect care să ajute dezvoltatorii JavaScript să partajeze cu ușurință secvențe de cod sub formă de module [REF](referință către Node.js) ambalate ca pachete. Registrul NPM este o colecție publică de astfel de pachete care sunt folosite de către comunitatea JavaScript pentru dezvoltarea aplicațiilor web sau aplicațiilor mobile. NPM pune la dispoziție un client care poate fi folosit în linie de comandă și oferă dezvoltatorilor capabilitatea de a instala, folosi și de a publica propriile pachete.
+”FoodSpy-shared” este un pachet propriu, disponibil în registrul public NPM. Acesta conține o colecție de constante, interfețe și enum-uri folosite în aplicația Angular, dar și în API-ul care administrează datele despre utilizatori. Una dintre aceste interfețe este ”IUser”, ilustrată în Fig. 5. ”IUser” definește contractul care trebuie îndeplinit atât pe partea de front-end cât și pe partea de back-end, când vine vorba de manipularea datelor despre un utilizator. Adăugarea pachetului ”FoodSpy-shared” și implementarea interfeței ”IUser” în API este ilustrată în Fig. 6.
+
+npm_iuser.png
+(Fig. 5 - Interfața ”IUser”)
+
+
+npm_user.png
+(Fig. 6 - Implementarea interfeței ”IUser” în API)
+
+f. Heroku
+Heroku este o platformă care pune la dispoziție posibilitatea de a construi, implementa și rula aplicații găzduite în cloud. Spre deosebire de Amazon Web Services sau Windows Azure, care oferă doar infrastructura în cloud necesară pentru a găzdui aplicația, Heroku oferă un serviciu de management asupra infrastructurii, care abstractizează toate detaliile legate de configurare și implementare. Astfel, Heroku permite dezvoltatorilor să concentreze toate resursele spre implementarea aplicației.
+Heroku suportă o colecție de limbaje de programare și framework-uri, printre care JavaScript și Node.js. Platforma pune la dispoziție toate uneltele necesare implementării unei aplicații, inclusiv administrarea mediului de rulare a aplicației și administrarea laturii DevOps. Din acest motiv, Heroku este un loc potrivit pentru a învăța despre microservicii și metodologii de implementare, precum livrarea continuă (”continuous delivery”). Mai mult decât atât, oferă un abonament destinat exclusiv studenților care permite utilizarea platformei pentru o perioadă de doi ani, suficient timp pentru a exersa orice limbaj de programare și orice șablon arhitectural.
+
+g. Utilitare (Postman, Git și GitHub)
+Postman este un utilitar interactiv prin care se pot examina endpoint-urile unui API. Postman poate fi folosit pe tot parcursul dezvoltării unei aplicații deoarece dispune de o interfață grafică care permite construirea și trimiterea de request-uri HTTP. De asemenea, se poate folosi pentru citirea și validarea răspunsurilor oferite de către API. Un exemplu de request trimis direct din Postman către ”FoodSpyAPI”, care interoghează baza de date pentru alimente care au în componența numelui termenul ”magiun” este reprezentat în Fig. 7.
+
+postman_magiun.png
+(Fig. 7 - Request GET trimis din Postman)
+
+Git este un sistem de versionare distribuit care poate urmări schimbări în fișiere. Git este folosit de programatori pentru a colabora la scrierea codului-sursă în procesul de dezvoltare software. A fost creat în anul 2005 și a fost gândit pentru a fi eficient, pentru a păstra integritatea datelor și pentru a oferi suport pentru numeroase medii de dezvoltare.
+Git urmărește schimbările în fișier pe toată durata dezvoltării software, ceea ce înseamnă că în orice moment, codul-sursă poate fi revizuit sau poate fi adus la o versiune precedentă.
+Git se instalează și rulează pe sistemul local și nu are nevoie de conexiune la internet pentru a funcționa. Față de alte sisteme de versionare, Git este ușor de folosit și gratis și a fost gândit să lucreze în principal cu fișiere text, adică exact tipul de fișiere folosit pentru a salva cod-sursă. Întregul cod-sursă este menținut sub evidența sistemului de versionare într-un director care poartă numele de ”repository”. Avantajul major al Git este așa numitul ”branching model”. Prin procesul de ”branching” se pot crea ”ramuri”, care sunt copii independente ale repository-ului. Asta se traduce prin ușurința de a testa și implementa noi funcționalități în aplicație, fără a afecta munca celorlalți participanți la dezvoltarea aplicației.
+GitHub este un serviciu de găzduire a unui repository. Este bazat exclusiv pe infrastructură cloud și este o bază de date care reține o colecție de repository-uri. GitHub este practic o versiune online a unui repository local și astfel oferă posibilitatea de a partaja un repository sau de a adăuga alți programatori care pot contribui în mod independent la dezvoltarea aplicației. Cu alte cuvinte, GitHub extinde funcționalitățile oferite de Git printr-o interfață intuitivă și unelte de management asupra unui repository. Un instantaneu al repository-ului care conține codul-sursă al aplicației ”FoodSpy” este reprezentat în Fig. 8. Se poate observa că branch-ul ”calculate-calories” a suferit 9 modificări de la momentul în care a fost clonat din branch-ul principal, adică ”master”.
+
+github_repo.png
+(Fig. 8 - Repository-ul ”FoodSpy”)
+
+
+
+7. Descrierea aplicației
+
+implementare_arhitectura.png
+(Fig. 1 - Arhitectura aplicației FoodSpy)
+
+Arhitectura aplicației FoodSpy presupune o implementare realizată pe mai multe nivele de infrastructură, nivele ce sunt detaliate în rândurile următoare.
+Proiectul ”FoodSpy” reprezintă nivelul clientului sau nivelul de prezentare, adică interfața grafică prin care utilizatorul interacționează cu aplicația.
+”FoodSpyUserAPI” este interfața de programare care efectuează comunicarea cu server-ul care se ocupă de administrarea utilizatorilor și a datelor acestora.
+Proiectul care se ocupă de persistența datelor reținute în jurnalul fiecărui utilizator este ”FoodSpyAPI”. Acesta este responsabil pentru stocarea informațiilor legate de mâncărurile pe care utilizatorii le pot folosi pentru a-și compune mesele și pentru a înregistra aportul caloric în jurnal.
+Nivelul de testare este acoperit de proiectele ”FoodSpyAPIIntegrationTests” și ”FoodSpyAPIUnitTests”.
+”foodspy-shared” este proiectul care reprezintă nivelul auxiliar, un nivel care face posibilă partajarea dependințelor aplicației. Acesta conține o colecție de enumerări și interfețe care sunt folosite atât la nivelul clientului cât și la nivelul interfețelor de programare (API-urilor).
+
+a. Clientul
+Nivelul clientului este împărțit pe mai multe componente Angular.
+”Auth” constituie componenta care administrează pagina de autentificare în aplicație. La baza acestei componente este un formular HTML. Pentru un utilizator care urmează să își creeze un cont, formularul are 3 câmpuri: e-mail-ul, parola și aportul zilnic de calorii pe care acesta dorește să-l atingă în fiecare zi. Pentru e-mail se folosește o validare bazată pe o expresie regulată care impune în componența sa existența unui domeniu (”.com”, ”.ro”, etc.). Parola trebuie să aibă un număr minim de caractere, număr definit de o constantă, iar aportul este exprimat ca un număr întreg cuprins într-un anumit interval.
+Pentru cazul în care utilizatorul are deja cont și efectuează operația de autentificare în aplicație, formularul nu mai afișează câmpul numărului de calorii.
+Se observă astfel faptul că același formular este folosit pentru procesul de înregistrare, dar și pentru procesul de autentificare. Această implementare este posibilă folosind directiva ”*ngIf”, descrisă [REF](către *ngIf).
+
+implementare_form.png
+(Fig. 2 - Formularul de înregistrare și autentificare în aplicație)
+
+”Auth” utilizează serviciul de autentificare ”AuthService”. Acesta validează datele introduse în formular și trimite un request ”POST” către interfața de programare care se ocupă de administrarea utilizatorilor. Request-ul ”POST” este împachetat într-o interfață ”IAuthResponseData” compusă din proprietățile ”email”, ”password” și ”targetCalories”. Interfața este partajată cu ”FoodSpyUserAPI” pentru a facilita despachetarea cu ușurință a informațiilor conținute în request-ul ”POST”.
+
+implementare_iauthresponsedata.png
+(Fig. 3 - Interfața ”IAuthResponseData”)
+
+După înregistrare sau autentificare, utilizatorul este redirecționat către componenta ”Intakes”. ”Intakes” reprezintă tabloul de bord al aplicației și afișează numărul de calorii pe care acesta și le-a setat ca obiectiv de atins la momentul înregistrării.
+De asemenea, oferă posibilitatea de a urmări istoricul utilizării aplicației, pe zile, ordonate de le cea mai îndepărtată zi, la cea mai apropiată. Acest istoric reprezintă de fapt jurnalul aportului de calorii al utilizatorului.
+
+implementare_intakes.png
+(Fig. 4 - Componenta ”Intakes”)
+
+Obiectul ”intakes” din Fig. 4 este populat cu rezultatul unui request ”POST” către ”FoodSpyAPI” care întoarce o listă de intrări din jurnalul unui anume utilizator, identificat prin adresa acestuia de e-mail. 
+Nu se face un request ”GET” deoarece acest endpoint din Fig. 5 permite sortarea intrărilor din jurnal, din punct de vedere cronologic, dacă se populează o proprietate numită ”sortOrder” cu valoarea 0 pentru ascendent sau cu valoarea 1 pentru descendent.
+
+implementare_getintakesbyemail.png
+(Fig. 5 - Request ”POST” către ”/api/db/intakes/search/”)
+
+În tabloul de bord, fiecare dintre aceste zile care face parte din istoric sunt conținute într-o componentă numită ”IntakeCard”. În ”IntakeCard”, istoricul nu este detaliat, afișează doar procentul de completare al aportului de calorii, și cantitatea totală de grăsimi, carbohidrați și zaharuri pe care utilizatorul le-a consumat în ziua respectivă.
+Detaliile precum mâncărurile care fac parte din componența unei mese și cantitatea fiecăruia dintre mâncăruri consumate de utilizator sunt afișate în componenta ”IntakeHistory”, la care se ajunge prin intermediul unui hyperlink. Hyperlink-ul este atașat unei element ”<h2>” prin evenimentul ”(click)”, după cum se poate observa în Fig. 6. Elementul ”<h2>” exprimă numărul de mese consumate de utilizator într-o anumită zi.
+
+implementare_hyperlink.png
+(Fig. 6 - Componenta ”Intakes”)
+
+”Intakes” face legătură către ”AddMeal” prin componenta ”AddIntakeCard”. Cu ajutorul ”AddMeal”, un utilizator poate căuta mâncărurile pe care să la adauge la o masă, iar masa o poate adăuga la jurnalul din ziua respectivă.
+”AddMeal” este cea mai complicată dintre componente, deoarece ea implementează funcționalitatea pentru căutarea mâncărurilor în baza de date și construcția unui obiect de tip ”IIntake”, care reprezintă o zi din jurnal.
+Când utilizatorul accesează componenta ”AddMeal”, se inițializează obiectul de tip ”IIntake” cu valori default. De exemplu, o proprietate a acestui obiect este ”createdAt”, care va reține momentul la care s-a adăugat în jurnal prima masă. Se mai inițializează proprietatea ”email” cu e-mail-ul utilizatorului și ”targetCalories” cu obiectivul setat de utilizator.
+
+implementare_initializeintake.png
+(Fig. 7 - Componenta ”Intakes”)
+
+Căutarea mâncărurilor din baza de date se face folosind un ”<input>” de tip ”text” atașat la o funcție care preia termenul de căutare introdus de către utilizator și face un request ”GET” către ”FoodsService”. Termenul de căutare populează parametrul din URL numit ”name” și asta va determina endpoint-ul definit în ”FoodSpyAPI” să returneze o listă de mâncăruri filtrate după nume. Un exemplu de request ”GET” după criteriul numelui este ”/api/db/foods/search?name=ciocolata”.
+
+implementare_search.png
+(Fig. 8 - Bara de căutare a mâncărurilor după nume)
+
+Odată găsită mâncarea în baza de date, utilizatorul poate deschide o căsuță de dialog, care reprezintă componenta ”EditFoodDialogue”. Aici, utilizatorul poate vedea mai multe detalii despre mâncarea selectată în urma căutării, printre care cantitatea de săruri sau proteine și de asemenea poate introduce cantitatea de mâncare, exprimată în grame. Pentru cantitate este implementată o validare care impune valoarea acesteia să nu poată depăși 1000 de grame. Validarea este ilustrată în Fig. 9. Aceasta poartă numele de ”foodQuantityValidator” și este implementată folosind clasa abstractă ”AbstractControl”. ”AbstractControl” permite accesul la valoarea introdusă de utilizator în formular și astfel se pot impune restricții asupra acesteia.
+
+implementare_foodqtyvalidator.png
+(Fig. 9 - Validarea pentru cantitatea de mâncare)
+
+După adăugarea unei mâncăruri, utilizatorul poate selecta tipul de masă pe care acesta a consumat-o. Tipurile de masă sunt ”Breakfast”, ”Lunch”, ”Dinner” sau ”Snack”. La momentul alegerii unuia dintre tipuri, formularul este valid și utilizatorului i se permite să înregistreze masa în jurnal.
+Când se înregistrează o masă, există două scenarii. Primul scenariu este acela în care utilizatorul nu are nicio intrare în jurnalul zilei respective, iar al doilea scenariu reprezintă modificarea unui jurnal deja existent.
+În primul scenariu, implementarea este simplă deoarece este suficient să adăugăm masa în colecția ”Meals” din baza de date și apoi să introducem ID-ul acestei mese în proprietatea ”mealIDs” a obiectului de tip ”IIntake”. Ultimul pas este să trimitem un request ”POST” către ”FoodSpyAPI” pentru a înregistra jurnalul în colecția ”Intakes” din baza de date.
+Al doilea scenariu este mai complicat deoarece în primul rând trebuie să determinăm dacă această masă nou adăugată face parte dintr-un tip de masă care există deja în în obiectul ”IIntake”.
+Dacă nu face parte, se persistă o masă nouă și se aduce referința în proprietatea ”mealIDs” prin ID, iar în final se execută un request ”PUT” pentru a modifica un ”Intake” deja existent. Dacă face parte, atunci trebuie identificată colecția de mese care are același tip cu tipul mesei pe care utilizatorul dorește să o adauge. După identificarea acesteia, se concatenează colecția existentă cu masa ce urmează să fie adăugată, se aduce referința (ID-ul) în obiectul ”IIntake” și din nou se modifică jurnalul (obiectul de tip ”IIntake”) prin același request ”PUT”.
+După executarea oricăruia dintre cele 2 scenarii descrise mai sus, se reîncarcă pagina pentru a reflecta modificarea din obiectul ”IIntake”.
+
+implementare_addmeal.png
+(Fig. 10 - Adăugarea unei intrări în jurnalul zilnic)
+
+Prezent deasupra tuturor celorlalte componente, ”Header” reprezintă antetul aplicației. Acesta afișează e-mail-ul utilizatorului autentificat, logo-ul aplicației și un buton pe care utilizatorul îl poate folosi pentru deconectare și redirecționare la componenta ”Auth”.
+
+implementare_header.png
+(Fig. 11 - Componenta ”Header”)
+
+b. API pentru administrarea utilizatorilor
+Interfața de programare pentru administrarea utilizatorilor pune la dispoziție două endpoint-uri, un endpoint pentru operația de înregistrare a unui nou utilizator și unul pentru procesul de autentificare în aplicație.
+La baza API-ului stă MikroORM, biblioteca TypeScript care implementează tehnica de a interoga și manipula datele dintr-o bază de date folosind o paradigmă orientată pe obiect. Cu ajutorul MikroORM, se definește o entitate care modelează profilul unui utilizator, dar și un manager peste această entitate care permite înregistrarea sau autentificarea acestuia în aplicație.
+Pentru înregistrarea unui utilizator este nevoie să definim un endpoint pentru verbul ”POST” cu ajutorul unei rute. Din Fig. 1, se poate observa că ruta folosită pentru procesul de înregistrare este ruta rădăcină, adică ”/api/auth/register”.
+
+userapi_rutaregister.png
+(Fig. 1 - Componenta ”Header”)
+
+”registerUser” este funcția care face un apel către ”getUserByEmail” din ”UserService”. Funcția respectivă întoarce imediat o eroare dacă din corpul request-ului ”POST” lipsește e-mail-ul utilizatorului. Altfel, folosind manager-ul peste entități oferit de MikroORM, se caută utilizatorul identificat de e-mail-ul introdus în formularul din componenta ”Auth” din client. Dacă se găsește utilizatorul, detaliile despre acesta se returnează într-un obiect ”User”, iar dacă nu există, funcția întoarce ”null”. În Fig. 2 este ilustrată funcția ”getUserByEmail”.
+
+
+userapi_getuserbyemail.png
+(Fig. 2 - Funcția ”getUserByEmail”)
+
+La momentul înregistrării, este important ca ”getUserByEmail” să returneze ”null”. Dacă returnează ”null”, înseamnă că utilizatorul nu există în baza de date și se poate înregistra cu succes folosind e-mail-ul, parola și obiectul caloric propus. Parola este criptată folosind biblioteca ”bcrypt” pentru a nu fi persistată în baza de date în format ”plain text”.
+Dacă ”getUserByEmail” nu returnează ”null”, înseamnă că utilizatorului trebuie să îi fie afișat un mesaj de eroare care să-l atenționeze că există deja un cont creat cu același e-mail.
+
+userapi_bcrypt.png
+(Fig. 3 - Criptarea parolei folosind ”bcrypt”)
+
+Pentru autentificarea unui utilizator este nevoie să definim un endpoint pentru verbul ”POST” cu ajutorul unei rute. Din Fig. 4, se poate observa că ruta folosită pentru procesul de autentificare este ruta rădăcină, adică ”/api/auth/login”.
+
+userapi_bcrypt.png
+(Fig. 4 - Criptarea parolei folosind ”bcrypt”)
+
+Asemenea funcției ”registerUser”, funcția ”loginUser” face un apel către ”getUserByEmail” din ”UserService”. La momentul autentificării, această funcție trebuie să returneze un obiect ”User”, care conține datele despre utilizator. În caz contrar, există scenariul în care utilizatorul nu există și trebuie mai întâi să se înregistreze sau există scenariul în care utilizatorul se află în baza de date. În acest caz, parola introdusă în formular este comparată cu parola persistată, iar dacă nu există o potrivire, un mesaj de eroare este afișat în client.
+
+userapi_loginuser.png
+(Fig. 5 - Corpul funcției ”loginUser”)
+
+La momentul pornirii server-ului care administrează datele despre utilizator, se caută un fișier numit ”.env” care conține string-ul de conectare la baza de date MongoDB precum și portul la care ascultă pentru cererile venite din partea clientului. ”.env” este interpretat de către API, care identifică string-ul de conectare și deschide portul de comunicare pentru client. Fișierul ”.env” nu este înregistrat în repository-ul aplicației deoarece conține informații sensibile.
+
+c. API pentru gestiunea jurnalelor utilizatorilor
+Structura proiectului ”FoodSpyAPI” este reprezentată în Fig. 1.
+
+fsapi_structura.png
+(Fig. 1 - Arhitectura proiectului ”FoodSpyAPI”)
+
+Directorul ”Common” conține clase și enumerări, precum ”Alphabet” sau ”MealType”. În ”Alphabet” există totalitatea caracterelor permise în aplicație, o reuniune a caracterelor alfabetului englez împreună cu literele cu diacritice din alfabetul limbii române. ”Alphabet” conține și o funcție ”ConvertDiacritic” care este utilizată pentru a îndepărta diacriticile dintr-un caracter. ”MealType” este o clasă statică care are în componența sa enumerarea ”MealType” folosită pentru definirea tipurilor de masă permise în aplicație. De asemenea, ”MealType” definește funcția ”GetMealTypesOrder” care are ca parametru de retur un ”Dictionary<string, uint>”. Dicționarul are ca utilitate sortarea meselor în funcție de tipul acestora, ”Breakfast” primul, ”Lunch” al doilea, ”Dinner” al treilea și ”Snack” ultimul.
+
+fsapi_mealtype.png
+(Fig. 2 - Corpul funcției ”GetMealTypesOrder”)
+
+Dicționarul este folosit în funcția ”Compare” a clasei ”MealTypeComparer” din directorul ”Comparators”. În funcție de ponderea tipului de masă, clasa poate sorta mesele dintr-un jurnal în ordine crescătoare sau descrescătoare.
+
+fsapi_mealtypecomparer.png
+(Fig. 3 - Implementarea comparării tipurilor de mese)
+
+Interfața de programare pentru gestiunea jurnalelor utilizatorilor este compus din trei controller-e, ”IntakesController”, ”MealsController” și ”FoodsController”, din directorul ”Controllers”. Fiecare dintre acestea trei are definite endpoint-uri pentru verbele ”GET”, ”GET” cu parametrul din URL ”id”, ”POST”, ”PUT” și ”DELETE”.
+”GET” returnează lista tuturor obiectelor de același tip cu tipul reprezentat de controller (”Intake”, ”Meal” sau ”Food”). ”GET” returnează un singur obiect identificat de parametrul ”id” din URL. ”POST” este folosit pentru adăugarea unui nou obiect, ”PUT” pentru editarea unui obiect deja existent, iar ”DELETE” pentru ștergerea unui obiect din baza de date. Pentru implementarea anumitor endpoint-uri este nevoie mai mult de unul din aceste verbe. Spre exemplu, pentru ”PUT” trebuie mai întâi să inițiem un request ”GET” după parametrul ”id” din URL. Rezultatul acestui request va fi un obiect care ulterior poate fi modificat cu ajutorul request-ului ”PUT”.
+Utilizatorul poate filtra mâncărurile din baza de date după criteriul numelui. De această filtrare se ocupă ”FoodsController” și funcția ”SearchFoodsByName”, ilustrată în Fig. 4. Această funcție primește ca parametru un obiect de tip ”string” care reprezintă termenul de căutare primit de la client. Cu ajutorul acestei funcții, a verbului ”GET” și a rutei ”/api/db/foods/search” se definește endpoint-ul care filtrează mâncărurile.
+
+fsapi_searchfoods.png
+(Fig. 4 - Corpul funcției ”SearchFoodsByName”)
+
+Se poate observa că prima oară se validează numele introdus de către utilizator și se returnează ca răspuns un ”status code” cu numărul 400, așa numitul ”BadRequest” și mesajul de eroare ”Food name is invalid!”, dacă numele nu este valid.
+În următorul pas, se îndepărtează diacriticile și se apelează ”SearchFoodsByName” din ”FoodService”. Aici, se construiește un filtru care nu ține cont de stilul de scriere a numelui (”case insensitive”) și se interoghează baza de date. Rezultatul sau rezultatele căutării sunt returnate pentru a putea fi afișate utilizatorului și pentru a-i permite să adauge mâncarea la o masă din jurnal. Dacă nu sunt rezultate în urma căutării, se returnează o listă goală pe care clientul o interpretează cu un mesaj de informare și anume ”No foods found”.
+
+fsapi_foodservice.png
+(Fig. 5 - Funcția ”SearchFoodsByName” din ”FoodService”)
+
+În directorul ”DTOs” sunt așa numitele ”data transfer objects”. Aceste obiecte sunt folosite strict pentru comunicarea între API și client. Acestea sunt o versiune simplificată a modelelor propriu-zise de date pentru a nu îngreuna transferul datelor cu proprietăți (informații) care nu sunt absolut necesare.
+De exemplu, clasa care modelează o masă se numește ”Meal” și are definite proprietățile din Fig. 6. Din obiectul de transfer ”MealModel”, lipsește proprietatea ”List<Food> Foods”, după cum se poate observa din Fig. 7.
+
+fsapi_meal.png
+(Fig. 6 - Clasa ”Meal”)
+
+fsapi_mealmodel.png
+(Fig. 7 - Clasa ”MealModel”)
+
+Tot în directorul ”DTOs” există clase care facilitează construirea unor request-uri ”POST” pentru filtrarea obiectelor de tip ”Intake”, spre exemplu după e-mail și după o anumită dată, cum este cazul clasei ”SearchByEmailAndDateOptions”.
+
+Directorul ”Helpers” conține clase ajutătoare, precum ”CharacterConverter”, care poate lua un obiect de tip ”string” și îndepărta diacriticele din caracterele care compun respectivul string.
+Cea mai des folosită clasă din acest director este ”Validator”, o clasă statică plină de funcții statice care sunt folosite pentru validare, printre care funcția care verifică validitatea unui ”id”, funcția care întoarce ”false” dacă e-mail-ul introdus de utilizator nu este sub o anumită formă, funcție care trece un string prin alfabetul descris în ”Alphabet” și verifică existența unor caractere nepermise și funcția care este folosită pentru a verifica faptul că un anumit tip de masă este prezent în enumerarea ”MealType”.
+
+fsapi_validmealtype.png
+(Fig. 8 - Funcția de validare a unui tip de masă)
+
+Tot în directorul ”Helpers” sunt metodele de extensie ”DateTimeExtension” și ”StringExtension”. În ”StringExtension” este definită o metodă ”FirstLetterUppercased” care se aplică unui string și întoarce același obiect string, dar cu prima literă scrisă de tipar și restul cu literă mică. Această metodă este folosită spre exemplu la validarea unui tip de masă, după cum se poate observa în Fig. 8, la linia 186. Corpul metodei ”FirstLetterUppercased” este ilustrat în Fig. 9.
+
+fsapi_validmealtype.png
+(Fig. 9 - Metoda de extensie ”FirstLetterUppercased”)
+
+Interfețele care definesc setul minim de proprietăți pe care ar trebui să le aibă în componență modelele ”Food”, ”Meal” și ”Intake” se află în directorul ”Interfaces”. De exemplu, interfața ”IMeal” este reprezentată în Fig. 10.
+
+fsapi_imeal.png
+(Fig. 10 - Interfața ”IMeal”)
+
+Clasele care se ocupă de asocierea proprietăților dintre modele și obiectele de transfer ale datelor se află în directorul ”Profiles”. ”MealProfile” este clasa care conține harta de asociere între ”Meal” și ”MealModel”. Această clasă este ilustrată în Fig. 11.
+
+fsapi_imeal.png
+(Fig. 11 - Clasa de asociere ”MealProfile”)
+
+Fiecare dintre controller-e are asociat un serviciu. Toate aceste servicii sunt reținute în directorul ”Services”. Serviciile sunt angajate de controller-e pentru a manipula datele din baza de date, în funcție de cererile care vin din partea clientului. Serviciile mai sunt folosite și pentru a executa anumite operații auxiliare asupra datelor. Spre exemplu, în serviciul ”MealService” există funcția ”CalculateCalories” care preia ca parametru un obiect de tip ”Meal”, ia în calcul informațiile nutriționale ale mâncărurilor care se află în componența obiectului și calculează numărul de calorii consumate. ”CalculateCalories” este supraîncărcată de o versiune a funcției care primește ca parametru o listă de obiecte de tip ”Meal”. În Fig. 12 este reprezentată versiunea care primește un singur obiect ”Meal” ca parametru.
+
+fsapi_calccalories.png
+(Fig. 12 - Corpul funcției ”CalculateCalories”)
+
+Directorul ”Settings” conține interfețe și clase care facilitează accesul la colecțiile ”Foods”, ”Meals” și ”Intakes” din baza de date. Clasele conțin informații despre numele colecției, string-ul de conexiune și numele bazei de date, în acest caz ”FoodSpyDb”.
+
+d. Baza de date
+Baza de date conține 4 colecții de date. ”Foods” este colecția în care se rețin mâncărurile pe care utilizatorii le pot folosi pentru a le adăuga la o masă. Aceste mese sunt salvate în colecția ”Meals”. Mesele intră în componența unei zile din jurnal. O astfel de zi poartă numele de ”Intake” și este persistată în colecția ”Intakes”.
+Există o relație între o entitate de tip ”Food” și o entitate de tip ”Meal” care nu este asociată cu niciun tabel în nivelul de persistență a datelor. Această relație poartă numele de ”MealFood” și are practic rolul unui tabel de legătură între ”Meal” și ”Food”. În relația ”MealFood” avem câmpurile ”mfid”, care reprezintă identificatorul unic al unei entități din ”Foods” și ”quantity” sau cantitatea acestui aliment exprimată în grame.
+Cu ajutorul acestei relații,
+
+
