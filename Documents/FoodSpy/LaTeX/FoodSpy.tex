@@ -19,6 +19,8 @@
 \usepackage{float}
 \usepackage{adjustbox}
 \usepackage{url}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
 
 %% Fonts
 % main
@@ -46,6 +48,7 @@ BoldItalicFeatures={FakeSlant=0.1},
 \renewcommand{\footrulewidth}{0.4pt}
 \renewcommand{\figurename}{Fig.}
 \renewcommand{\chaptername}{Capitolul}
+\renewcommand{\tablename}{Tabelul}
 %\rhead{Manghiuc Teodor-Adrian \\ Informatică Aplicată}
 %\lhead{Universitatea Transilvania \\ Facultatea de Matematică și Informatică}
 
@@ -71,11 +74,13 @@ BoldItalicFeatures={FakeSlant=0.1},
 \begin{document}
 	\input{titlepage}
 	
-	%\chapter*{Abstract}
+	\chapter*{Abstract}
+	\input{Chapters/00_Abstract}
 	
-	%\chapter*{Mențiuni}
+	\chapter*{Mențiuni}
+	\input{Chapters/01_Mentiuni}
 	
-	%\tableofcontents
+	\tableofcontents
 	
 	\chapter{Introducere}
 	\input{Chapters/02_Introducere}
@@ -83,25 +88,25 @@ BoldItalicFeatures={FakeSlant=0.1},
 	\chapter{Aplicații web - noțiuni teoretice}
 	\input{Chapters/03_Teorie}
 	
-	%\chapter{Limbaje de programare}
-	%\input{Chapters/04_Limbaje}
-	%
-	%\chapter{Framework-uri web}
-	%\input{Chapters/05_Framework-uri_web}
-	%
-	%\chapter{Tehnologii}
-	%\input{Chapters/06_Tehnologii}
-	%
-	%\chapter{Descrierea aplicației}
-	%\input{Chapters/07_Descrierea}
-	%
-	%\chapter{Utilizarea aplicației}
-	%\input{Chapters/08_Utilizarea}
-	%
-	%\chapter{Concluzii și perspective de dezvoltare}
-	%\input{Chapters/09_Concluzii}
+	\chapter{Limbaje de programare}
+	\input{Chapters/04_Limbaje}
 	
-	%\chapter{Bibliografie}
-	%\input{Chapters/10_Bibliografie}
+	\chapter{Framework-uri web}
+	\input{Chapters/05_Framework-uri_web}
+	
+	\chapter{Tehnologii}
+	\input{Chapters/06_Tehnologii}
+	
+	\chapter{Descrierea aplicației}
+	\input{Chapters/07_Descrierea}
+	
+	\chapter{Utilizarea aplicației}
+	\input{Chapters/08_Utilizarea}
+	
+	\chapter{Concluzii și perspective de dezvoltare}
+	\input{Chapters/09_Concluzii}
+	
+	\chapter{Bibliografie}
+	\input{Chapters/10_Bibliografie}
 	
 \end{document}
