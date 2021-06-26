@@ -42,7 +42,7 @@ Un modul Node.js este asemenea unei librării JavaScript care poate fi inclus î
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.6\textwidth]
+	\includegraphics[width=0.8\textwidth]
 	{../LaTeX/Images/nodejs_http.PNG}
 	\caption{Modulul HTTP din Node.js}
 	\label{fig:53}
@@ -54,7 +54,7 @@ Față de mediul de rulare convențional, bazat pe thread-uri, Node.js are avant
 \section{Express}
 Node.js nu oferă suport pentru diferitele verbe HTTP, precum GET, POST sau DELETE. De asemenea, nu poate servi fișiere statice și nici nu poate trata cererile care pot veni la diferite URL-uri, așa numitele ”rute” sau ”endpoint”-uri. Pentru aceste cazuri, este necesară implementarea manuală sau folosirea unui framework web, în speță, Express.
 \\ \\
-Express adresează neajunsurile Node.js enumerate mai sus prin pachete ”middleware” și mai mult decât atât, aceste pachete pot fi folosite pentru lucrul cu sesiuni sau cookie-uri, extragerea parametrilor din URL sau a datelor transmise prin corpul cererilor POST.
+Express adresează neajunsurile Node.js enumerate mai sus prin pachete ”middleware” și, mai mult decât atât, aceste pachete pot fi folosite pentru lucrul cu sesiuni sau cookie-uri, extragerea parametrilor din URL sau a datelor transmise prin corpul cererilor POST.
 
 \begin{figure}[!htb]
 	\centering
@@ -69,7 +69,7 @@ Inițial, se importă modulul Express prin ”require(‘express’)”. Aplica�
 
 
 \section{NPM și publicarea pachetului ”FoodSpy-shared”}
-NPM este manager-ul de pachete pentru Node.js. A fost creat în 2009 ca un proiect care să ajute dezvoltatorii JavaScript să partajeze cu ușurință secvențe de cod sub formă de module [REF](referință către Node.js) ambalate ca pachete. Registrul NPM este o colecție publică de astfel de pachete care sunt folosite de către comunitatea JavaScript pentru dezvoltarea aplicațiilor web sau aplicațiilor mobile. NPM pune la dispoziție un client care poate fi folosit în linie de comandă și oferă dezvoltatorilor capabilitatea de a instala, folosi și de a publica propriile pachete.
+NPM este manager-ul de pachete pentru Node.js. A fost creat în 2009 ca un proiect care să ajute dezvoltatorii JavaScript să partajeze cu ușurință secvențe de cod sub formă de module ambalate ca pachete. Registrul NPM este o colecție publică de astfel de pachete care sunt folosite de către comunitatea JavaScript pentru dezvoltarea aplicațiilor web sau aplicațiilor mobile. NPM pune la dispoziție un client care poate fi folosit în linie de comandă și oferă dezvoltatorilor capabilitatea de a instala, folosi și de a publica propriile pachete.
 \\ \\
 ”FoodSpy-shared” este un pachet propriu, disponibil în registrul public NPM. Acesta conține o colecție de constante, interfețe și enum-uri folosite în aplicația Angular, dar și în API-ul care administrează datele despre utilizatori. Una dintre aceste interfețe este ”IUser”, ilustrată în (Fig. \ref{fig:55}). ”IUser” definește contractul care trebuie îndeplinit atât pe partea de front-end cât și pe partea de back-end, când vine vorba de manipularea datelor despre un utilizator. Adăugarea pachetului ”FoodSpy-shared” și implementarea interfeței ”IUser” în API este ilustrată în (Fig. \ref{fig:56}).
 
@@ -97,15 +97,35 @@ Heroku suportă o colecție de limbaje de programare și framework-uri, printre 
 Platforma pune la dispoziție toate uneltele necesare implementării unei aplicații, inclusiv administrarea mediului de rulare a aplicației și administrarea laturii DevOps. Din acest motiv, Heroku este un loc potrivit pentru a învăța despre microservicii și metodologii de implementare, precum livrarea continuă (”continuous delivery”). Mai mult decât atât, oferă un abonament destinat exclusiv studenților care permite utilizarea platformei pentru o perioadă de doi ani, suficient timp pentru a exersa orice limbaj de programare și orice șablon arhitectural.
 
 
+\section{Docker}
+Docker este o platformă cu sursă-deschisă folosită pentru construirea, implementarea, testarea și administrarea aplicațiilor bazate pe așa numitele containere. Containerele sunt pachete care conțin codul-sursă al aplicației și toate dependințele de care aplicația are nevoie pentru a funcționa corespunzător - biblioteci, unelte de sistem, cod-sursă și mediul de rulare (din engl. ”runtime environment”).\\
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=1\textwidth]
+	{../LaTeX/Images/docker.PNG}
+	\caption{Mașină virtuală (stânga) vs. container(dreapta)}
+	\label{fig:57}
+\end{figure}
+
+Câteva avantaje ale folosirii containerelor:
+\begin{itemize}
+	\item spre deosebire de o mașină virtuală, un container conține doar procesele sistemului de operare și dependințele necesare executării codului aplicației
+	\item mult mai multe containere pot rula în paralel decât mașini virtuale, deoarece o mașină virtuală trebuie să suporte sarcina unui întregi instanțe de sistem de operare
+	\item un container este mai ușor și mai rapid de implementat decât o mașină virtuală, astfel că sunt ideale în pipeline-uri ”continuous integration” și ”continuous delivery” (CI/CD)
+\end{itemize}
+Un ”DockerFile” este un fișier text care include instrucțiuni pentru creearea unei imagini Docker. Instrucțiunile sunt executate de ”Docker Engine”, iar rezultatul execuției reprezintă imaginea Docker.
+O imagine Docker conține codul-sursă executabil al aplicației, dependințele acesteia și bibliotecile de care are nevoie pentru a rula sub formă de container. Când o imagine Docker este rulată, aceasta devine o instanță live, devine un container Docker. În timp ce o imagine Docker este un fișier ”read-only”, cu un container Docker se poate interacționa și manipula.
+
+
 \section{Utilitare (Postman, Git și GitHub)}
-Postman este un utilitar interactiv prin care se pot examina endpoint-urile unui API. Postman poate fi folosit pe tot parcursul dezvoltării unei aplicații deoarece dispune de o interfață grafică care permite construirea și trimiterea de request-uri HTTP. De asemenea, se poate folosi pentru citirea și validarea răspunsurilor oferite de către API. Un exemplu de request trimis direct din Postman către ”FoodSpyAPI”, care interoghează baza de date pentru alimente care au în componența numelui termenul ”magiun” este reprezentat în (Fig. \ref{fig:57}).
+Postman este un utilitar interactiv prin care se pot examina endpoint-urile unui API. Postman poate fi folosit pe tot parcursul dezvoltării unei aplicații deoarece dispune de o interfață grafică care permite construirea și trimiterea de request-uri HTTP. De asemenea, se poate folosi pentru citirea și validarea răspunsurilor oferite de către API. Un exemplu de request trimis direct din Postman către ”FoodSpyAPI”, care interoghează baza de date pentru alimente care au în componența numelui termenul ”magiun” este reprezentat în (Fig. \ref{fig:58}).
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.8\textwidth]
+	\includegraphics[width=1\textwidth]
 	{../LaTeX/Images/postman_magiun.PNG}
 	\caption{Request ”GET” trimis din Postman}
-	\label{fig:57}
+	\label{fig:58}
 \end{figure}
 
 %maybe add \\ \\ here
@@ -115,12 +135,12 @@ Git urmărește schimbările în fișier pe toată durata dezvoltării software,
 \\ \\
 Git se instalează și rulează pe sistemul local și nu are nevoie de conexiune la internet pentru a funcționa. Față de alte sisteme de versionare, Git este ușor de folosit și gratis și a fost gândit să lucreze în principal cu fișiere text, adică exact tipul de fișiere folosit pentru a salva cod-sursă. Întregul cod-sursă este menținut sub evidența sistemului de versionare într-un director care poartă numele de ”repository”. Avantajul major al Git este așa numitul ”branching model”. Prin procesul de ”branching” se pot crea ”ramuri”, care sunt copii independente ale repository-ului. Asta se traduce prin ușurința de a testa și implementa noi funcționalități în aplicație, fără a afecta munca celorlalți participanți la dezvoltarea aplicației.
 \\ \\
-GitHub este un serviciu de găzduire a unui repository. Este bazat exclusiv pe infrastructură cloud și este o bază de date care reține o colecție de repository-uri. GitHub este practic o versiune online a unui repository local și astfel oferă posibilitatea de a partaja un repository sau de a adăuga alți programatori care pot contribui în mod independent la dezvoltarea aplicației. Cu alte cuvinte, GitHub extinde funcționalitățile oferite de Git printr-o interfață intuitivă și unelte de management asupra unui repository. Un instantaneu al repository-ului care conține codul-sursă al aplicației ”FoodSpy” este reprezentat în (Fig. \ref{fig:58}). Se poate observa că branch-ul ”calculate-calories” a suferit 9 modificări de la momentul în care a fost clonat din branch-ul principal, adică ”master”.
+GitHub este un serviciu de găzduire a unui repository. Este bazat exclusiv pe infrastructură cloud și este o bază de date care reține o colecție de repository-uri. GitHub este practic o versiune online a unui repository local și astfel oferă posibilitatea de a partaja un repository sau de a adăuga alți programatori care pot contribui în mod independent la dezvoltarea aplicației. Cu alte cuvinte, GitHub extinde funcționalitățile oferite de Git printr-o interfață intuitivă și unelte de management asupra unui repository. Un instantaneu al repository-ului care conține codul-sursă al aplicației ”FoodSpy” este reprezentat în (Fig. \ref{fig:59}). Se poate observa că branch-ul ”calculate-calories” a suferit 9 modificări de la momentul în care a fost clonat din branch-ul principal, adică ”master”.
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.9\textwidth]
+	\includegraphics[width=1\textwidth]
 	{../LaTeX/Images/github_repo.PNG}
 	\caption{Repository-ul ”FoodSpy”}
-	\label{fig:58}
+	\label{fig:59}
 \end{figure}

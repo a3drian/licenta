@@ -34,7 +34,7 @@ Deși o mai bună înțelegere a limbajului JavaScript este recomandată, TypeSc
 \begin{figure}[htbp]
 	\centering
 	%\hspace*{-2cm}
-	\includegraphics[width=0.9\textwidth]
+	\includegraphics[width=1\textwidth]
 	{../LaTeX/Images/ts_similar-3.PNG}
 	\caption{Asemănări între C\# și TypeScript}
 	\label{fig:33}
@@ -105,7 +105,7 @@ LINQ permite scrierea unei interogări sub forma unei structuri SQL, după cum s
 	\label{fig:37}
 \end{figure}
 
-Un alt avantaj este claritatea originii variabilei ”name” - chiar din primul rând (linia 11) se distinge faptul că ”name” provine din sursa de date ”names”, spre deosebire de interogarea SQL clasică, unde clauza ”from” ar fi fost declarată ultima.
+Un alt avantaj este claritatea originii variabilei ”name” - chiar din primul rând ("from name in names") se distinge faptul că ”name” provine din sursa de date ”names”, spre deosebire de interogarea SQL clasică, unde clauza ”from” ar fi fost declarată ultima.
 
 LINQ nu ar fi fost un concept realizabil dacă nu s-ar fi implementat în prealabil funcționalități precum metodele de extensie, tipurile anonime \footnote{List<string> names = new List<string>() \{ "Teodor", "Adrian", "Manghiuc" \};\\Din construirea unei variabile, compilatorul are la dispoziție suficiente informații pentru a pune la dispoziție un tip de date care să modeleze variabila.}, tipurile implicite \footnote{var anonymousType = names.Select(n => new \{ Name = n, Capitalized = n.ToUpper() \});\\Din inițializarea unei variabile, compilatorul are la dispoziție suficiente informații pentru a infera tipul acesteia.\\var inference = names.Select(n => n);\\devine\\IEnumerable<string> inference = names.Select(n => n);} și expresiile lambda.
 
@@ -176,7 +176,7 @@ Codul ”inline” este codul CSS scris înăuntrul elementelor HTML, folosind p
 
 Se preferă scrierea regulilor de stilizare într-un fișier separat deoarece astfel rezultă o separare între structura paginii web, elementele HTML și aspectul acesteia, regulile CSS. Codul este mai ușor de citit, mai ușor de întreținut și actualizat și permite o detectare mai ușoară a erorilor.
 \\ \\
-SCSS vine de la Sassy CSS și este un limbaj de preprocesare al cărui rezultat de compilare este cod CSS. În CSS este dificilă scrierea de reguli organizate și ușor de menținut deoarece lipsește suportul pentru cod imbricate (din engl. ”nested”), funcții și moștenire. Folosind SCSS se poate evita scrierea codului duplicat, prin construirea de bucăți de cod reutilizabile și se pot scrie secvențe de cod imbricate, care sunt structurate și ușor de citit (Fig. \ref{fig:314}).
+SCSS vine de la Sassy CSS și este un limbaj de preprocesare al cărui rezultat de compilare este cod CSS. În CSS este dificilă scrierea de reguli organizate și ușor de menținut deoarece lipsește suportul pentru cod imbricat (din engl. ”nested”), funcții și moștenire. Folosind SCSS se poate evita scrierea codului duplicat, prin construirea de bucăți de cod reutilizabile și se pot scrie secvențe de cod imbricate, care sunt structurate și ușor de citit (Fig. \ref{fig:314}).
 \\ \\
 
 \begin{figure}[!htb]

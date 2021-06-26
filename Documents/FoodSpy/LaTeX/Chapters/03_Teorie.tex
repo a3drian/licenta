@@ -17,14 +17,14 @@ Arhitectura client-server prezintă o serie de avantaje când vine vorba de pers
 \end{itemize}
 
 
-\section{HTTP}
+\section{Hypertext Transfer Protocol}
 HTTP este protocolul care permite accesarea de resurse, cum ar fi documente HTML. Reprezintă piatra de temelie pentru orice schimb de date pe web și este un protocol client-server. Browser-ul web este clientul și trimite cereri către server. Un document HTML complet este reconstituit din rezultatul mai multor sub-documente primite ca răspuns de la server. Sub-documentele pot fi bucățile de text care compun conținutul paginii, descrierea structurii paginii, imagini sau script-uri.
 \\ \\
 Clienții și server-ele comunică printr-un schimb de mesaje individuale și nu printr-un flux de date. Mesajele trimise de către client se numesc cereri (din engl. ”requests”), iar mesajele primite înapoi din partea server-ului se numesc răspunsuri (din engl. ”responses”).
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.9\textwidth]
+	\includegraphics[width=1\textwidth]
 	{../LaTeX/Images/http_fetch.PNG}
 	\caption{Schimbul de mesaje între client și un server web}
 	\label{fig:21}
@@ -37,12 +37,12 @@ Fiecare cerere se procesează în mod individual și întoarce un răspuns. Înt
 \\ \\
 Pentru a afișa o pagină web, clientul trimite prima oară o cerere pentru aducerea documentului HTML care reprezintă pagina. Apoi, interpretează (din engl. ”parses”) documentul HTML și execută alte cereri. Aceste cereri corespund cu identificarea în fișier a script-urilor, opțiunilor de stilizare ale paginii (CSS) sau resursele media necesare, imagini și clipuri video. După ce toate aceste cereri au fost satisfăcute, browser-ul web pune toate părțile componente laolaltă și afișează pagina completă în fereastră.
 \\ \\
-O pagină web este un document ”hypertext”, adică poate conține legături către alte pagini web, la evenimentul de click al mouse-ului pe bucățile din text care reprezintă link-uri. Asta permite utilizatorilor să direcționeze clientul de pe o pagină pe alta și să navigheze pe web. Browser-ul este cel care interpretează aceste direcționări sub forma unor cereri HTTP de la care așteaptă răspuns. Răspunsul îl afișează utilizatorului sub forma unui mesaj clar.
+O pagină web este un document ”hypertext”, adică poate conține legături către alte pagini web, accesibile la evenimentul de click al mouse-ului pe bucățile din text care reprezintă link-uri. Asta permite utilizatorilor să direcționeze clientul de pe o pagină pe alta și să navigheze pe web. Browser-ul este cel care interpretează aceste direcționări sub forma unor cereri HTTP de la care așteaptă răspuns. Răspunsul îl afișează utilizatorului sub forma unui mesaj clar.
 \\ \\
 La partea opusă a clientului stă server-ul, care așteaptă și administrează cererile primite. Un server nu este reprezentat neapărat de către o singură resursă de calcul. Folosind anumite soluții software, server-ul poate chiar partaja aceeași adresă IP cu alte server-e, folosind versiunea 1.1 a protocolului HTTP și antetul ”Host”. Antetul ”Host” specifică port-ul și gazda către care se trimite o cerere pentru a fi îndeplinită.
 
 \subsection{Aspectele protocolului HTTP}
-HTTP este gândit să fie simplu, extensibil și ”stateless”. ”Stateless” înseamnă că nu există o legătură între două cereri succesive, efectuate pe aceeași conexiune. Acest lucru ridică anumite probleme, deoarece un utilizator nu poate în mod coerent să interacționeze cu anumite pagini web, de exemplu, cu paginile web ale unui magazin online. Deși nucleul HTTP este ”stateless”, folosind cookie-uri HTTP se pot iniția așa numitele sesiuni ”stateful”. Folosind antetul unei cereri HTTP, cookie-urile se pot adăuga în antet, astfel încăt să permită sesiuni care partajează același context sau aceeași stare.
+HTTP este gândit să fie simplu, extensibil și ”stateless”. ”Stateless” înseamnă că nu există o legătură între două cereri succesive, efectuate pe aceeași conexiune. Acest lucru ridică anumite probleme, deoarece un utilizator nu poate în mod coerent să interacționeze cu anumite pagini web, de exemplu, cu paginile web ale unui magazin online. Deși nucleul HTTP este ”stateless”, folosind cookie-uri HTTP se pot iniția așa numitele sesiuni ”stateful”. Folosind antetul unei cereri HTTP, cookie-urile se pot adăuga în antet, astfel încăt să permită creearea de sesiuni care partajează același context sau aceeași stare.
 
 \subsection{Fluxul HTTP}
 Se deschide o conexiune folosită pentru transportul cererii și al răspunsului.
