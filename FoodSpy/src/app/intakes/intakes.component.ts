@@ -37,6 +37,8 @@ export class IntakesComponent implements OnInit, OnDestroy {
   currentTime: Date = new Date();
   timeSubscription: Subscription = new Subscription();
 
+  hasConsumed: boolean = false;
+
   intakes: any;
   intakesColumns: string[] = [
     'id',
@@ -51,6 +53,10 @@ export class IntakesComponent implements OnInit, OnDestroy {
     private router: Router,
     private userService: UserService
   ) { }
+
+  private compareDates(x: Date, y: Date): boolean {
+    return x.getDate() === y.getDate() && x.getMonth() === y.getMonth() && x.getFullYear() === y.getFullYear();
+  }
 
   ngOnInit(): void {
     this.user = this.userService.user;
@@ -67,6 +73,12 @@ export class IntakesComponent implements OnInit, OnDestroy {
           this.intakes = intakes;
           this.intakesLoaded = true;
           this.isLoading = false;
+          const i: IIntake = this.intakes[this.intakes.length - 1];
+          const date = new Date(i.createdAt);
+          if (this.compareDates(date, this.currentTime)) {
+            this.hasConsumed = true;
+            log('intakes.ts', this.ngOnInit.name, 'this.hasConsumed:', this.hasConsumed);
+          }
         },
         (error: HttpErrorResponse) => {
           log('intakes.ts', this.ngOnInit.name, '(error) error:', error);
@@ -74,7 +86,7 @@ export class IntakesComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           this.errorResponse = error;
         }
-      )
+      );
     if (!this.isInDebugMode) {  // only slice if not in Debug Mode
       this.intakesColumns = this.intakesColumns.slice(2);
     }

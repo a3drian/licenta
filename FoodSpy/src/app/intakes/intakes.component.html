@@ -22,12 +22,12 @@
 </div>
 
 <div class="intakes-section" *ngIf="!errorResponse && !canShowIntakesCards()">
-   <app-add-intake-card></app-add-intake-card>
+   <app-add-intake-card [hasConsumed]="hasConsumed"></app-add-intake-card>
 </div>
 
 <div class="intakes-section" *ngIf="!errorResponse && canShowIntakesCards()">
    <app-intakes-list [intakes]="intakes"></app-intakes-list>
-   <app-add-intake-card></app-add-intake-card>
+   <app-add-intake-card [hasConsumed]="hasConsumed"></app-add-intake-card>
 </div>
 
 <div class="lastDiv">
