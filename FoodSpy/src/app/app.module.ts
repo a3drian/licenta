@@ -34,13 +34,14 @@ import { IntakeHistoryComponent } from './intake-history/intake-history.componen
 import { HistoryComponent } from './history/history.component';
 import { FoodItemComponent } from './intake-history/food-item/food-item.component';
 import { MealItemComponent } from './intake-history/meal-item/meal-item.component';
-import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-import { ErrorResponseComponent } from './shared/error-response/error-response.component';
+import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
+import { ErrorResponseComponent } from './shared/components/error-response/error-response.component';
 import { NotFoundPageComponent } from './not-found-page/not-found-page.component';
 import { IntakeCardComponent } from './intakes/intake-card/intake-card.component';
 import { AddIntakeCardComponent } from './intakes/add-intake-card/add-intake-card.component';
 import { IntakesListComponent } from './intakes/intakes-list/intakes-list.component';
 import { MealFoodItemComponent } from './intake-history/meal-food-item/meal-food-item.component';
+import { ConfirmationDialogueComponent } from './shared/components/confirmation-dialogue/confirmation-dialogue.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { MealFoodItemComponent } from './intake-history/meal-food-item/meal-food
     IntakeCardComponent,
     AddIntakeCardComponent,
     IntakesListComponent,
-    MealFoodItemComponent
+    MealFoodItemComponent,
+    ConfirmationDialogueComponent
   ],
   imports: [
     BrowserModule,

@@ -1,6 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+// rxjs:
+import { Subscription } from 'rxjs';
+// Components:
+import { ConfirmationDialogueComponent } from 'src/app/shared/components/confirmation-dialogue/confirmation-dialogue.component';
 // Interfaces:
 import { IFood, IIntake, IMeal, IMealFood, IUser } from 'foodspy-shared';
 // Services:
@@ -15,7 +20,7 @@ import { log } from 'src/app/shared/Logger';
   templateUrl: './intake-card.component.html',
   styleUrls: ['./intake-card.component.scss']
 })
-export class IntakeCardComponent implements OnInit {
+export class IntakeCardComponent implements OnInit, OnDestroy {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
   isLoading: boolean = true;
@@ -38,10 +43,13 @@ export class IntakeCardComponent implements OnInit {
   carbohydrates: number = 0;
   sugars: number = 0;
 
+  dialogueSubscription: Subscription = new Subscription();
+
   constructor(
     private intakesService: IntakesService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -54,6 +62,37 @@ export class IntakeCardComponent implements OnInit {
     }
     this.populateIntakeDetails();
     this.percentage = Math.floor(this.intakesService.getPercentage(this.intake, this.userTargetCalories));
+  }
+
+  ngOnDestroy() {
+    if (this.dialogueSubscription) {
+      this.dialogueSubscription.unsubscribe();
+    }
+  }
+
+  openConfirmationDialog(intake: IIntake): void {
+    log('intake-card.ts', this.openConfirmationDialog.name, 'Selected intake:', intake);
+
+    const dialogRef = this.dialog
+      .open(
+        ConfirmationDialogueComponent,
+        {
+          data: intake.createdAt,
+          panelClass: 'custom-confirmation-dialog-container',
+          height: '200px',
+          width: '400px'
+        }
+      );
+    this.dialogueSubscription = dialogRef
+      .afterClosed()
+      .subscribe(
+        (canDelete: boolean) => {
+          log('intake-card.ts', this.openConfirmationDialog.name, 'canDelete:', canDelete);
+          if (canDelete) {
+            this.deleteIntake(intake);
+          }
+        }
+      );
   }
 
   private populateIntakeDetails() {

@@ -8,10 +8,9 @@ import { MealFood } from 'src/app/models/MealFood';
 // Services:
 import { UnitsService } from 'src/app/services/units.service';
 // Validators:
-import { positiveIntegerValidator } from 'src/app/shared/validators/positiveIntegerValidator';
+import { foodQuantityValidator } from 'src/app/shared/validators/foodQuantityValidator';
 // Shared:
 import { Constants } from '../../shared/Constants';
-import { foodQuantityValidator } from 'src/app/shared/validators/foodQuantityValidator';
 
 @Component({
   selector: 'app-edit-food-dialogue',

@@ -74,10 +74,12 @@ export class IntakesComponent implements OnInit, OnDestroy {
           this.intakesLoaded = true;
           this.isLoading = false;
           const i: IIntake = this.intakes[this.intakes.length - 1];
-          const date = new Date(i.createdAt);
-          if (this.compareDates(date, this.currentTime)) {
-            this.hasConsumed = true;
-            log('intakes.ts', this.ngOnInit.name, 'this.hasConsumed:', this.hasConsumed);
+          if (i) {
+            const date = new Date(i.createdAt);
+            if (this.compareDates(date, this.currentTime)) {
+              this.hasConsumed = true;
+              log('intakes.ts', this.ngOnInit.name, 'this.hasConsumed:', this.hasConsumed);
+            }
           }
         },
         (error: HttpErrorResponse) => {

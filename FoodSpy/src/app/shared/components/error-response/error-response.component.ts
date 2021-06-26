@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 // Shared:
-import { Constants } from '../Constants';
+import { Constants } from '../../Constants';
 
 @Component({
   selector: 'app-error-response',

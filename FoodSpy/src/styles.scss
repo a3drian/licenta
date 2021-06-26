@@ -247,6 +247,10 @@ button:hover:not(:disabled) {
   background: $secondary;
 }
 
+.custom-confirmation-dialog-container .mat-dialog-container {
+  background: $secondary;
+}
+
 mat-option {
   // color: $primary !important;
   background-color: $secondary;
