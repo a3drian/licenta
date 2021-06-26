@@ -1,8 +1,7 @@
 <p *ngIf="isInDebugMode"><b>meal-item</b> works!</p>
 
 <p *ngIf="isInDebugMode">
-   Meal ID:
-   {{ meal.id }}
+   Meal ID: {{ meal.id }}
 </p>
 
 <div *ngIf="isLoading" class="loading-spinner">
@@ -21,7 +20,6 @@
       <app-food-item *ngFor="let food of foods" [food]="food">
       </app-food-item>
    </p>
-   -->
 
    <div *ngFor="let food of foods">
       <p>
@@ -35,14 +33,15 @@
       </p>
    </div>
 
-   <!--
    <div *ngFor="let mealFood of meal.foods">
       TEST> {{ mealFood.displayName }}
    </div>
+   -->
 
    <div *ngFor="let mealFood of meal.mealFoods">
-      {{ mealFood.mfid }}, {{ mealFood.quantity }} {{ mealFood.unit }}
+      <p *ngIf="isInDebugMode">{{ mealFood.mfid }}, {{ mealFood.quantity }} {{ mealFood.unit }}</p>
+      <app-meal-food-item [mealFood]="mealFood">
+      </app-meal-food-item>
    </div>
-   -->
 
 </div>

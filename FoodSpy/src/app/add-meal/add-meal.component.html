@@ -49,7 +49,7 @@
     <div id="formFields" *ngIf="!errorResponse">
         <div class="field" *ngIf="canSearch()">
             <input class="input" #searchBox type="text" id="search-box" name="searchBox"
-                (input)="search(searchBox.value)" placeholder=" " pattern="[A-Za-z0-9 ]+" />
+                (input)="search(searchBox.value)" placeholder=" " pattern="[A-Za-z0-9 ,%]+" />
             <label class="label" for="searchBox">Look for food...</label>
         </div>
         <!--

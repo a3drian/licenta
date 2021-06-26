@@ -4,17 +4,17 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 // Interfaces:
-import { IIntake, IMeal } from 'foodspy-shared';
+import { IIntake, IMeal, IMealFood } from 'foodspy-shared';
 // Models:
 import { FoodDetail } from '../models/Food';
-import { MealFood } from '../models/MealFood';
 import { SearchByEmail } from '../models/searchOptions/SearchByEmail';
 import { SearchByEmailAndDate } from '../models/searchOptions/SearchByEmailAndDate';
+// Services:
+import { MealFoodsService } from './mealFoods.service';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { STATUS_CODES } from 'foodspy-shared';
 import { log } from '../shared/Logger';
-import { MealFoodsService } from './mealFoods.service';
 
 @Injectable({
    providedIn: 'root'
@@ -171,10 +171,10 @@ export class IntakesService {
       if (meals) {
          meals.forEach(
             (meal: IMeal) => {
-               const mealFoods: MealFood[] = meal.mealFoods;
+               const mealFoods: IMealFood[] = meal.mealFoods;
                if (mealFoods) {
                   mealFoods.forEach(
-                     (mealFood: MealFood) => {
+                     (mealFood: IMealFood) => {
                         const food = this.mealFoodsService.calculateMealFoodDetails(mealFood);
                         if (food) {
                            f.energy += food.energy;

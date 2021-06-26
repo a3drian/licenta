@@ -40,6 +40,7 @@ import { NotFoundPageComponent } from './not-found-page/not-found-page.component
 import { IntakeCardComponent } from './intakes/intake-card/intake-card.component';
 import { AddIntakeCardComponent } from './intakes/add-intake-card/add-intake-card.component';
 import { IntakesListComponent } from './intakes/intakes-list/intakes-list.component';
+import { MealFoodItemComponent } from './intake-history/meal-food-item/meal-food-item.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { IntakesListComponent } from './intakes/intakes-list/intakes-list.compon
     NotFoundPageComponent,
     IntakeCardComponent,
     AddIntakeCardComponent,
-    IntakesListComponent
+    IntakesListComponent,
+    MealFoodItemComponent
   ],
   imports: [
     BrowserModule,

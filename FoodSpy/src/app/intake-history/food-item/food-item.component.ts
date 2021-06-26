@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Constants } from '../../shared/Constants';
+// Interfaces:
 import { IFood } from 'foodspy-shared';
+// Shared:
+import { Constants } from '../../shared/Constants';
 
 @Component({
   selector: 'app-food-item',

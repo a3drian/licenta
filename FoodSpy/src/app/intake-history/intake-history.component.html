@@ -46,19 +46,27 @@
          </p>
       </div>
 
+      <!--
       <div>
          <label><b>Meals:</b></label>
          <p *ngFor="let mealFood of mealFoods">
-            <!-- <span *ngIf="isInDebugMode">{{ mealFood.mfid }}</span> -->
+            <span *ngIf="isInDebugMode">{{ mealFood.mfid }}</span>
             <span class="food">{{ mealFood.food?.displayName }} - <b><span>Quantity</span></b>: {{ mealFood.quantity }} g</span><br>
             (<b><span>Energy</span></b>: {{ mealFood.food?.energy }} kCal,
             <b><span>Fats</span></b>: {{ mealFood.food?.fats | number : '1.0-2' }} g,
-            <b><span>Saturates</span></b>: {{ saturates | number : '1.0-2' }} g,
+            <b><span>Saturates</span></b>: {{ mealFood.food?.saturates | number : '1.0-2' }} g,
             <b><span>Carbohydrates</span></b>: {{ mealFood.food?.carbohydrates | number : '1.0-2' }} g,
             <b><span>Sugars</span></b>: {{ mealFood.food?.sugars | number : '1.0-2' }} g,
-            <b><span>Proteins</span></b>: {{ proteins | number : '1.0-2' }} g,
-            <b><span>Salt</span></b>: {{ salt | number : '1.0-2' }} g)
+            <b><span>Proteins</span></b>: {{ mealFood.food?.proteins | number : '1.0-2' }} g,
+            <b><span>Salt</span></b>: {{ mealFood.food?.salt | number : '1.0-2' }} g)
          </p>
+      </div>
+      -->
+
+      <div>
+         <label><b>Meals:</b></label>
+         <app-meal-item *ngFor="let meal of intake.meals" [meal]="meal">
+         </app-meal-item>
       </div>
 
    </div>

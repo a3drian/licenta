@@ -2,9 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 // Interfaces:
-import { IFood, IIntake, IMeal, IUser } from 'foodspy-shared';
-// Models:
-import { MealFood } from 'src/app/models/MealFood';
+import { IFood, IIntake, IMeal, IMealFood, IUser } from 'foodspy-shared';
 // Services:
 import { IntakesService } from 'src/app/services/intakes.service';
 import { UserService } from 'src/app/auth/user.service';
@@ -63,10 +61,10 @@ export class IntakeCardComponent implements OnInit {
     if (meals) {
       meals.forEach(
         (meal: IMeal) => {
-          const mealFoods: MealFood[] = meal.mealFoods;
+          const mealFoods: IMealFood[] = meal.mealFoods;
           if (mealFoods) {
             mealFoods.forEach(
-              (mealFood: MealFood) => {
+              (mealFood: IMealFood) => {
                 const f = this.intakesService.populateIntakeDetails(this.intake);
                 if (f) {
                   this.fats = f.fats;

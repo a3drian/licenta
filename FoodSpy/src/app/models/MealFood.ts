@@ -5,7 +5,7 @@ export class MealFood implements IMealFood {
    mfid!: string;
    quantity!: number;
    unit!: string;
-   food?: IFood;
+   food!: IFood;
 
    public constructor(partial?: Partial<MealFood>) {
       Object.assign(this, partial);

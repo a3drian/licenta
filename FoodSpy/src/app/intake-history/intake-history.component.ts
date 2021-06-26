@@ -5,8 +5,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { IIntake, IMeal, IMealFood } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
 import { IUser } from 'foodspy-shared';
-// Models:
-import { Food } from '../models/Food';
 // Services:
 import { IntakesService } from '../services/intakes.service';
 import { UserService } from '../auth/user.service';
@@ -14,7 +12,6 @@ import { UserService } from '../auth/user.service';
 import { log } from '../shared/Logger';
 import { Constants } from '../shared/Constants';
 import { STATUS_CODES } from 'foodspy-shared';
-import { MealFood } from '../models/MealFood';
 
 @Component({
   selector: 'app-intake-history',
@@ -33,7 +30,7 @@ export class IntakeHistoryComponent implements OnInit {
 
   intake: IIntake = <IIntake>{};
   intakeId: string = '';
-  mealFoods: MealFood[] = [];
+  mealFoods: IMealFood[] = [];
 
   energy!: number;
   fats!: number;
@@ -113,12 +110,12 @@ export class IntakeHistoryComponent implements OnInit {
           const meals: IMeal[] = this.intake.meals;
           meals.forEach(
             (meal: IMeal) => {
-              const mealFoods: MealFood[] = meal.mealFoods;
+              const mealFoods: IMealFood[] = meal.mealFoods;
               if (mealFoods) {
                 mealFoods.forEach(
-                  (mealFood: MealFood) => {
+                  (mealFood: IMealFood) => {
                     this.mealFoods.push(mealFood);
-                  })
+                  });
               }
             });
           this.intakeWasFound = this.intake ? true : false;
