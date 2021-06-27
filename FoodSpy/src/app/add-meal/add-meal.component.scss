@@ -1,10 +1,97 @@
 @import "../styles/colors.scss";
 @import "../../styles.scss";
+$margin-size: 0.5rem;
 // @import "../auth/auth.component.scss";
+
+.content {
+  width: 100vw;
+  // height: 100vh;
+}
+
+.left {
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  width: 70vw;
+  // height: 100vh;
+  background-color: blue;
+}
+
+.right {
+  // position: absolute;
+  // right: 0;
+  // top: 0;
+  width: 30vw;
+  // height: 100vh;
+  background-color: green;
+}
 
 table {
   width: 100%;
 }
+
+#wrapper {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rem;
+  // width: 100vw;
+}
+
+#wrapper > div {
+  flex: 1;
+}
+
+#first {
+  margin-right: $margin-size;
+  float: left;
+  padding-top: 0.5rem;
+  // width: 70vw;
+}
+
+#second {
+  margin-right: $margin-size;
+  margin-left: $margin-size;
+
+  font-size: 2em;
+  text-align: center;
+}
+
+.third {
+  margin-left: $margin-size;
+  float: right;
+  // width: 30vw;
+  button {
+    margin-right: 0.5rem;
+  }
+}
+
+.elem {
+  // flex: 0 0 33%;
+}
+
+// #basket {
+//   display: flex;
+//   margin-bottom: 1rem;
+//   // flex-direction: row;
+//   // align-items: baseline;
+//   // text-align: center;
+//   // width: 100%;
+// }
+
+// .foodName {
+//   // width: 400px;
+//   float: left;
+//   padding-top: 0.75rem;
+//   margin-right: 0.5rem;
+//   // width: 80%;
+// }
+// .editDeleteButtons {
+//   float: right;
+//   button {
+//     margin-right: 0.5rem;
+//   }
+//   // width: 15%;
+// }
 
 #formFields {
   height: 50px;
@@ -51,7 +138,7 @@ table th {
   mat-form-field,
   button {
     // float: left;
-    padding-right: 1rem;
+    margin-right: 1rem;
   }
   height: 100px;
 }

@@ -27,17 +27,57 @@
         To add a meal, select a meal type and then add foods using the search bar.
     </h3>
 
-    <div class="basket">
-        <div *ngFor="let mealFood of addedMealFoods; let i = index">
-            <p style="width: 400px;">{{ mealFood.food.displayName }} - <b><span>Quantity</span></b>: {{
-                mealFood.quantity }} {{ mealFood.unit }}</p>
-            <button (click)="editDialog(mealFood, i)">
-                Edit
-            </button>
-            <button (click)="deleteFoodFromMealFood(i)">
+    <h3 class="guide" *ngIf="!errorResponse && !isLoading && !canShowAddedFoods()">
+        Added foods will appear here.
+    </h3>
+    <h3 class="guide" *ngIf="!errorResponse && !isLoading && canShowAddedFoods()">
+        Foods added:
+    </h3>
+
+    <div id="wrapper" *ngFor="let mealFood of addedMealFoods; let i = index">
+
+        <!-- 
+        <div class="content">
+            <div class="left">
+                <p><b>{{ mealFood.food.displayName }}</b> - {{ mealFood.quantity }} {{
+                    mealFood.unit
+                    }}
+                    (<b><span>Energy</span></b>: {{ mealFood.food.energy }} kCal,
+                    <b><span>Fats</span></b>: {{ mealFood.food.fats | number : '1.0-2' }} g,
+                    <b><span>Carbohydrates</span></b>: {{ mealFood.food.carbohydrates | number : '1.0-2' }} g,
+                    <b><span>Sugars</span></b>: {{ mealFood.food.sugars | number : '1.0-2' }} g)
+                </p>
+            </div>
+            <div class="right">
+                <button (click)="deleteFoodFromMealFood(i)">
+                    Delete
+                </button>
+                <button (click)="editDialog(mealFood, i)">
+                    Edit
+                </button>
+            </div>
+        </div>
+        -->
+
+        <div>
+            <p id="first"><b>{{ mealFood.food.displayName }}</b> - {{ mealFood.quantity }} {{ mealFood.unit
+                }}
+                (<b><span>Energy</span></b>: {{ mealFood.food.energy }} kCal,
+                <b><span>Fats</span></b>: {{ mealFood.food.fats | number : '1.0-2' }} g,
+                <b><span>Carbohydrates</span></b>: {{ mealFood.food.carbohydrates | number : '1.0-2' }} g,
+                <b><span>Sugars</span></b>: {{ mealFood.food.sugars | number : '1.0-2' }} g)
+            </p>
+        </div>
+
+        <div>
+            <button class="third" (click)="deleteFoodFromMealFood(i)">
                 Delete
             </button>
+            <button class="third" (click)="editDialog(mealFood, i)">
+                Edit
+            </button>
         </div>
+
     </div>
 
     <div id="mealTypeForm" *ngIf="!errorResponse">
@@ -53,9 +93,7 @@
 
             <!-- <br> -->
 
-            <button type="submit" [disabled]="!isFormValid()">
-                Add meal
-            </button>
+            <button type="submit" [disabled]="!isFormValid()">Add meal</button>
         </form>
     </div>
 

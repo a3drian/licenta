@@ -47,7 +47,7 @@
       </mat-form-field>
    </form>
    <mat-dialog-actions>
-      <button mat-dialog-close (click)="saveEditedFood()" [disabled]="!isFormValid()">Add to meal</button>
+      <button mat-dialog-close (click)="saveEditedFood()" [disabled]="!isFormValid()">{{buttonText}}</button>
    </mat-dialog-actions>
 
    <div *ngIf="isInDebugMode">

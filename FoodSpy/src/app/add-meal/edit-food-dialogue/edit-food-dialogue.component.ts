@@ -21,6 +21,7 @@ export class EditFoodDialogueComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
+  buttonText: string = '';
   defaultQuantity: number = 0;
   defaultUnit: string = '';
   minMealQuantity: number = 0;
@@ -43,8 +44,10 @@ export class EditFoodDialogueComponent implements OnInit {
     const qty: number = mealFood.quantity;
     if (qty) {
       this.defaultQuantity = qty;
+      this.buttonText = 'Edit food';
     } else {
       this.defaultQuantity = Constants.DEFAULT_QUANTITY;
+      this.buttonText = 'Add to meal';
     }
     this.defaultUnit = Constants.DEFAULT_UNIT;
     this.minMealQuantity = Constants.MIN_MEAL_QUANTITY;

@@ -231,6 +231,7 @@ button {
   border-radius: $border-radius;
   background: transparent;
   transition: all 100ms;
+  min-width: 100px;
 }
 button:disabled {
   border-color: $ternary;

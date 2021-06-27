@@ -188,6 +188,44 @@ export class AddMealComponent implements OnInit, OnDestroy {
           return meals.type;
         }
       );
+    if (this.isInDebugMode) {
+      const one = '44d6bc87-0aee-4857-bd92-b9ed82248511';
+      this.foodsService
+        .getFoodById(one)
+        .subscribe(
+          (f) => {
+            this.addedMealFoods
+              .push(
+                new MealFood(
+                  {
+                    mfid: one,
+                    quantity: 69,
+                    unit: 'grams',
+                    food: f
+                  }
+                )
+              )
+          }
+        );
+      const two = '26966e2d-a717-4558-acfc-b2a7dc1d4f55';
+      this.foodsService
+        .getFoodById(two)
+        .subscribe(
+          (f) => {
+            this.addedMealFoods
+              .push(
+                new MealFood(
+                  {
+                    mfid: two,
+                    quantity: 96,
+                    unit: 'grams',
+                    food: f
+                  }
+                )
+              )
+          }
+        );
+    }
   }
 
   private getAllFoods() {
@@ -294,7 +332,26 @@ export class AddMealComponent implements OnInit, OnDestroy {
         (mealFood: IMealFood) => {
           if (mealFood) {
             mealFood.food = food;
-            this.addFoodFromDialogueToFoodsArray(mealFood);
+            if (this.addedMealFoods.length === 0) {
+              this.addFoodFromDialogueToFoodsArray(mealFood);
+            } else {
+              let index: number = -1;
+              for (let i = 0; i < this.addedMealFoods.length; i++) {
+                const element = this.addedMealFoods[i];
+                if (element.mfid === food.id) {
+                  index = i;
+                }
+              }
+              if (index > -1) {
+                log('add-meal.ts', this.addDialog.name, 'This food was already added, modifying quantity...');
+                let mf: IMealFood = this.addedMealFoods[index];
+                mf.quantity += mealFood.quantity;
+                this.addedMealFoods[index] = mf;
+              } else {
+                this.addFoodFromDialogueToFoodsArray(mealFood);
+              }
+            }
+            this.clearSearchBar();
           }
         }
       );
@@ -503,6 +560,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
     }
   }
 
+  canShowAddedFoods(): boolean {
+    return this.addedMealFoods.length > 0;
+  }
+
   canShowIntakeHistoryButton(): boolean {
     if (!this.isLoading) {
       if (this.intake) {  // sometimes this check is made before the intake has been loaded from the db
@@ -605,21 +666,27 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   // Item filtering:
   searchTerms = new Subject<string>();
-  searchTerm: string = '';
+  // searchTerm: string = '';
   search(term: string): void {
     log('add-meal.ts', this.search.name, 'Search term:', term);
     if (!isValidSearchTerm(term)) {
       return;
     }
     if (term.length < 3) {
-      this.hasSearched = false;
-      this.showNoResults = true;
-      this.databaseFoods = [];
+      this.clearSearchBar();
+      term = '';
       return;
     }
-    this.searchTerm = term;
+    // this.searchTerm = term;
     this.searchTerms.next(term);
     this.hasSearched = true;
+  }
+
+  private clearSearchBar(): void {
+    this.hasSearched = false;
+    this.showNoResults = true;
+    this.databaseFoods = [];
+    // this.search('');
   }
 
   scanBarcode(): void {
