@@ -1,13 +1,19 @@
+@use "sass:color";
+
 $primary: hsl(176, 56%, 55%);
-$primary-light: hsl(176, 56%, 85%);
+// $primary-light: hsl(176, 56%, 85%);
 $secondary: hsl(212, 14%, 19%);
-$ternary: hsl(212, 14%, 59%);
-$fourth: hsl(212, 14%, 79%);
+// $ternary: hsl(212, 14%, 59%);
+// $fourth: hsl(212, 14%, 79%);
+
 $red: rgb(255, 107, 107);
 $white: rgb(247, 255, 247);
 $gold: rgb(255, 230, 109);
 $green: hsl(69, 50%, 44%);
 $black: hsl(212, 14%, 9%);
+
+$ternary: color.scale($secondary, $lightness: 40%);
+$fourth: color.scale($secondary, $lightness: 60%);
 
 $valid: $green;
 $invalid: $red;
