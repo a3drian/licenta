@@ -6,14 +6,16 @@ $red: hsl(0, 100%, 71%);
 $white: hsl(120, 100%, 98%);
 $green: hsl(69, 50%, 44%);
 
-$ternary: color.scale($secondary, $lightness: 40%);
-$fourth: color.scale($secondary, $lightness: 60%);
-$black: color.scale($secondary, $lightness: -10%);
+$ternary: color.adjust($secondary, $saturation: 0%, $lightness: +40%);
+$fourth: color.adjust($secondary, $saturation: 0%, $lightness: +60%);
+$black: color.adjust($secondary, $saturation: 0%, $lightness: -10%);
+
+// $ternary: hsl(212, 14%, 59%);
+// $fourth: hsl(212, 14%, 79%);
+// $black: hsl(212, 14%, 9%);
 
 $valid: $green;
 $invalid: $red;
 
-$text: $primary;
-
-// used as background color for Chrome form autofill
+// used as background color for Chrome form autocomplete
 $autofill: $secondary;
