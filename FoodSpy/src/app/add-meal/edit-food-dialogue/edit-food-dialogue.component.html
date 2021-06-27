@@ -1,19 +1,19 @@
 <p *ngIf="isInDebugMode"><b>edit-food-dialogue</b> works!</p>
 
-<h2 mat-dialog-title>{{food.displayName}}</h2>
+<h2 mat-dialog-title>{{displayFood.displayName}}</h2>
 
 <!-- <div mat-dialog-content style="width: 400px; height: 550px;"> -->
 <main>
+   <div class="foodInfo">
+      <p><b>Energy</b>: {{ displayFood.energy | number : '1.0-2' }} kCal</p>
+      <p><b>Fats</b>: {{ displayFood.fats | number : '1.0-2' }} g </p>
+      <p><b>Saturates</b>: {{ displayFood.saturates | number : '1.0-2' }} g </p>
+      <p><b>Carbohydrates</b>: {{ displayFood.carbohydrates | number : '1.0-2' }} g </p>
+      <p><b>Sugars</b>: {{ displayFood.sugars | number : '1.0-2' }} g </p>
+      <p><b>Proteins</b>: {{ displayFood.proteins | number : '1.0-2' }} g </p>
+      <p><b>Salt</b>: {{ displayFood.salt | number : '1.0-2' }} g </p>
+   </div>
    <form [formGroup]="editFoodForm">
-      <div class="foodInfo">
-         <p><b>Energy</b>: {{ food.energy }} kCal</p>
-         <p><b>Fats</b>: {{ food.fats }} g </p>
-         <p><b>Saturates</b>: {{ food.saturates }} g </p>
-         <p><b>Carbohydrates</b>: {{ food.carbohydrates }} g </p>
-         <p><b>Sugars</b>: {{ food.sugars }} g </p>
-         <p><b>Proteins</b>: {{ food.proteins }} g </p>
-         <p><b>Salt</b>: {{ food.salt }} g </p>
-      </div>
       <!--
       <div>
          <label for="aux">Quantity</label>

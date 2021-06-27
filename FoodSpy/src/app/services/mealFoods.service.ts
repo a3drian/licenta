@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 // Interfaces:
 import { IFood, IMealFood } from 'foodspy-shared';
 // Models:
-import { FoodDetail } from '../models/Food';
+import { Food, FoodDetail } from '../models/Food';
+// Services:
+import { HelperService } from './helper.service';
 // Shared:
 import { log } from '../shared/Logger';
 import { Constants } from '../shared/Constants';
@@ -14,7 +16,9 @@ export class MealFoodsService {
 
    isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
-   constructor() { }
+   constructor(
+      private helperService: HelperService
+   ) { }
 
    calculateMealFoodDetails(mealFood: IMealFood): FoodDetail {
       const food: IFood = mealFood.food;
@@ -22,13 +26,13 @@ export class MealFoodsService {
       if (food) {
          const f: FoodDetail = new FoodDetail(
             {
-               energy: this.getFoodValuePerQuantity(food.energy, quantity),
-               fats: this.getFoodValuePerQuantity(food.fats, quantity),
-               saturates: this.getFoodValuePerQuantity(food.saturates, quantity),
-               carbohydrates: this.getFoodValuePerQuantity(food.carbohydrates, quantity),
-               sugars: this.getFoodValuePerQuantity(food.sugars, quantity),
-               proteins: this.getFoodValuePerQuantity(food.proteins, quantity),
-               salt: this.getFoodValuePerQuantity(food.salt, quantity),
+               energy: this.helperService.getFoodValuePerQuantity(food.energy, quantity),
+               fats: this.helperService.getFoodValuePerQuantity(food.fats, quantity),
+               saturates: this.helperService.getFoodValuePerQuantity(food.saturates, quantity),
+               carbohydrates: this.helperService.getFoodValuePerQuantity(food.carbohydrates, quantity),
+               sugars: this.helperService.getFoodValuePerQuantity(food.sugars, quantity),
+               proteins: this.helperService.getFoodValuePerQuantity(food.proteins, quantity),
+               salt: this.helperService.getFoodValuePerQuantity(food.salt, quantity),
             });
          return f;
       } else {
@@ -45,11 +49,6 @@ export class MealFoodsService {
             });
          return f;
       }
-   }
-
-   private getFoodValuePerQuantity(foodValue: number, quantity: number): number {
-      const value: number = foodValue * quantity / 100;
-      return value;
    }
 
 }

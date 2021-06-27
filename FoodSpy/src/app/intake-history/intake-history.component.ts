@@ -6,6 +6,7 @@ import { IIntake, IMeal, IMealFood } from 'foodspy-shared';
 import { Intake } from '../models/Intake';
 import { IUser } from 'foodspy-shared';
 // Services:
+import { HelperService } from '../services/helper.service';
 import { IntakesService } from '../services/intakes.service';
 import { UserService } from '../auth/user.service';
 // Shared:
@@ -50,7 +51,8 @@ export class IntakeHistoryComponent implements OnInit {
     private intakesService: IntakesService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private helperService: HelperService
   ) {
     this.activatedRoute.params.subscribe(
       (params: Params) => {
@@ -138,7 +140,7 @@ export class IntakeHistoryComponent implements OnInit {
             this.proteins = f.proteins
             this.salt = f.salt;
           }
-          this.percentage = this.intakesService.getPercentage(this.intake, this.userTargetCalories);
+          this.percentage = this.helperService.getPercentage(this.intake, this.userTargetCalories);
           setTimeout(() => {
             this.fillGraph();
           }, 1000);

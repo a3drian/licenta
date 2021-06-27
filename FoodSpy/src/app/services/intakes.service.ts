@@ -195,11 +195,4 @@ export class IntakesService {
       }
       return f;
    }
-
-   getPercentage(intake: IIntake, userTargetCalories: number): number {
-      const x = userTargetCalories;
-      const y = intake.calories;
-      const calories = y / x;
-      return calories * 100;
-   }
 }

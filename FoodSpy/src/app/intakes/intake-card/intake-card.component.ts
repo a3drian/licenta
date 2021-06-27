@@ -7,9 +7,10 @@ import { Subscription } from 'rxjs';
 // Components:
 import { ConfirmationDialogueComponent } from 'src/app/shared/components/confirmation-dialogue/confirmation-dialogue.component';
 // Interfaces:
-import { IFood, IIntake, IMeal, IMealFood, IUser } from 'foodspy-shared';
+import { IIntake, IMeal, IMealFood, IUser } from 'foodspy-shared';
 // Services:
 import { IntakesService } from 'src/app/services/intakes.service';
+import { HelperService } from 'src/app/services/helper.service';
 import { UserService } from 'src/app/auth/user.service';
 // Shared:
 import { Constants } from 'src/app/shared/Constants';
@@ -49,6 +50,7 @@ export class IntakeCardComponent implements OnInit, OnDestroy {
     private intakesService: IntakesService,
     private router: Router,
     private userService: UserService,
+    private helperService: HelperService,
     public dialog: MatDialog
   ) { }
 
@@ -61,7 +63,7 @@ export class IntakeCardComponent implements OnInit, OnDestroy {
       log('intake-card.ts', this.ngOnInit.name, 'this.userEmail:', this.userEmail);
     }
     this.populateIntakeDetails();
-    this.percentage = Math.floor(this.intakesService.getPercentage(this.intake, this.userTargetCalories));
+    this.percentage = Math.floor(this.helperService.getPercentage(this.intake, this.userTargetCalories));
   }
 
   ngOnDestroy() {

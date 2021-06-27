@@ -201,7 +201,7 @@ mat-label {
   width: 100%;
   padding: 0.25rem 0;
   background: none;
-  color: $text;
+  color: $primary;
   font-size: 1.2rem;
   font-weight: bold;
   transition: border 500ms;
@@ -209,11 +209,6 @@ mat-label {
 
 // based on the type of the input, some validation is run automatically by the browser
 // this means we can use below pseudo-selectors to color the text based on valid / invalid input
-/*
-.input:valid {
-  color: $valid;
-}
-*/
 .input:invalid {
   color: $invalid;
 }

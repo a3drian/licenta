@@ -27,7 +27,7 @@ form {
   width: 100%;
   padding: 0.25rem 0;
   background: none;
-  color: $text;
+  color: $primary;
   font-size: 1.2rem;
   font-weight: bold;
   transition: border 500ms;
@@ -35,11 +35,6 @@ form {
 
 // based on the type of the input, some validation is run automatically by the browser
 // this means we can use below pseudo-selectors to color the text based on valid / invalid input
-/*
-.input:valid {
-  color: $valid;
-}
-*/
 .input:invalid {
   color: $invalid;
 }
@@ -99,6 +94,7 @@ form {
   font-size: 0.5rem;
   right: 0.25rem;
   bottom: 0.25rem;
+  min-width: 1rem;
   box-shadow: 0 0 0 30px $secondary inset;
 }
 
@@ -151,7 +147,7 @@ input[type="number"] {
 
 .valid {
   @extend .input;
-  color: $text;
+  color: $primary;
 }
 
 .invalid {

@@ -35,8 +35,8 @@
          </div>
       </div>
 
-      <div id="graph">
-         <p>
+      <div>
+         <p class="white-text">
             <b><span>Fats</span></b>: {{ fats | number : '1.0-2' }} g<br>
             <b><span>Saturates</span></b>: {{ saturates | number : '1.0-2' }} g<br>
             <b><span>Carbohydrates</span></b>: {{ carbohydrates | number : '1.0-2' }} g<br>
@@ -64,7 +64,7 @@
       -->
 
       <div>
-         <label><b>Meals:</b></label>
+         <p class="white-text"><b>Meals:</b></p>
          <app-meal-item *ngFor="let meal of intake.meals" [meal]="meal">
          </app-meal-item>
       </div>

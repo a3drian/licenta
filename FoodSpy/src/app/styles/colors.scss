@@ -6,8 +6,15 @@ $red: hsl(0, 100%, 71%);
 $white: hsl(120, 100%, 98%);
 $green: hsl(69, 50%, 44%);
 
+// $primary: hsl(123, 36%, 52%);
+// $secondary: hsl(212, 14%, 14%);
+// $red: hsl(351, 51%, 40%);
+// $white: hsl(334, 100%, 91%);
+// $green: hsl(123, 100%, 12%);
+
 $ternary: color.adjust($secondary, $saturation: 0%, $lightness: +40%);
-$fourth: color.adjust($secondary, $saturation: 0%, $lightness: +60%);
+$fourth: color.adjust($primary, $saturation: 0%, $lightness: 0%);
+
 $black: color.adjust($secondary, $saturation: 0%, $lightness: -10%);
 
 // $ternary: hsl(212, 14%, 59%);

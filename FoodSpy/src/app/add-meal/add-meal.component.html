@@ -85,6 +85,7 @@
             <mat-form-field>
                 <mat-label>Select meal type</mat-label>
                 <mat-select formControlName="mealType" (selectionChange)="onSelectedMealType($event)">
+                    <!-- <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let mealType of mealTypes" -->
                     <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
                         {{ mealType }}
                     </mat-option>
@@ -130,25 +131,25 @@
         <!-- Energy -->
         <ng-container matColumnDef="energy">
             <th mat-header-cell *matHeaderCellDef> Energy (kCal) </th>
-            <td mat-cell *matCellDef="let food"> {{food.energy}} </td>
+            <td mat-cell *matCellDef="let food"> {{food.energy | number : '1.0-2'}} </td>
         </ng-container>
 
         <!-- Fats -->
         <ng-container matColumnDef="fats">
             <th mat-header-cell *matHeaderCellDef> Fats (g) </th>
-            <td mat-cell *matCellDef="let food"> {{food.fats}} </td>
+            <td mat-cell *matCellDef="let food"> {{food.fats | number : '1.0-2'}} </td>
         </ng-container>
 
         <!-- Carbs -->
         <ng-container matColumnDef="carbs">
             <th mat-header-cell *matHeaderCellDef> Carbs (g) </th>
-            <td mat-cell *matCellDef="let food"> {{food.carbohydrates}} </td>
+            <td mat-cell *matCellDef="let food"> {{food.carbohydrates | number : '1.0-2'}} </td>
         </ng-container>
 
         <!-- Proteins -->
         <ng-container matColumnDef="proteins">
             <th mat-header-cell *matHeaderCellDef> Proteins (g) </th>
-            <td mat-cell *matCellDef="let food"> {{food.proteins}} </td>
+            <td mat-cell *matCellDef="let food"> {{food.proteins | number : '1.0-2'}} </td>
         </ng-container>
 
         <!-- Selection checkbox -->

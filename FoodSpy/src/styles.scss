@@ -226,7 +226,7 @@ button {
   padding: 10px 10px;
   // font-weight: bold;
   border: 2px solid $ternary;
-  color: $text;
+  color: $primary;
   font-size: 1rem;
   border-radius: $border-radius;
   background: transparent;
@@ -262,55 +262,12 @@ mat-option {
   background-color: $secondary;
 }
 
-/*
-.button {
-  margin-top: 1rem;
-  padding: 10px 10px;
-  // font-weight: bold;
-  border: 2px solid $ternary;
-  color: $text;
-  font-size: 1rem;
-  border-radius: $border-radius;
-  background: transparent;
-  transition: all 100ms;
-}
-.button:disabled {
-  border-color: $ternary;
-  color: $ternary;
-}
-.button:hover:not(:disabled) {
-  border-color: $primary;
-  background: $secondary;
-  text-shadow: none;
-}
-*/
-
-/*
-button {
-  color: #333;
-  background-color: #f4f4f4;
-  outline: none;
-}
-
-button:disabled {
-  color: #999;
-}
-
-button:not(:disabled):active {
-  background-color: #ddd;
-}
-
-button:focus {
-  border-color: #666;
-}
-*/
-
 // autocomplete
 :-webkit-autofill,
 :-webkit-autofill:hover,
 :-webkit-autofill:focus,
 :-webkit-autofill:active {
-  -webkit-text-fill-color: $text;
+  -webkit-text-fill-color: $primary;
   -webkit-box-shadow: 0 0 0px 30px $autofill inset;
   box-shadow: 0 0 0px 30px $autofill inset;
 }
