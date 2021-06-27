@@ -29,16 +29,23 @@ export class EditFoodDialogueComponent implements OnInit {
   quantityLabel = 'quantity';
 
   editFoodForm: FormGroup;
+  food: IFood;
 
   units: string[] = [];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public food: IFood,
+    @Inject(MAT_DIALOG_DATA) public mealFood: IMealFood,
     private dialogReference: MatDialogRef<EditFoodDialogueComponent>,
     private formBuilder: FormBuilder,
     private unitsService: UnitsService
   ) {
-    this.defaultQuantity = Constants.DEFAULT_QUANTITY;
+    this.food = mealFood.food;
+    const qty: number = mealFood.quantity;
+    if (qty) {
+      this.defaultQuantity = qty;
+    } else {
+      this.defaultQuantity = Constants.DEFAULT_QUANTITY;
+    }
     this.defaultUnit = Constants.DEFAULT_UNIT;
     this.minMealQuantity = Constants.MIN_MEAL_QUANTITY;
     this.maxMealQuantity = Constants.MAX_MEAL_QUANTITY;
@@ -67,7 +74,7 @@ export class EditFoodDialogueComponent implements OnInit {
 
   saveEditedFood(): void {
     if (this.isFormValid()) {
-      const editedMealFood: IMealFood = new MealFood({ mfid: this.food.id });
+      const editedMealFood: IMealFood = new MealFood({ mfid: this.mealFood.mfid });
       const foodFromForm = this.editFoodForm.value;
       editedMealFood.quantity = foodFromForm.quantity;
       editedMealFood.unit = foodFromForm.unit;

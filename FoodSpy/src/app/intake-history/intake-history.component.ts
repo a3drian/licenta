@@ -87,12 +87,20 @@ export class IntakeHistoryComponent implements OnInit {
   public percentage: number = 0;
 
   fillGraph() {
-    if (this.percentage >= 100) {
-      this.percentage = 100;
+    this.percentage = this.percentage >= 100 ? 100 : this.percentage;
+
+    const floored: number = Math.floor(this.percentage);
+    if (this.percentage - floored >= 0.5) {
+      this.percentage = floored + 0.5;
     } else {
-      this.percentage = this.percentage;
+      this.percentage = floored;
     }
-    this.progress = this.percentage + '%';
+
+    if (this.percentage <= 0.1) {
+      this.progress = '<1%';
+    } else {
+      this.progress = this.percentage + '%';
+    }
   }
 
   ngOnInit(): void {
@@ -130,7 +138,7 @@ export class IntakeHistoryComponent implements OnInit {
             this.proteins = f.proteins
             this.salt = f.salt;
           }
-          this.percentage = Math.floor(this.intakesService.getPercentage(this.intake, this.userTargetCalories));
+          this.percentage = this.intakesService.getPercentage(this.intake, this.userTargetCalories);
           setTimeout(() => {
             this.fillGraph();
           }, 1000);

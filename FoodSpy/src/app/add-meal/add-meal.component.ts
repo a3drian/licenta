@@ -22,6 +22,7 @@ import { IIntake } from 'foodspy-shared';
 import { IUser } from 'foodspy-shared';
 // Models:
 import { Intake } from '../models/Intake';
+import { MealFood } from '../models/MealFood';
 // Components:
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
 // Shared:
@@ -241,33 +242,74 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.selectedMealType = mealType;
   }
 
-  openDialog(food: IFood): void {
-    log('add-meal.ts', this.openDialog.name, 'Selected food:', food);
+  private openDialog(food: IFood, qty?: number) {
+    log('add-meal.ts', this.openDialog.name, 'food:', food);
+    const mealFood: IMealFood =
+      new MealFood(
+        {
+          mfid: food.id,
+          quantity: qty,
+          food: food
+        }
+      );
 
-    const dialogRef = this.dialog
+    return this.dialog
       .open(
         EditFoodDialogueComponent,
         {
-          data: food,
+          data: mealFood,
           panelClass: 'custom-dialog-container',
           height: '650px',
           width: '550px'
         }
       );
+  }
+
+  editDialog(mealFood: IMealFood, index: number): void {
+    log('add-meal.ts', this.editDialog.name, 'Selected mealFood to edit:', mealFood);
+
+    const food: IFood = mealFood.food;
+    const qty: number = mealFood.quantity;
+
+    const dialogRef = this.openDialog(food, qty);
     this.dialogueSubscription = dialogRef
       .afterClosed()
       .subscribe(
         (mealFood: IMealFood) => {
           if (mealFood) {
+            mealFood.food = food;
+            this.addedMealFoods[index] = mealFood;
+          }
+        }
+      );
+  }
+
+  addDialog(food: IFood): void {
+    log('add-meal.ts', this.addDialog.name, 'Selected food:', food);
+
+    const dialogRef = this.openDialog(food);
+    this.dialogueSubscription = dialogRef
+      .afterClosed()
+      .subscribe(
+        (mealFood: IMealFood) => {
+          if (mealFood) {
+            mealFood.food = food;
             this.addFoodFromDialogueToFoodsArray(mealFood);
           }
         }
       );
   }
 
-  addFoodFromDialogueToFoodsArray(food: IMealFood): void {
-    log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', food);
-    this.addedMealFoods.push(food);
+  deleteFoodFromMealFood(index: number): void {
+    log('add-meal.ts', this.deleteFoodFromMealFood.name, 'index:', index);
+    if (index > -1) {
+      this.addedMealFoods.splice(index, 1);
+    }
+  }
+
+  addFoodFromDialogueToFoodsArray(mealFood: IMealFood): void {
+    log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', mealFood);
+    this.addedMealFoods.push(mealFood);
     log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added meal foods []:', this.addedMealFoods);
   }
 
