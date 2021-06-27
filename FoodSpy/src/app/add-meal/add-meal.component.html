@@ -60,13 +60,15 @@
         -->
 
         <div>
-            <p id="first"><b>{{ mealFood.food.displayName }}</b> - {{ mealFood.quantity }} {{ mealFood.unit
+            <!-- <p id="first"><b>{{ mealFood.food.displayName }}</b> - {{ mealFood.quantity }} {{ mealFood.unit
                 }}
                 (<b><span>Energy</span></b>: {{ mealFood.food.energy }} kCal,
                 <b><span>Fats</span></b>: {{ mealFood.food.fats | number : '1.0-2' }} g,
                 <b><span>Carbohydrates</span></b>: {{ mealFood.food.carbohydrates | number : '1.0-2' }} g,
                 <b><span>Sugars</span></b>: {{ mealFood.food.sugars | number : '1.0-2' }} g)
-            </p>
+            </p> -->
+            <app-meal-food-detail [mealFood]="mealFood">
+            </app-meal-food-detail>
         </div>
 
         <div>
@@ -85,7 +87,7 @@
             <mat-form-field>
                 <mat-label>Select meal type</mat-label>
                 <mat-select formControlName="mealType" (selectionChange)="onSelectedMealType($event)">
-                    <!-- <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let mealType of mealTypes" -->
+                    <!-- <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let mealType of mealTypes" [value]="mealType"> -->
                     <mat-option *ngFor="let mealType of mealTypes" [value]="mealType">
                         {{ mealType }}
                     </mat-option>

@@ -4,14 +4,14 @@ import { IFood, IMealFood } from 'foodspy-shared';
 // Services:
 import { MealFoodsService } from 'src/app/services/mealFoods.service';
 // Shared:
-import { Constants } from '../../shared/Constants';
+import { Constants } from 'src/app/shared/Constants';
 
 @Component({
-  selector: 'app-meal-food-item',
-  templateUrl: './meal-food-item.component.html',
-  styleUrls: ['./meal-food-item.component.scss']
+  selector: 'app-meal-food-detail',
+  templateUrl: './meal-food-detail.component.html',
+  styleUrls: ['./meal-food-detail.component.scss']
 })
-export class MealFoodItemComponent implements OnInit {
+export class MealFoodDetailComponent implements OnInit {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 

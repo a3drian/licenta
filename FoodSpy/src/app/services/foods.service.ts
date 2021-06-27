@@ -93,6 +93,8 @@ export class FoodsService {
    updateFoodInfo(food: IFood, quantity: number): IFood {
       const f: IFood = new Food(
          {
+            name: food.name,
+            displayName: food.displayName,
             energy: this.helperService.getFoodValuePerQuantity(food.energy, quantity),
             fats: this.helperService.getFoodValuePerQuantity(food.fats, quantity),
             saturates: this.helperService.getFoodValuePerQuantity(food.saturates, quantity),
@@ -106,6 +108,7 @@ export class FoodsService {
 
    populateFoodInfoFromMealFood(mealFood: IMealFood): IFood {
       const f = new Food({
+         name: mealFood.food.name,
          displayName: mealFood.food.displayName,
          energy: mealFood.food.energy,
          fats: mealFood.food.fats,

@@ -40,7 +40,8 @@
       <mat-form-field>
          <mat-label for="unit">Select unit</mat-label>
          <mat-select formControlName="unit">
-            <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let unit of units" [value]="unit">
+            <!-- <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let unit of units" [value]="unit"> -->
+            <mat-option *ngFor="let unit of units" [value]="unit">
                {{ unit }}
             </mat-option>
          </mat-select>

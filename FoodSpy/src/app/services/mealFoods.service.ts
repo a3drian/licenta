@@ -24,31 +24,55 @@ export class MealFoodsService {
       const food: IFood = mealFood.food;
       const quantity: number = mealFood.quantity;
       if (food) {
-         const f: FoodDetail = new FoodDetail(
-            {
-               energy: this.helperService.getFoodValuePerQuantity(food.energy, quantity),
-               fats: this.helperService.getFoodValuePerQuantity(food.fats, quantity),
-               saturates: this.helperService.getFoodValuePerQuantity(food.saturates, quantity),
-               carbohydrates: this.helperService.getFoodValuePerQuantity(food.carbohydrates, quantity),
-               sugars: this.helperService.getFoodValuePerQuantity(food.sugars, quantity),
-               proteins: this.helperService.getFoodValuePerQuantity(food.proteins, quantity),
-               salt: this.helperService.getFoodValuePerQuantity(food.salt, quantity),
-            });
-         return f;
+         return this.populateFoodDetailInfoFromFoodAndQuantity(food, quantity);
       } else {
          log('mealFoods.service.ts', this.calculateMealFoodDetails.name, 'mealFood.food returned null');
-         const f: FoodDetail = new FoodDetail(
-            {
-               energy: 0,
-               fats: 0,
-               saturates: 0,
-               carbohydrates: 0,
-               sugars: 0,
-               proteins: 0,
-               salt: 0,
-            });
-         return f;
+         return this.getEmptyMealFoodInfo();
       }
    }
 
+   private getEmptyMealFoodInfo() {
+      const f: FoodDetail = new FoodDetail(
+         {
+            energy: 0,
+            fats: 0,
+            saturates: 0,
+            carbohydrates: 0,
+            sugars: 0,
+            proteins: 0,
+            salt: 0,
+         });
+      return f;
+   }
+
+   private populateFoodDetailInfoFromFoodAndQuantity(food: IFood, quantity: number) {
+      const f: FoodDetail = new FoodDetail(
+         {
+            energy: this.helperService.getFoodValuePerQuantity(food.energy, quantity),
+            fats: this.helperService.getFoodValuePerQuantity(food.fats, quantity),
+            saturates: this.helperService.getFoodValuePerQuantity(food.saturates, quantity),
+            carbohydrates: this.helperService.getFoodValuePerQuantity(food.carbohydrates, quantity),
+            sugars: this.helperService.getFoodValuePerQuantity(food.sugars, quantity),
+            proteins: this.helperService.getFoodValuePerQuantity(food.proteins, quantity),
+            salt: this.helperService.getFoodValuePerQuantity(food.salt, quantity),
+         });
+      return f;
+   }
+
+   public populateMealFoodInfoFromFoodAndQuantity(food: IFood, quantity: number) {
+      const f: IFood = new Food(
+         {
+            id: food.id,
+            name: food.name,
+            displayName: food.displayName,
+            energy: this.helperService.getFoodValuePerQuantity(food.energy, quantity),
+            fats: this.helperService.getFoodValuePerQuantity(food.fats, quantity),
+            saturates: this.helperService.getFoodValuePerQuantity(food.saturates, quantity),
+            carbohydrates: this.helperService.getFoodValuePerQuantity(food.carbohydrates, quantity),
+            sugars: this.helperService.getFoodValuePerQuantity(food.sugars, quantity),
+            proteins: this.helperService.getFoodValuePerQuantity(food.proteins, quantity),
+            salt: this.helperService.getFoodValuePerQuantity(food.salt, quantity),
+         });
+      return f;
+   }
 }
