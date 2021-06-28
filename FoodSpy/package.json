@@ -5,7 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "proxy": "ng serve --proxy-config ./proxy.json",
+    "proxy:prod": "ng serve --configuration production --proxy-config ./proxy-prod.json",
     "build": "ng build",
+	"build:prod": "ng build --configuration production",
     "test": "ng test",
     "lint": "npx ng lint FoodSpy",
     "e2e": "ng e2e"

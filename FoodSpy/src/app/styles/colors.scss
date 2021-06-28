@@ -8,8 +8,8 @@ $green: hsl(69, 50%, 44%);
 
 // $primary: hsl(123, 36%, 52%);
 // $secondary: hsl(212, 14%, 14%);
-// $red: hsl(351, 51%, 40%);
-// $white: hsl(334, 100%, 91%);
+// $red: hsl(334, 100%, 91%);
+// $white: hsl(351, 51%, 40%);
 // $green: hsl(123, 100%, 12%);
 
 $ternary: color.adjust($secondary, $saturation: 0%, $lightness: +40%);
