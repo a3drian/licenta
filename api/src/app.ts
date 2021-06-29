@@ -4,6 +4,7 @@ const cors = require('cors');
 // Heroku^
 
 const express = require('express');
+const path = require('path');
 import { Application, Router, Request, Response, NextFunction } from 'express';
 import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
 
@@ -33,6 +34,16 @@ async function makeApp(): Promise<Application> {
   app.use(cors());
 
   app.use(express.static('build'));
+  app.get(
+    '/*',
+    function (_req: IExpressRequest, res: Response) {
+      const frontendPath = path.join(__dirname, '../');
+      // log('app.ts', makeApp.name, 'frontendPath:', frontendPath);
+      const indexPath: string = path.join(frontendPath + '/build/index.html');
+      // log('app.ts', makeApp.name, 'indexPath:', indexPath);
+      res.sendFile(indexPath);
+    }
+  );
 
   const orm = await MikroORM.init<MongoDriver>({
     metadataProvider: ReflectMetadataProvider,
