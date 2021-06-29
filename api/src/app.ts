@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const express = require('express');
 const path = require('path');
+import sslRedirect from 'heroku-ssl-redirect';
 import { Application, Router, Request, Response, NextFunction } from 'express';
 import { MikroORM, ReflectMetadataProvider } from '@mikro-orm/core';
 
@@ -32,6 +33,8 @@ async function makeApp(): Promise<Application> {
 
   app = express();
   app.use(cors());
+
+  app.use(sslRedirect());
 
   app.use(express.static('build'));
   app.get(
