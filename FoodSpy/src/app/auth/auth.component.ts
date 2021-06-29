@@ -32,7 +32,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     emailFormControlName: string = 'email';
     passwordFormControlName: string = 'password';
 
-    authForm: FormGroup;
+    authForm!: FormGroup;
 
     isLoading: boolean = false;
     isInLoginMode: boolean = false;
@@ -106,6 +106,9 @@ export class AuthComponent implements OnInit, OnDestroy {
         this.error = null;
         this.errorResponse = null;
         this.info = null;
+    }
+
+    private initialiseAuthForm() {
         this.authForm = this.formBuilder
             .group(
                 {
@@ -128,6 +131,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.initialiseAuthForm();
         this.targetCaloriesFormControlValueChanged();
     }
 
@@ -187,6 +191,7 @@ export class AuthComponent implements OnInit, OnDestroy {
                         this.info = 'Account created! You can log in now!';
                         this.error = null;
                         this.isInLoginMode = true;
+                        this.initialiseAuthForm();
                     }
                 },
                 // we always throwError(errorMessage) in the service => we can simply display the message here

@@ -42,6 +42,7 @@ import { AddIntakeCardComponent } from './intakes/add-intake-card/add-intake-car
 import { IntakesListComponent } from './intakes/intakes-list/intakes-list.component';
 import { MealFoodItemComponent } from './intake-history/meal-food-item/meal-food-item.component';
 import { ConfirmationDialogueComponent } from './shared/components/confirmation-dialogue/confirmation-dialogue.component';
+import { MealFoodDetailComponent } from './add-meal/meal-food-detail/meal-food-detail.component';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,8 @@ import { ConfirmationDialogueComponent } from './shared/components/confirmation-
     AddIntakeCardComponent,
     IntakesListComponent,
     MealFoodItemComponent,
-    ConfirmationDialogueComponent
+    ConfirmationDialogueComponent,
+    MealFoodDetailComponent
   ],
   imports: [
     BrowserModule,
