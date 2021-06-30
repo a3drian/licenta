@@ -1,4 +1,5 @@
 import { environment } from 'foodspy-shared';
+import { ENV_TOKEN_SECRET } from './env';
 
 export { Constants };
 
@@ -37,5 +38,6 @@ class Constants {
    static DEFAULT_QUANTITY: number = 100;
    static DEFAULT_UNIT: string = 'grams';
 
-   static MIN_PASSWORD_LENGTH: number = 3;
+   static MIN_PASSWORD_LENGTH: number = 8;
+   static ENV_TOKEN_SECRET = ENV_TOKEN_SECRET;
 }

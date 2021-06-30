@@ -12,8 +12,9 @@ namespace FoodSpyAPI.Common
 		public static string RO_ALPHABET_UPPERCASE = "ĂÂÎȘȚ";
 
 		public static string NUMBERS = "0123456789";
+		public static string CHARACTERS = ",%";
 
-		public static string ALLOWED_CHARACTERS = EMPTY_SPACES + EN_ALPHABET + EN_ALPHABET_UPPERCASE + RO_ALPHABET + RO_ALPHABET_UPPERCASE + NUMBERS;
+		public static string ALLOWED_CHARACTERS = EMPTY_SPACES + EN_ALPHABET + EN_ALPHABET_UPPERCASE + RO_ALPHABET + RO_ALPHABET_UPPERCASE + NUMBERS + CHARACTERS;
 
 		public static char ConvertDiacritic(char c)
 		{
