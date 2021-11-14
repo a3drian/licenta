@@ -1,0 +1,9 @@
+Perspective:
+-cand adaugi cantitatea de mancare sa se actualizeze automat valorile pentru Energy, Fats, etc.
+-o bază de date mai mare
+-scanarea alimentelor folosind codul de bare
+-introducerea alimentelor facand o poza la tabelul cu informatiile nutritionale
+
+-partea de recomandare a unui numar dat de calorii cu 1, 2, n produse
+-statistici, grafice, medii (nr mediu de calorii cumulat pentru o perioada, eventual sa aleaga utilizatorul perioada)
+-module de predictie cu inteligenta artificiala

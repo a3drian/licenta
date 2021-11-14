@@ -33,6 +33,20 @@ namespace FoodSpyAPI.Controllers
 
 		#region GET
 
+		[HttpGet("unpopulated")]
+		public async Task<ActionResult<List<MealModel>>> GetUnpopulatedMeals()
+		{
+			try {
+
+				List<Meal> meals = await _mealService.GetUnpopulatedMeals();
+				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(meals);
+				return mappedMeals;
+
+			} catch (Exception e) {
+				return LogDatabaseException(e);
+			}
+		}
+
 		[HttpGet]
 		public async Task<ActionResult<List<MealModel>>> GetMeals()
 		{
@@ -47,23 +61,33 @@ namespace FoodSpyAPI.Controllers
 			}
 		}
 
-		[HttpGet("withFoods")]
-		public async Task<ActionResult<List<MealModel>>> GetMealsWithFoods()
+		#endregion
+
+		#region GET/:id
+
+		[HttpGet("unpopulated/{id}")]
+		public async Task<ActionResult<MealModel>> GetUnpopulatedMealById(string id)
 		{
 			try {
 
-				List<Meal> meals = await _mealService.GetMealsWithFoods();
-				List<MealModel> mappedMeals = _mapper.Map<List<MealModel>>(meals);
-				return mappedMeals;
+				ObjectResult validateID = ValidateID(id);
+				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
+					return validateID;
+				}
+
+				Meal meal = await _mealService.GetUnpopulatedMealById(id);
+
+				if (meal == null) {
+					return NotFound($"Meal with id '{id}' was not found!");
+				}
+
+				MealModel mappedMeal = _mapper.Map<MealModel>(meal);
+				return mappedMeal;
 
 			} catch (Exception e) {
 				return LogDatabaseException(e);
 			}
 		}
-
-		#endregion
-
-		#region GET/:id
 
 		[HttpGet("{id}")]
 		public async Task<ActionResult<MealModel>> GetMealById(string id)
@@ -107,7 +131,7 @@ namespace FoodSpyAPI.Controllers
 				Meal addedMeal = await _mealService.AddMeal(mapFromModel);
 
 				string location = _linkGenerator.GetPathByAction(
-					 "GetMealById",
+					 nameof(GetMealById),
 					 "Meals",
 					 new { id = addedMeal.Id }
 				);
@@ -145,7 +169,7 @@ namespace FoodSpyAPI.Controllers
 					return validateMeal;
 				}
 
-				Meal oldMeal = await _mealService.GetMealById(id);
+				Meal oldMeal = await _mealService.GetUnpopulatedMealById(id);
 				if (oldMeal == null) {
 					return NotFound($"Meal with id '{id}' was not found!");
 				}
@@ -183,7 +207,7 @@ namespace FoodSpyAPI.Controllers
 					return validateID;
 				}
 
-				Meal meal = await _mealService.GetMealById(id);
+				Meal meal = await _mealService.GetUnpopulatedMealById(id);
 				if (meal == null) {
 					return NotFound($"Meal with id '{id}' was not found!");
 				}
@@ -235,11 +259,11 @@ namespace FoodSpyAPI.Controllers
 		{
 			ObjectResult result = new ObjectResult(ControllerValidator.OK_RESULT);
 
-			if (!Validator.IsValidId(id)) {
+			if (!Validator.IsValidAndNotEmptyString(id)) {
 				return BadRequest($"'{nameof(id)}' parameter: '{id}' is invalid!");
 			}
-			if (!Validator.IsValid24DigitHexString(id)) {
-				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid 24 digit hex string!");
+			if (!Validator.IsValidGuid(id)) {
+				return BadRequest($"'{nameof(id)}' parameter: '{id}' is not a valid Guid!");
 			}
 
 			return result;
@@ -254,19 +278,23 @@ namespace FoodSpyAPI.Controllers
 			if (!Validator.IsValidDate(meal.CreatedAt)) {
 				return BadRequest($"'{nameof(meal.CreatedAt)}' is missing or is invalid!");
 			}
-			/*
-			if (!Validator.IsValidIDArray(meal.FoodIDs)) {
-				return BadRequest($"'{nameof(meal.FoodIDs)}' is missing, is invalid or contains duplicates!");
-			}
 
-			List<string> foodIDs = meal.FoodIDs;
-			foreach (string foodID in foodIDs) {
-				ObjectResult validateID = ValidateID(foodID);
+			List<MealFoodModel> mealFoods = meal.MealFoods;
+			foreach (MealFoodModel mealFood in mealFoods) {
+				string mfid = mealFood.Mfid;
+				ObjectResult validateID = ValidateID(mfid);
 				if (!validateID.Value.Equals(ControllerValidator.OK_RESULT)) {
 					return validateID;
 				}
+				bool validQty = Validator.IsValidMealQuantity(mealFood.Quantity);
+				if (!validQty) {
+					return BadRequest($"'{nameof(mealFood.Quantity)}' is not a valid quantity!");
+				}
+				bool validFoodUnit = Validator.IsValidFoodUnit(mealFood.Unit);
+				if (!validFoodUnit) {
+					return BadRequest($"'{nameof(mealFood.Unit)}' is not a valid food unit!");
+				}
 			}
-			*/
 
 			return result;
 		}

@@ -1,0 +1,19 @@
+@import "../intakes.component.scss";
+
+.add-intake-card {
+  @extend .card-style;
+  width: $card-width;
+
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-card-div {
+  @extend .card-div-position;
+}
+
+#add-card-header {
+  width: 100%;
+}

@@ -45,7 +45,9 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Fetching food with id '{id}' ...");
 
-			IAsyncCursor<Food> findResult = await _foods.FindAsync<Food>(n => n.Id == id);
+			Guid guid = new Guid(id);
+
+			IAsyncCursor<Food> findResult = await _foods.FindAsync<Food>(f => f.Id.Equals(guid));
 			Task<Food> foodSingleOrDefault = findResult.SingleOrDefaultAsync();
 			Food food = foodSingleOrDefault.Result;
 			return food;
@@ -79,7 +81,7 @@ namespace FoodSpyAPI.Services
 
 			ReplaceOneResult result = await _foods
 				 .ReplaceOneAsync<Food>(
-					  filter: n => n.Id == food.Id,
+					  filter: f => f.Id.Equals(food.Id),
 					  replacement: food
 				 );
 
@@ -101,13 +103,15 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Deleting food with id '{food.Id}' ...");
 
-			DeleteResult result = await _foods.DeleteOneAsync(n => n.Id == food.Id);
+			DeleteResult result = await _foods.DeleteOneAsync(f => f.Id.Equals(food.Id));
 
 			bool deleted = result.IsAcknowledged;
-			_logger.LogInformation($"{result.ToJson()}");
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
 
 			return deleted;
 		}
+
+		#region Search methods
 
 		public async Task<List<Food>> SearchFoodsByName(string name)
 		{
@@ -127,5 +131,7 @@ namespace FoodSpyAPI.Services
 
 			return foodsList;
 		}
+
+		#endregion
 	}
 }

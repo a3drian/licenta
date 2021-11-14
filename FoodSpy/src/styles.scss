@@ -1,7 +1,108 @@
+@import "./app/styles/colors.scss";
 
+$fs-primary: (
+  50: $primary,
+  100: $primary,
+  200: $primary,
+  300: $primary,
+  400: $primary,
+  500: $primary,
+  600: $primary,
+  700: $primary,
+  800: $primary,
+  900: $primary,
+  A100: $primary,
+  A200: $primary,
+  A400: $primary,
+  A700: $primary,
+  contrast: (
+    50: $black,
+    100: $black,
+    200: $black,
+    300: $white,
+    400: $white,
+    500: $white,
+    600: $white,
+    700: $white,
+    800: $white,
+    900: $white,
+    A100: $black,
+    A200: $white,
+    A400: $white,
+    A700: $white,
+  ),
+);
+
+$fs-secondary: (
+  50: $secondary,
+  100: $secondary,
+  200: $secondary,
+  300: $secondary,
+  400: $secondary,
+  500: $secondary,
+  600: $secondary,
+  700: $secondary,
+  800: $secondary,
+  900: $secondary,
+  A100: $secondary,
+  A200: $secondary,
+  A400: $secondary,
+  A700: $secondary,
+  contrast: (
+    50: $black,
+    100: $black,
+    200: $black,
+    300: $white,
+    400: $white,
+    500: $white,
+    600: $white,
+    700: $white,
+    800: $white,
+    900: $white,
+    A100: $black,
+    A200: $white,
+    A400: $white,
+    A700: $white,
+  ),
+);
+
+$fs-red: (
+  50: $red,
+  100: $red,
+  200: $red,
+  300: $red,
+  400: $red,
+  500: $red,
+  600: $red,
+  700: $red,
+  800: $red,
+  900: $red,
+  A100: $red,
+  A200: $red,
+  A400: $red,
+  A700: $red,
+  contrast: (
+    50: $black,
+    100: $black,
+    200: $black,
+    300: $black,
+    400: $black,
+    500: $white,
+    600: $white,
+    700: $white,
+    800: $white,
+    900: $white,
+    A100: $black,
+    A200: $white,
+    A400: $white,
+    A700: $white,
+  ),
+);
+
+// /*
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@import '~@angular/material/theming';
+@import "~@angular/material/theming";
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -12,29 +113,32 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$FoodSpy-primary: mat-palette($mat-indigo);
-$FoodSpy-accent: mat-palette($mat-pink, A200, A100, A400);
+$FoodSpy-primary: mat-palette($fs-primary);
+$FoodSpy-accent: mat-palette($fs-secondary);
 
 // The warn palette is optional (defaults to red).
-$FoodSpy-warn: mat-palette($mat-red);
+$FoodSpy-warn: mat-palette($fs-red);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$FoodSpy-theme: mat-light-theme((
-  color: (
-    primary: $FoodSpy-primary,
-    accent: $FoodSpy-accent,
-    warn: $FoodSpy-warn,
+$FoodSpy-theme: mat-dark-theme(
+  (
+    color: (
+      primary: $FoodSpy-primary,
+      accent: $FoodSpy-accent,
+      warn: $FoodSpy-warn,
+    ),
   )
-));
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($FoodSpy-theme);
-
+// */
 /* You can add global styles to this file, and also import other style files */
 
+/*
 html,
 body {
   height: 100%;
@@ -43,4 +147,127 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+*/
 
+@import "./app/styles/classes.scss";
+@import "./app/styles/colors.scss";
+@import "./app/styles/measurements.scss";
+
+.mainDiv {
+  @extend .intakes-section;
+  padding: 0.5rem;
+}
+
+.intakes-section {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html,
+body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-size: 1rem;
+}
+
+body {
+  color: $primary;
+  background: $secondary;
+  margin: 0;
+  padding: 1rem;
+  box-sizing: border-box;
+  // font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  //   Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 400;
+}
+
+a {
+  color: rgb(0, 100, 200);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: rgb(0, 80, 160);
+}
+
+label {
+  display: block;
+}
+
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.4rem;
+  margin: 0 0 0.5em 0;
+  box-sizing: border-box;
+  border: 1px solid $ternary;
+  border-radius: 2px;
+}
+
+input:disabled {
+  color: $ternary;
+}
+
+input[type="range"] {
+  height: 0;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 10px 10px;
+  // font-weight: bold;
+  border: 2px solid $ternary;
+  color: $primary;
+  font-size: 1rem;
+  border-radius: $border-radius;
+  background: transparent;
+  transition: all 100ms;
+  min-width: 100px;
+}
+button:disabled {
+  border-color: $ternary;
+  color: $ternary;
+}
+button:hover:not(:disabled) {
+  border-color: $primary;
+  background: $secondary;
+  text-shadow: none;
+}
+
+.custom-dialog-container .mat-dialog-container {
+  // border: 2px red solid;
+  background: $secondary;
+}
+
+.custom-confirmation-dialog-container .mat-dialog-container {
+  background: $secondary;
+}
+
+mat-option {
+  // color: $primary !important;
+  background-color: $secondary;
+}
+
+.custom-dialog-container .mat-option {
+  color: $primary !important;
+  background-color: $secondary;
+}
+
+// autocomplete
+:-webkit-autofill,
+:-webkit-autofill:hover,
+:-webkit-autofill:focus,
+:-webkit-autofill:active {
+  -webkit-text-fill-color: $primary;
+  -webkit-box-shadow: 0 0 0px 30px $autofill inset;
+  box-shadow: 0 0 0px 30px $autofill inset;
+}

@@ -5,6 +5,8 @@ export class Intake implements IIntake {
 
    id!: string;
    email!: string;
+   calories!: number;
+   targetCalories!: number;
    createdAt!: Date;
    mealIDs!: string[];
    meals!: IMeal[];

@@ -8,18 +8,12 @@ import { throwError } from 'rxjs';
 // Interfaces:
 import { IAuthResponseData } from 'foodspy-shared';
 // Models:
+import { AuthResponseData } from '../models/AuthResponseData';
 import { User } from '../models/User';
 // Shared:
 import { Constants } from '../shared/Constants';
 import { log } from '../shared/Logger';
-
-export interface AuthResponseData {
-    email: string;
-    // response properties
-    id: string;
-    token: string;
-    expiresIn: number;
-}
+import { STATUS_CODES } from 'foodspy-shared';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -45,12 +39,7 @@ export class AuthService {
     ) { }
 
     private handleError(errorResponse: HttpErrorResponse) {
-        let errorMessage = 'Unexpected error occurred when registering an user which is not connected to the API!';
-        if (!errorResponse.error) {
-            return throwError(errorMessage);
-        }
-        errorMessage = errorResponse.error.message;
-        return throwError(errorMessage);
+        return throwError(errorResponse);
     }
 
     private handleAuthentication(responseData: AuthResponseData): void {
@@ -60,6 +49,7 @@ export class AuthService {
         const user = new User(
             responseData.email,
             responseData.id,
+            responseData.targetCalories,
             responseData.token,
             expirationDate
         );
@@ -69,18 +59,20 @@ export class AuthService {
         localStorage.setItem(this.LOCAL_STORAGE_USER_DATA_KEY, JSON.stringify(user));
     }
 
-    register(_email: string, _password: string): Observable<IAuthResponseData> {
+    register(_email: string, _password: string, _targetCalories: number): Observable<IAuthResponseData> {
         return this.http
             .post<AuthResponseData>(
                 this.REGISTER_URL,
                 {
                     email: _email,
-                    password: _password
+                    password: _password,
+                    targetCalories: _targetCalories
                 }
             )
             .pipe(
                 catchError(
-                    (errorResponse) => {
+                    (errorResponse: HttpErrorResponse) => {
+                        log('auth.service.ts', this.register.name, '(errorResponse), errorResponse:', errorResponse);
                         return this.handleError(errorResponse);
                     }
                 ),
@@ -102,7 +94,12 @@ export class AuthService {
                 }
             )
             .pipe(
-                catchError(this.handleError),
+                catchError(
+                    (errorResponse: HttpErrorResponse) => {
+                        log('auth.service.ts', this.login.name, '(errorResponse), errorResponse:', errorResponse);
+                        return this.handleError(errorResponse);
+                    }
+                ),
                 tap(
                     (responseData) => {
                         return this.handleAuthentication(responseData);
@@ -139,6 +136,7 @@ export class AuthService {
         const localUserData: {
             email: string;
             id: string;
+            _targetCalories: number;
             _token: string;
             _tokenExpirationDate: string
         } = JSON.parse(localStorageUserData);
@@ -150,6 +148,7 @@ export class AuthService {
         const loadedUser = new User(
             localUserData.email,
             localUserData.id,
+            localUserData._targetCalories,
             localUserData._token,
             new Date(localUserData._tokenExpirationDate)
         );

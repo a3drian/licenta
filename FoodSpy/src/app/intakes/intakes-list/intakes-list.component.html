@@ -1,0 +1,6 @@
+<p *ngIf="isInDebugMode"><b>intakes-list</b> works!</p>
+
+<div class="card-div" *ngFor="let intake of intakes">
+   <app-intake-card [intake]="intake">
+   </app-intake-card>
+</div>

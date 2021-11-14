@@ -13,6 +13,10 @@ namespace FoodSpyAPI.Interfaces.Services
 
 		public Task<Intake> GetIntakeById(string id);
 
+		public Task<Intake> GetIntakeWithCalculatedCaloriesById(string id);
+
+		public Task<Intake> GetUnpopulatedIntakeById(string id);
+
 		public Task<Intake> AddIntake(Intake intake);
 
 		public Task<bool> UpdateIntake(Intake intake);
@@ -22,6 +26,5 @@ namespace FoodSpyAPI.Interfaces.Services
 		public Task<List<Intake>> SearchIntakesByEmail(string email, SortOrder sortOrder);
 
 		public Task<Intake> SearchIntakeByEmailAndDate(string email, DateTime createdAt);
-
 	}
 }

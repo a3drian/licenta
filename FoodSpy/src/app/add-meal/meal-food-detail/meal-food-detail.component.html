@@ -1,0 +1,12 @@
+<p *ngIf="isInDebugMode"><b>meal-food-detail</b> works!</p>
+
+<p *ngIf="isInDebugMode">
+   mfid: {{ mealFood.mfid }}
+</p>
+<p>
+   <b>{{ mealFood.food.displayName }}</b> - {{ mealFood.quantity }} {{ mealFood.unit }}
+   (<b><span>Energy</span></b>: {{ mealFood.food.energy }} kCal,
+   <b><span>Fats</span></b>: {{ mealFood.food.fats | number : '1.0-2' }} g,
+   <b><span>Carbohydrates</span></b>: {{ mealFood.food.carbohydrates | number : '1.0-2' }} g,
+   <b><span>Sugars</span></b>: {{ mealFood.food.sugars | number : '1.0-2' }} g)
+</p>

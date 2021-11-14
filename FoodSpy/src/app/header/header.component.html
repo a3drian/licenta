@@ -1,15 +1,29 @@
 <p *ngIf="isInDebugMode"><b>header</b> works!</p>
 
-<div *ngIf="isAuthenticated">
-   <h3>Welcome, {{ authenticatedUserEmail }}</h3>
-   <button (click)="onLogout()">
-      Logout
-   </button>
+<div id="wrapper" class="mainDiv" *ngIf="isAuthenticated">
+
+   <div>
+      <p id="first" class="elem">Welcome, {{ userEmail }}!</p>
+   </div>
+
+   <div>
+      <p id="second" class="elem">
+         <img class="logo-img" src="assets/images/foodspy-logo.png" alt="FoodSpy">
+      </p>
+   </div>
+
+   <div>
+      <button id="third" class="elem" (click)="onLogout()">
+         Logout
+      </button>
+   </div>
+
 </div>
 
-<div *ngIf="!isAuthenticated">
-   <h3>Welcome to FoodSpy!</h3>
-   <button (click)="logIn()">
+<div id="wrapper" class="mainDiv" *ngIf="!isAuthenticated">
+   <h3 class="elem">Welcome!</h3>
+   <h3 class="elem">FoodSpy</h3>
+   <button class="elem" (click)="logIn()">
       Log in
    </button>
 </div>

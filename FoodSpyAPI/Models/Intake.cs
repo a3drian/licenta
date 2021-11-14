@@ -13,28 +13,28 @@ namespace FoodSpyAPI.Models
 	public class Intake : IIntake
 	{
 		[BsonId]
-		[BsonRepresentation(BsonType.ObjectId)]
-		public string Id { get; set; }
+		[BsonElement(nameof(Id))]
+		public Guid Id { get; set; }
 
-		[BsonElement(nameof(Email))]
 		[Required]
+		[BsonElement(nameof(Email))]
 		public string Email { get; set; }
 
-		[BsonElement(nameof(Calories))]
 		[Required]
+		[BsonElement(nameof(Calories))]
 		public double Calories { get; set; }
 
-		[BsonElement(nameof(TargetCalories))]
 		[Required]
+		[BsonElement(nameof(TargetCalories))]
 		public double TargetCalories { get; set; }
 
-		[BsonElement(nameof(CreatedAt))]
 		[Required]
+		[BsonElement(nameof(CreatedAt))]
 		public DateTime CreatedAt { get; set; }
 
-		[BsonElement(nameof(MealIDs))]
 		[Required]
-		public List<ObjectId> MealIDs { get; set; }
+		[BsonElement(nameof(MealIDs))]
+		public List<Guid> MealIDs { get; set; }
 
 		[BsonElement(nameof(Meals))]
 		public List<Meal> Meals { get; set; }
@@ -63,7 +63,7 @@ namespace FoodSpyAPI.Models
 			output += $" CreatedAt: {CreatedAt.Print()}" + "\n";
 
 			output += $"{blank.PadLeft(10, space)} {nameof(MealIDs)}:" + "\n";
-			foreach (ObjectId id in MealIDs) {
+			foreach (Guid id in MealIDs) {
 				output += $"{blank.PadLeft(15, space)} ID: {id} \n";
 			}
 

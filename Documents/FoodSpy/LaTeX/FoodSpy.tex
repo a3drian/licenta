@@ -1,0 +1,112 @@
+% !TeX program = xelatex
+\documentclass[12pt, twoside]{report}
+
+% Packages
+\usepackage{amsfonts,amsmath,amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage[a4paper, width=150mm, top=25mm, bottom=25mm, bindingoffset=6mm]{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\def\UrlBreaks{\do\/\do-}
+\usepackage{nameref}
+\usepackage[style=numeric, citestyle=authortitle]{biblatex}
+\usepackage{algorithm,algcompatible}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{url}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+
+%% Fonts
+% main
+\setmainfont{UT Sans}[
+UprightFont=*-Regular,
+BoldFont=*-Medium,
+ItalicFont=*-Regular,
+ItalicFeatures={FakeSlant=0.3},
+BoldItalicFont=*-Medium,
+BoldItalicFeatures={FakeSlant=0.1},
+]
+% algorithms
+\newfontfamily{\algfont}{Courier}
+\let\algorithmicOLD\algorithmic
+\def\algorithmic{\algorithmicOLD\algfont}
+
+% Header & Footer
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[LO,RE]{Manghiuc Teodor-Adrian \\ Informatică Aplicată}
+\fancyhead[RO,LE]{Universitatea Transilvania \\ Facultatea de Matematică și Informatică}
+\fancyfoot{}
+\fancyfoot[LE,RO]{Pag. \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\chaptername}{Capitolul}
+\renewcommand{\tablename}{Tabelul}
+%\rhead{Manghiuc Teodor-Adrian \\ Informatică Aplicată}
+%\lhead{Universitatea Transilvania \\ Facultatea de Matematică și Informatică}
+
+% Disables paragraph indentation
+\setlength{\parindent}{0pt}
+
+% Graphics path
+\graphicspath{ {Images} }
+
+% Biblatex References
+\addbibresource{references.bib}
+
+% Algorithm comments
+\renewcommand{\COMMENT}[2][.5\linewidth]{%
+	\leavevmode\hfill\makebox[#1][l]{~#2}}
+
+% General info
+\title{Lucrare de licență}
+\author{Manghiuc Teodor-Adrian}
+\date{}
+
+% Document
+\begin{document}
+	\input{titlepage}
+	
+	\chapter*{Abstract}
+	\input{Chapters/00_Abstract}
+	
+	\chapter*{Mențiuni}
+	\input{Chapters/01_Mentiuni}
+	
+	\tableofcontents
+	
+	\chapter{Introducere}
+	\input{Chapters/02_Introducere}
+	
+	\chapter{Aplicații web - noțiuni teoretice}
+	\input{Chapters/03_Teorie}
+	
+	\chapter{Limbaje de programare}
+	\input{Chapters/04_Limbaje}
+	
+	\chapter{Framework-uri web}
+	\input{Chapters/05_Framework-uri_web}
+	
+	\chapter{Tehnologii}
+	\input{Chapters/06_Tehnologii}
+	
+	\chapter{Descrierea aplicației}
+	\input{Chapters/07_Descrierea}
+	
+	\chapter{Utilizarea aplicației}
+	\input{Chapters/08_Utilizarea}
+	
+	\chapter{Concluzii și perspective de dezvoltare}
+	\input{Chapters/09_Concluzii}
+	
+	\chapter{Bibliografie}
+	\input{Chapters/10_Bibliografie}
+	
+\end{document}

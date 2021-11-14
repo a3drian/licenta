@@ -1,16 +1,46 @@
 <p *ngIf="isInDebugMode"><b>edit-food-dialogue</b> works!</p>
 
-<h2 mat-dialog-title>{{food.name}}</h2>
+<h2 mat-dialog-title>{{displayFood.displayName}}</h2>
 
-<div mat-dialog-content style="width: 500px; height: 500px;">
+<!-- <div mat-dialog-content style="width: 400px; height: 550px;"> -->
+<main>
+   <div class="foodInfo">
+      <p><b>Energy</b>: {{ displayFood.energy | number : '1.0-2' }} kCal</p>
+      <p><b>Fats</b>: {{ displayFood.fats | number : '1.0-2' }} g </p>
+      <p><b>Saturates</b>: {{ displayFood.saturates | number : '1.0-2' }} g </p>
+      <p><b>Carbohydrates</b>: {{ displayFood.carbohydrates | number : '1.0-2' }} g </p>
+      <p><b>Sugars</b>: {{ displayFood.sugars | number : '1.0-2' }} g </p>
+      <p><b>Proteins</b>: {{ displayFood.proteins | number : '1.0-2' }} g </p>
+      <p><b>Salt</b>: {{ displayFood.salt | number : '1.0-2' }} g </p>
+   </div>
    <form [formGroup]="editFoodForm">
+      <!--
       <div>
-         <label for="quantity">Quantity</label>
-         <input formControlName="quantity" type="number" id="quantity" required>
+         <label for="aux">Quantity</label>
+         <input formControlName="aux" type="number" name="aux" pattern="[0-9]+" required>
+         <p class="qtyError">
+            <mat-error *ngIf="!isQuantityValid()">
+               Please use a value between {{ minMealQuantity }} and {{ maxMealQuantity }} {{ defaultUnit }}.
+            </mat-error>
+         </p>
       </div>
-      <mat-form-field appearance="outline">
+      -->
+      <div id="formFields">
+         <div class="field">
+            <input class="input" formControlName="quantity" type="number" id="quantity" name="quantity" placeholder=" "
+               required min="{{minMealQuantity}}" max="{{maxMealQuantity}}" />
+            <label class="label" for="quantity">Food quantity</label>
+         </div>
+         <p>
+            <mat-error class="qtyError" *ngIf="!isQuantityValid()">
+               Use a value between {{ minMealQuantity }} and {{ maxMealQuantity }} {{ defaultUnit }}.
+            </mat-error>
+         </p>
+      </div>
+      <mat-form-field>
          <mat-label for="unit">Select unit</mat-label>
          <mat-select formControlName="unit">
+            <!-- <mat-option style="background-color: hsl(212, 14%, 19%);" *ngFor="let unit of units" [value]="unit"> -->
             <mat-option *ngFor="let unit of units" [value]="unit">
                {{ unit }}
             </mat-option>
@@ -18,7 +48,7 @@
       </mat-form-field>
    </form>
    <mat-dialog-actions>
-      <button mat-dialog-close (click)="saveEditedFood()" [disabled]="!isFormValid()">Add to meal</button>
+      <button mat-dialog-close (click)="saveEditedFood()" [disabled]="!isFormValid()">{{buttonText}}</button>
    </mat-dialog-actions>
 
    <div *ngIf="isInDebugMode">
@@ -26,5 +56,5 @@
       <p>Form value:<br>{{ editFoodForm.value | json }}</p>
       <p>Form status:<br>{{ editFoodForm.status }}</p>
    </div>
-
-</div>
+</main>
+<!-- </div> -->

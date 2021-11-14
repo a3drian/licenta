@@ -1,33 +1,66 @@
-<div>
-    <div *ngIf="error">
-        <p>{{ error }}</p>
+<main>
+
+    <h1>
+        <img class="logo-img" src="assets/images/foodspy-logo.png" alt="FoodSpy">
+    </h1>
+
+    <div class="message">
+        <div class="error" *ngIf="error">
+            <p>{{ error }}</p>
+        </div>
+        <div class="info" *ngIf="info">
+            <p>{{ info }}</p>
+        </div>
     </div>
+
+    <!--
+    <div *ngIf="errorResponse && isInDebugMode">
+        <app-error-response [errorResponse]="errorResponse"></app-error-response>
+    </div>
+    -->
+
     <div *ngIf="isLoading" class="loading-spinner">
         <app-loading-spinner></app-loading-spinner>
     </div>
     <form [formGroup]="authForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
-        <div>
-            <label for="email">E-Mail</label>
-            <input formControlName="email" type="email" id="email" required email />
+
+        <div id="formFields">
+            <div [ngClass]="emailValid() ? 'validField': 'invalidField'">
+                <input [ngClass]="emailValid() ? 'valid': 'invalid'" formControlName="email" type="email" name="email"
+                    placeholder=" " required />
+                <label class="label" for="email">E-Mail</label>
+            </div>
+
+            <div class="field">
+                <input class="input" formControlName="password" [type]="showPassword ? 'text' : 'password'"
+                    name="password" placeholder=" " required minlength="{{defaultPasswordLength}}" />
+                <label class="label" for="password">Password</label>
+                <button type="button" class="toggle-password" (click)="onShowPassword()"
+                    [disabled]="!hasTypedPassword()">
+                    <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    <!-- {{ showPassword ? 'show' : 'hide' }} -->
+                </button>
+            </div>
+
+            <div class="field" *ngIf="!isInLoginMode">
+                <input class="input" formControlName="targetCalories" type="number" id="targetCalories"
+                    name="targetCalories" placeholder=" " min="{{defaultMinCalories}}" max="{{defaultMaxCalories}}"
+                    required />
+                <label class="label" for="targetCalories">Target calories</label>
+            </div>
         </div>
-        <div>
-            <label for="password">Password</label>
-            <input formControlName="password" type="password" id="password" required minlength="3" />
-        </div>
-        <div>
-            <button type="submit" [disabled]="!isFormValid()">
+
+        <div id="formButtons">
+            <button class="formButton" type="submit" [disabled]="!isFormValid()">
                 {{ isInLoginMode ? loginButtonText : registerButtonText }}
             </button>
-            <br>
-            <button type="button" (click)="onSwitchBetweenLoggedInAndOut()">
+            <button class="formButton" type="button" (click)="onSwitchBetweenLoggedInAndOut()">
                 {{ isInLoginMode ? noAccountButtonText : existingAccountButtonText }}
             </button>
-            <br>
-            <button type="button">Forgot e-mail / password ?</button>
-            <br>
+            <!-- <button class="formButton" type="button">Forgot e-mail / password ?</button> -->
         </div>
     </form>
-</div>
+</main>
 
 <div *ngIf="isInDebugMode">
     <p>Form value:<br>{{ authForm.value | json }}</p>

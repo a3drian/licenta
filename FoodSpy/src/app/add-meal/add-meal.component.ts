@@ -22,6 +22,7 @@ import { IIntake } from 'foodspy-shared';
 import { IUser } from 'foodspy-shared';
 // Models:
 import { Intake } from '../models/Intake';
+import { MealFood } from '../models/MealFood';
 // Components:
 import { EditFoodDialogueComponent } from './edit-food-dialogue/edit-food-dialogue.component';
 // Shared:
@@ -38,30 +39,35 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
   isLoading: boolean = true;
-  areFoodsLoading: boolean = true;
-  isSearchLoading: boolean = true;
-  foodsLoaded: boolean = false;
+  // areFoodsLoading: boolean = true;
+  // isSearchLoading: boolean = true;
+  // foodsLoaded: boolean = false;
 
   errorResponse: HttpErrorResponse | null = null;
 
   isAuthenticated: boolean = false;
-  authenticatedUserEmail: string = '';
+  userEmail: string = '';
+  userTargetCalories: number = 0;
 
   user: IUser | null = null;
 
   addMealForm: FormGroup;
   meal: IMeal = <IMeal>{};
+
   intake: IIntake = <IIntake>{};
   intakeId: string = '';
   existingIntake: boolean = false;
   intakeText: string = '';
+  intakeCaloriesConsumed: number = 0;
+  intakeCaloriesConsumedText: string = '';
 
   existingMealInIntake: boolean = false;
   existingMealTypes: string[] = [];
   selectedMealType: string = '';
+  hasSearched: boolean = false;
 
-  DASHBOARD_URL: string = '/dashboard';
-  ADD_MEAL_URL: string = this.DASHBOARD_URL + '/add';
+  DASHBOARD_URL: string = Constants.DASHBOARD_URL;
+  ADD_MEAL_URL: string = Constants.ADD_MEAL_URL;
 
   addedMealFoods: IMealFood[] = [];
 
@@ -79,6 +85,7 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   dialogueSubscription: Subscription = new Subscription();
   today: Date = new Date();
+  showNoResults: boolean = true;
 
   constructor(
     private foodsService: FoodsService,
@@ -110,12 +117,13 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.user = this.userService.user;
     if (this.user) {
       this.isAuthenticated = this.userService.isAuthenticated;
-      this.authenticatedUserEmail = this.userService.authenticatedUserEmail;
-      log('add-meal.ts', this.ngOnInit.name, 'this.authenticatedUserEmail:', this.authenticatedUserEmail);
+      this.userEmail = this.userService.authenticatedUserEmail;
+      this.userTargetCalories = this.userService.authenticatedUserTargetCalories;
+      log('add-meal.ts', this.ngOnInit.name, 'this.userEmail:', this.userEmail);
     }
 
     this.intakesService
-      .getIntakeByEmailAndCreatedAt(this.authenticatedUserEmail, this.today)
+      .getIntakeByEmailAndCreatedAt(this.userEmail, this.today)
       .subscribe(
         (intake: IIntake) => {
           if (intake) {
@@ -127,12 +135,14 @@ export class AddMealComponent implements OnInit, OnDestroy {
             log('add-meal.ts', this.ngOnInit.name, '(intake) this.existingMealTypes:', this.existingMealTypes);
             this.intakeId = intake.id;
             this.intake.mealIDs = intake.mealIDs;
+            this.intake.targetCalories = this.userTargetCalories;
           } else {
             this.initializeIntake();
             log('add-meal.ts', this.ngOnInit.name, '(!intake) (intake should be initialized with defaults) this.intake:', this.intake);
           }
           this.isLoading = false;
           this.changeIntakeText();
+          this.changeCaloriesConsumedText();
         },
         (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.intakesService.subscribe(error), error:', error);
@@ -155,38 +165,85 @@ export class AddMealComponent implements OnInit, OnDestroy {
       .subscribe(
         (data) => {
           this.databaseFoods = data;
-          this.areFoodsLoading = false;
+          if (data.length === 0) {
+            this.showNoResults = false;
+          }
+          // this.areFoodsLoading = false;
         },
         (error: HttpErrorResponse) => {
           log('add-meal.ts', this.ngOnInit.name, 'this.searchTerms.subscribe(error) error:', error);
-          this.areFoodsLoading = false;
+          // this.areFoodsLoading = false;
           this.errorResponse = error;
         }
       );
     // Foods
-    this.foodsService
-      .getFoods()
-      .subscribe(
-        (data) => {
-          if (data) {
-            this.databaseFoods = data;
-            this.foodsLoaded = true;
-            this.isSearchLoading = false;
-          }
-        },
-        (error: HttpErrorResponse) => {
-          log('add-meal.ts', this.ngOnInit.name, 'this.foodsService.subscribe(error) error:', error);
-          this.foodsLoaded = false;
-          this.isSearchLoading = false;
-          this.errorResponse = error;
-        }
-      );
+    // this.getAllFoods();
+    this.databaseFoods = [];
+    this.hasSearched = false;
     // Meals:
     this.mealTypes = this.mealsService
       .getMealTypes()
       .map(
         (meals) => {
           return meals.type;
+        }
+      );
+    if (this.isInDebugMode) {
+      const one = '44d6bc87-0aee-4857-bd92-b9ed82248511';
+      this.foodsService
+        .getFoodById(one)
+        .subscribe(
+          (f) => {
+            this.addedMealFoods
+              .push(
+                new MealFood(
+                  {
+                    mfid: one,
+                    quantity: 69,
+                    unit: 'grams',
+                    food: f
+                  }
+                )
+              )
+          }
+        );
+      const two = '26966e2d-a717-4558-acfc-b2a7dc1d4f55';
+      this.foodsService
+        .getFoodById(two)
+        .subscribe(
+          (f) => {
+            this.addedMealFoods
+              .push(
+                new MealFood(
+                  {
+                    mfid: two,
+                    quantity: 96,
+                    unit: 'grams',
+                    food: f
+                  }
+                )
+              )
+          }
+        );
+    }
+  }
+
+  private getAllFoods() {
+    this.foodsService
+      .getFoods()
+      .subscribe(
+        (data) => {
+          if (data) {
+            this.databaseFoods = data;
+            // this.foodsLoaded = true;
+            // this.isSearchLoading = false;
+          }
+        },
+        (error: HttpErrorResponse) => {
+          log('add-meal.ts', this.ngOnInit.name, 'this.foodsService.subscribe(error) error:', error);
+          // this.foodsLoaded = false;
+          // this.isSearchLoading = false;
+          this.errorResponse = error;
         }
       );
   }
@@ -202,10 +259,12 @@ export class AddMealComponent implements OnInit, OnDestroy {
     const initalMealIDs: string[] = [];
     const initalMeals: IMeal[] = [];
     this.intake = new Intake({
-      email: this.authenticatedUserEmail,
+      email: this.userEmail,
       mealIDs: initalMealIDs,
       meals: initalMeals,
       createdAt: this.today,
+      targetCalories: this.userTargetCalories,
+      calories: 0
     });
   }
 
@@ -221,30 +280,93 @@ export class AddMealComponent implements OnInit, OnDestroy {
     this.selectedMealType = mealType;
   }
 
-  openDialog(food: IFood): void {
-    log('add-meal.ts', this.openDialog.name, 'Selected food:', food);
+  private openDialog(food: IFood, qty?: number) {
+    log('add-meal.ts', this.openDialog.name, 'food:', food);
+    const mealFood: IMealFood =
+      new MealFood(
+        {
+          mfid: food.id,
+          quantity: qty,
+          food: food
+        }
+      );
 
-    const dialogRef = this.dialog
+    return this.dialog
       .open(
         EditFoodDialogueComponent,
         {
-          data: food
+          data: mealFood,
+          panelClass: 'custom-dialog-container',
+          height: '650px',
+          width: '550px'
         }
       );
+  }
+
+  editDialog(mealFood: IMealFood, index: number): void {
+    log('add-meal.ts', this.editDialog.name, 'Selected mealFood to edit:', mealFood);
+
+    const food: IFood = mealFood.food;
+    const qty: number = mealFood.quantity;
+
+    const dialogRef = this.openDialog(food, qty);
     this.dialogueSubscription = dialogRef
       .afterClosed()
       .subscribe(
         (mealFood: IMealFood) => {
           if (mealFood) {
-            this.addFoodFromDialogueToFoodsArray(mealFood);
+            mealFood.food = food;
+            this.addedMealFoods[index] = mealFood;
           }
         }
       );
   }
 
-  addFoodFromDialogueToFoodsArray(food: IMealFood): void {
-    log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', food);
-    this.addedMealFoods.push(food);
+  addDialog(food: IFood): void {
+    log('add-meal.ts', this.addDialog.name, 'Selected food:', food);
+
+    const dialogRef = this.openDialog(food);
+    this.dialogueSubscription = dialogRef
+      .afterClosed()
+      .subscribe(
+        (mealFood: IMealFood) => {
+          if (mealFood) {
+            mealFood.food = food;
+            if (this.addedMealFoods.length === 0) {
+              this.addFoodFromDialogueToFoodsArray(mealFood);
+            } else {
+              let index: number = -1;
+              for (let i = 0; i < this.addedMealFoods.length; i++) {
+                const element = this.addedMealFoods[i];
+                if (element.mfid === food.id) {
+                  index = i;
+                }
+              }
+              if (index > -1) {
+                log('add-meal.ts', this.addDialog.name, 'This food was already added, modifying quantity...');
+                let mf: IMealFood = this.addedMealFoods[index];
+                mf.quantity += mealFood.quantity;
+                this.addedMealFoods[index] = mf;
+              } else {
+                this.addFoodFromDialogueToFoodsArray(mealFood);
+              }
+            }
+            this.clearSearchBar();
+          }
+        }
+      );
+  }
+
+  deleteFoodFromMealFood(index: number): void {
+    log('add-meal.ts', this.deleteFoodFromMealFood.name, 'index:', index);
+    if (index > -1) {
+      this.addedMealFoods.splice(index, 1);
+    }
+  }
+
+  addFoodFromDialogueToFoodsArray(mealFood: IMealFood): void {
+    log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'MealFood from dialogue:', mealFood);
+    this.addedMealFoods.push(mealFood);
     log('add-meal.ts', this.addFoodFromDialogueToFoodsArray.name, 'Added meal foods []:', this.addedMealFoods);
   }
 
@@ -438,6 +560,10 @@ export class AddMealComponent implements OnInit, OnDestroy {
     }
   }
 
+  canShowAddedFoods(): boolean {
+    return this.addedMealFoods.length > 0;
+  }
+
   canShowIntakeHistoryButton(): boolean {
     if (!this.isLoading) {
       if (this.intake) {  // sometimes this check is made before the intake has been loaded from the db
@@ -471,6 +597,18 @@ export class AddMealComponent implements OnInit, OnDestroy {
     }
   }
 
+  changeCaloriesConsumedText(): void {
+    if (!this.isLoading) {
+      if (this.intake) {
+        if (this.intake.calories === 0) {
+          this.intakeCaloriesConsumedText = 'No calories burnt today.';
+        } else {
+          this.intakeCaloriesConsumedText = `Calories burnt: ${this.intake.calories}.`;
+        }
+      }
+    }
+  }
+
   viewIntakeDetails(): void {
     if (this.isAuthenticated) {
       if (this.intakeId) {
@@ -490,24 +628,36 @@ export class AddMealComponent implements OnInit, OnDestroy {
   }
 
   canShowFoodsTable(): boolean {
-
-    if (this.foodsLoaded) {
+    if (this.hasSearched) {
+      // if (this.foodsLoaded) {
       if (this.databaseFoods) {
-        if (this.databaseFoods.length !== 0) {
-          return true;
-        }
+        // if (this.databaseFoods.length !== 0) { // cannot use this because the user can search for something that returns 0 results
+        return true;
+        // }
       }
+      // }
     }
-
     return false;
   }
 
+  hasSearchResults(): boolean {
+    let hasResults: boolean = true;
+    if (this.hasSearched) {
+      if (this.databaseFoods) {
+        if (this.databaseFoods.length === 0) {
+          hasResults = false;
+        }
+      }
+    };
+    return hasResults;
+  }
+
   canSearch(): boolean {
-    return this.canShowFoodsTable();
+    return true;
   }
 
   canSelectMealType(): boolean {
-    return this.canShowFoodsTable();
+    return true;
   }
 
   canScanBarcode(): boolean {
@@ -516,14 +666,27 @@ export class AddMealComponent implements OnInit, OnDestroy {
 
   // Item filtering:
   searchTerms = new Subject<string>();
-  searchTerm: string = '';
+  // searchTerm: string = '';
   search(term: string): void {
     log('add-meal.ts', this.search.name, 'Search term:', term);
     if (!isValidSearchTerm(term)) {
       return;
     }
-    this.searchTerm = term;
+    if (term.length < 3) {
+      this.clearSearchBar();
+      term = '';
+      return;
+    }
+    // this.searchTerm = term;
     this.searchTerms.next(term);
+    this.hasSearched = true;
+  }
+
+  private clearSearchBar(): void {
+    this.hasSearched = false;
+    this.showNoResults = true;
+    this.databaseFoods = [];
+    // this.search('');
   }
 
   scanBarcode(): void {

@@ -1,0 +1,1 @@
+export const ENV_TOKEN_SECRET='Lorem ipsum dolor';

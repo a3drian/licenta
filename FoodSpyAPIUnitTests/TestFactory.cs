@@ -14,11 +14,11 @@ namespace FoodSpyAPIUnitTests
 		public const string BAD_EMAIL = "BAD_EMAIL";
 		public const string GOOD_EMAIL = "adi@foodspy.com";
 
-		public const string BAD_MEAL_ID = "123456789987654321123456";
-		public const string GOOD_MEAL_ID = "608ad9df65614f54f0859c39";
+		public const string BAD_MEAL_ID = "12345678-1234-1234-1234-123456789012";
+		public const string GOOD_MEAL_ID = "fee45c47-4ed3-4448-8fed-21221d2dd92d";
 
-		public static ObjectId GOOD_OID = new ObjectId(GOOD_MEAL_ID);
-		public static ObjectId BAD_OID = new ObjectId(BAD_MEAL_ID);
+		public static Guid GOOD_GUID = new Guid(GOOD_MEAL_ID);
+		public static Guid BAD_GUID = new Guid(BAD_MEAL_ID);
 
 		public const string GOOD_SID = GOOD_MEAL_ID;
 		public const string BAD_SID = BAD_MEAL_ID;
@@ -41,16 +41,16 @@ namespace FoodSpyAPIUnitTests
 
 		public static object[] ValidIDs =
 		{
-			new object[] { "606888685727537f425277cf" },
-			new object[] { "6068886e5727537f425277d0" },
-			new object[] { "606888795727537f425277d2" },
-			new object[] { "606888725727537f425277d1" },
-			new object[] { "6068616630494d22f260b234" },
-			new object[] { "60636d2c6dc1cc04409b4909" },
-			new object[] { "60649872d9bc9a2e9436cacc" },
-			new object[] { "60649877d9bc9a2e9436cacd" },
-			new object[] { "60649887d9bc9a2e9436cace" },
-			new object[] { "60804088dad7f5268095cdb1" }
+			new object[] { "bb81d0e7-001a-4754-bf35-65d26a75160c" },
+			new object[] { "1d939b21-1a7b-4fbe-8808-d7fff483bc00" },
+			new object[] { "d1b60339-a473-4e07-82a3-d754f81791aa" },
+			new object[] { "a9693105-4e04-4526-87f1-e66d640cfda6" },
+			new object[] { "623be7a3-889d-4844-95b5-3d1466546224" },
+			new object[] { "54f1cef7-f08c-4a95-8ab2-23081f8ee591" },
+			new object[] { "a47b023e-33ff-4e0b-8b4e-e7d2a11d7050" },
+			new object[] { "c6ecec02-6ad7-4367-821f-ced30edefbcc" },
+			new object[] { "7f8f720f-4553-4c3c-8e08-5f2727bee5a5" },
+			new object[] { "32423cba-a164-4b1a-9127-caac67d733db" }
 		};
 
 		public static object[] InvalidIntakes =
@@ -64,7 +64,7 @@ namespace FoodSpyAPIUnitTests
 						new Intake
 						{
 							Email = BAD_EMAIL,
-							MealIDs = new List<ObjectId> { GOOD_OID }
+							MealIDs = new List<Guid> { GOOD_GUID }
 						}
 					},
 
@@ -73,7 +73,7 @@ namespace FoodSpyAPIUnitTests
 						new Intake
 						{
 							Email = GOOD_EMAIL,
-							MealIDs = new List<ObjectId> { BAD_OID }
+							MealIDs = new List<Guid> { BAD_GUID }
 						}
 					}
 		};
@@ -89,7 +89,7 @@ namespace FoodSpyAPIUnitTests
 						new IntakeModel
 						{
 							Email = BAD_EMAIL,
-							MealIDs = new List<string> { GOOD_SID }
+							MealIDs = new List<Guid> { GOOD_GUID }
 						}
 					},
 
@@ -98,7 +98,7 @@ namespace FoodSpyAPIUnitTests
 						new IntakeModel
 						{
 							Email = GOOD_EMAIL,
-							MealIDs = new List<string> { BAD_SID }
+							MealIDs = new List<Guid> { BAD_GUID }
 						}
 					}
 		};
@@ -114,12 +114,12 @@ namespace FoodSpyAPIUnitTests
 						new Intake
 						{
 							Email = BAD_EMAIL,
-							MealIDs = new List<ObjectId> { GOOD_OID }
+							MealIDs = new List<Guid> { GOOD_GUID }
 						},
 						new IntakeModel
 						{
 							Email = BAD_EMAIL,
-							MealIDs = new List<string> { GOOD_SID }
+							MealIDs = new List<Guid> { GOOD_GUID }
 						}
 					},
 
@@ -127,12 +127,12 @@ namespace FoodSpyAPIUnitTests
 						new Intake
 						{
 							Email = GOOD_EMAIL,
-							MealIDs = new List<ObjectId> { BAD_OID }
+							MealIDs = new List<Guid> { BAD_GUID }
 						},
 						new IntakeModel
 						{
 							Email = GOOD_EMAIL,
-							MealIDs = new List<string> { BAD_SID }
+							MealIDs = new List<Guid> { BAD_GUID }
 						}
 					}
 		};
@@ -143,10 +143,10 @@ namespace FoodSpyAPIUnitTests
 		{
 			Intake intake = new Intake
 			{
-				Id = id,
+				Id = Guid.Parse(id),
 				Email = GOOD_EMAIL,
 				CreatedAt = new DateTime(2021, 5, 25),
-				MealIDs = new List<ObjectId>() { GOOD_OID }
+				MealIDs = new List<Guid>() { GOOD_GUID }
 			};
 
 			return intake;
@@ -156,10 +156,10 @@ namespace FoodSpyAPIUnitTests
 		{
 			IntakeModel intake = new IntakeModel
 			{
-				Id = id,
+				Id = new Guid(id),
 				Email = GOOD_EMAIL,
 				CreatedAt = new DateTime(2021, 5, 25),
-				MealIDs = new List<string>() { GOOD_SID }
+				MealIDs = new List<Guid>() { GOOD_GUID }
 			};
 
 			return intake;

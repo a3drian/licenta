@@ -46,7 +46,7 @@ namespace FoodSpyAPI.Services
 
 		#region GET
 
-		public async Task<List<Meal>> GetMeals()
+		public async Task<List<Meal>> GetUnpopulatedMeals()
 		{
 			_logger.LogInformation($"Fetching meals...");
 
@@ -55,7 +55,7 @@ namespace FoodSpyAPI.Services
 			return mealsList;
 		}
 
-		public async Task<List<Meal>> GetMealsWithFoods()
+		public async Task<List<Meal>> GetMeals()
 		{
 			_logger.LogInformation($"Fetching meals...");
 
@@ -80,13 +80,58 @@ namespace FoodSpyAPI.Services
 
 		#region GET/:id
 
+		public async Task<Meal> GetUnpopulatedMealById(string id)
+		{
+			_logger.LogInformation($"Fetching meal with id '{id}' ...");
+
+			Guid guid = new Guid(id);
+
+			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(meal => meal.Id.Equals(guid));
+			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
+			Meal meal = mealSingleOrDefault.Result;
+
+			_logger.LogInformation($"Meal with id '{id}' ...\n{meal}");
+
+			return meal;
+		}
+
 		public async Task<Meal> GetMealById(string id)
 		{
 			_logger.LogInformation($"Fetching meal with id '{id}' ...");
 
-			IAsyncCursor<Meal> findResult = await _meals.FindAsync<Meal>(n => n.Id == id);
-			Task<Meal> mealSingleOrDefault = findResult.SingleOrDefaultAsync();
-			Meal meal = mealSingleOrDefault.Result;
+			Guid guid = new Guid(id);
+
+			IAggregateFluent<Meal> aggregationMatch = _meals
+				.Aggregate()
+				.Match<Meal>(meal => meal.Id.Equals(guid));
+
+			// sa vad daca pot popula direct "MealFoods.Food", de ex.
+			Meal meal = await aggregationMatch
+				.Lookup(
+					FOODS_FOREIGN_COLLECTION_NAME,
+					MEAL_LOCAL_FIELD,
+					FOOD_FOREIGN_FIELD,
+					FOODS_ARRAY
+				)
+				.As<Meal>()
+				.SingleOrDefaultAsync();
+
+			if (meal == null) {
+				_logger.LogError($"Could not find meal (of intake) with id '{id}' ...\n{meal}");
+				return null;
+			}
+
+			// workaround
+			List<MealFood> mealFoods = meal.MealFoods;
+			List<MealFood> sortedMealFoods = mealFoods.OrderBy(m => m.Mfid).ToList();
+			List<Food> sortedFoods = meal.Foods.OrderBy(m => m.Id).ToList();
+
+			// add food info to property "Food" of "MealFood"
+			for (int i = 0; i < sortedFoods.Count; i++) {
+				sortedMealFoods[i].Food = sortedFoods[i];
+			}
+
+			meal.MealFoods = sortedMealFoods;
 
 			_logger.LogInformation($"Meal with id '{id}' ...\n{meal}");
 
@@ -129,7 +174,7 @@ namespace FoodSpyAPI.Services
 
 			ReplaceOneResult result = await _meals
 				 .ReplaceOneAsync<Meal>(
-					  filter: n => n.Id == meal.Id,
+					  filter: m => m.Id.Equals(meal.Id),
 					  replacement: meal
 				 );
 
@@ -155,10 +200,23 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Deleting meal with id '{meal.Id}' ...");
 
-			DeleteResult result = await _meals.DeleteOneAsync(n => n.Id == meal.Id);
+			DeleteResult result = await _meals.DeleteOneAsync(m => m.Id.Equals(meal.Id));
 
 			bool deleted = result.IsAcknowledged;
-			_logger.LogInformation($"{result.ToJson()}");
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
+
+			return deleted;
+		}
+
+		public async Task<bool> DeleteMeal(string id)
+		{
+			_logger.LogInformation($"Deleting meal (of intake) with id '{id}' ...");
+
+			Guid guid = new Guid(id);
+			DeleteResult result = await _meals.DeleteOneAsync(m => m.Id.Equals(guid));
+
+			bool deleted = result.IsAcknowledged;
+			_logger.LogInformation($"result.IsAcknowledged: {deleted}");
 
 			return deleted;
 		}
@@ -171,9 +229,15 @@ namespace FoodSpyAPI.Services
 		{
 			_logger.LogInformation($"Searching by type of '{type}' ...");
 
+			string SEARCH_BY_TYPE = nameof(Meal.Type);
+
+			FilterDefinition<Meal> typeFilter = Builders<Meal>
+				.Filter
+				.Regex(SEARCH_BY_TYPE, new BsonRegularExpression(type, "i"));
+
 			IAsyncCursor<Meal> meals = await _meals
 				 .FindAsync<Meal>(
-					  filter: meal => meal.Type.Equals(type)
+					  filter: typeFilter
 				 );
 
 			if (meals == null) {
@@ -183,12 +247,48 @@ namespace FoodSpyAPI.Services
 
 			List<Meal> mealsList = meals.ToList();
 
-			_logger.LogInformation($"Meals of type: '{type}' ...");
-			foreach (Meal meal in mealsList) {
-				Console.WriteLine(meal);
-			}
-
 			return mealsList;
+		}
+
+		#endregion
+
+		#region Helper methods
+
+		public double CalculateCalories(Meal meal)
+		{
+			double calories = 0;
+			List<MealFood> mealFoods = meal.MealFoods;
+			foreach (MealFood mealFood in mealFoods) {
+				Food food = mealFood.Food;
+				double energy = food.Energy;
+				calories += energy;
+			}
+			return calories;
+		}
+
+		public double CalculateCalories(List<Meal> meals)
+		{
+			double calories = 0;
+			foreach (Meal meal in meals) {
+				List<MealFood> mealFoods = meal.MealFoods;
+				double c = 0;
+				foreach (MealFood mealFood in mealFoods) {
+					Food food = mealFood.Food;
+					double energy = food.Energy;
+					double quantity = mealFood.Quantity;
+					double cal = GetCaloriesPerQuantity(energy, quantity);
+					c += cal;
+				}
+				calories += c;
+			}
+			return calories;
+		}
+
+		public double GetCaloriesPerQuantity(double energy, double quantity)
+		{
+			double value = energy * quantity / 100;
+			double calories = Math.Floor(value);
+			return calories;
 		}
 
 		#endregion

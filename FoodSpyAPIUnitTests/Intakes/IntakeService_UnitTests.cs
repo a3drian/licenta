@@ -36,6 +36,7 @@ namespace FoodSpyAPIUnitTests.Intakes
 
 			_intakeService = new IntakeService(
 					_databaseSettings,
+					null,
 					_logger.Object
 				);
 		}

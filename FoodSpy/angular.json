@@ -24,7 +24,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/FoodSpy",
+            "outputPath": "../Heroku/frontend/build/",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -32,6 +32,7 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
+              "src/images/foodspy-logo.png",
               "src/assets"
             ],
             "styles": [
@@ -61,12 +62,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "256kb"
                 }
               ]
             }
@@ -80,7 +81,8 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "FoodSpy:build:production"
+              "browserTarget": "FoodSpy:build:production",
+              "proxyConfig": "./proxy-prod.json"
             }
           }
         },
@@ -99,6 +101,7 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "src/favicon.ico",
+              "src/images/foodspy-logo.png",
               "src/assets"
             ],
             "styles": [

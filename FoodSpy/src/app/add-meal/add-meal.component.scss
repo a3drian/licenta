@@ -1,3 +1,263 @@
+@import "../styles/colors.scss";
+@import "../../styles.scss";
+$margin-size: 0.5rem;
+// @import "../auth/auth.component.scss";
+
+.content {
+  width: 100vw;
+  // height: 100vh;
+}
+
+.left {
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  width: 70vw;
+  // height: 100vh;
+  background-color: blue;
+}
+
+.right {
+  // position: absolute;
+  // right: 0;
+  // top: 0;
+  width: 30vw;
+  // height: 100vh;
+  background-color: green;
+}
+
+table {
+  width: 100%;
+}
+
+#wrapper {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rem;
+  // width: 100vw;
+}
+
+#wrapper > div {
+  flex: 1;
+}
+
+#first {
+  margin-right: $margin-size;
+  float: left;
+  padding-top: 0.5rem;
+  // width: 70vw;
+}
+
+#second {
+  margin-right: $margin-size;
+  margin-left: $margin-size;
+
+  font-size: 2em;
+  text-align: center;
+}
+
+.third {
+  margin-left: $margin-size;
+  float: right;
+  // width: 30vw;
+  button {
+    margin-right: 0.5rem;
+  }
+}
+
+.elem {
+  // flex: 0 0 33%;
+}
+
+// #basket {
+//   display: flex;
+//   margin-bottom: 1rem;
+//   // flex-direction: row;
+//   // align-items: baseline;
+//   // text-align: center;
+//   // width: 100%;
+// }
+
+// .foodName {
+//   // width: 400px;
+//   float: left;
+//   padding-top: 0.75rem;
+//   margin-right: 0.5rem;
+//   // width: 80%;
+// }
+// .editDeleteButtons {
+//   float: right;
+//   button {
+//     margin-right: 0.5rem;
+//   }
+//   // width: 15%;
+// }
+
+#formFields {
+  height: 50px;
+}
+
+.guide {
+  color: $white;
+}
+
+table td,
 table th {
-   width: 100px;
+  font-size: 1rem;
+}
+
+.displayName {
+  color: $primary;
+}
+
+// table th {
+//   width: 14%;
+// }
+
+table th {
+  color: $primary;
+}
+
+// table th {
+//   width: 30%;
+// }
+
+// table th:nth-child(n + 2):nth-child(-n + 5) {
+//   width: 15%;
+// }
+
+.smallCell {
+  width: 20%;
+}
+
+.plusButton {
+  font-size: 1.5rem;
+  min-width: 1rem;
+}
+
+#mealTypeForm {
+  mat-form-field,
+  button {
+    // float: left;
+    margin-right: 1rem;
+  }
+  height: 100px;
+}
+
+mat-label {
+  color: $primary;
+}
+
+#intakeDetails {
+  margin-bottom: 2rem;
+}
+
+.mat-table {
+  background: $secondary !important;
+  border-bottom: 1rem;
+}
+
+// .search {
+//   @extend .field;
+//   width: 300px;
+// }
+
+.searchButton {
+  float: right;
+}
+
+// .searchMain {
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   flex-direction: row;
+//   text-align: center;
+//   margin-bottom: 1rem;
+// }
+
+.result {
+  width: 100%;
+}
+
+.field {
+  width: 330px;
+  position: relative; // can use "top", "left", "right", "bottom" to control where this element sits relative to its normal position
+  border-bottom: 2px solid $ternary;
+  // margin: 4rem auto 1rem; // top, left and right, bottom
+  margin-top: 2rem;
+}
+
+.label {
+  color: $ternary;
+  font-size: 1.2rem;
+}
+
+// sits inside the container, while its parent, the "field" class will handle all animation related stuff
+.input {
+  outline: none;
+  border: none;
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  padding: 0.25rem 0;
+  background: none;
+  color: $primary;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: border 500ms;
+}
+
+// based on the type of the input, some validation is run automatically by the browser
+// this means we can use below pseudo-selectors to color the text based on valid / invalid input
+.input:invalid {
+  color: $invalid;
+}
+
+// animations
+
+// will display the border underneath the field
+// can use transforms to apply animations
+.field::after {
+  content: "";
+  position: relative;
+  display: block;
+  height: 4px;
+  width: 100%;
+  background: $primary;
+  transform: scaleX(
+    0
+  ); // hides the field; only "X" to preserve height when unhiding it
+  transform-origin: 0%; // animates from left to right
+  opacity: 0;
+  transition: transform 500ms ease;
+  top: 2px;
+}
+
+// state change resulting in basically an animation
+// :focus-within is active when child has focus, in our case when the "input" has focus
+.field:focus-within {
+  border-color: transparent;
+}
+
+.field:focus-within::after {
+  transform: scaleX(1); // makes the border slide in from left "0" to right "1"
+  opacity: 1;
+}
+
+// move the label outside the input
+.label {
+  z-index: -1; // makes the label look as theough it's behind the "form" element
+  // means it's relative to the entire document OR relative to the next positioned element in the tree
+  // in our case, it's the "<field>" element which contains the "<input>"
+  position: absolute;
+  transform: translateY(-2rem);
+  transform-origin: 0%;
+  transition: transform 400ms;
+}
+
+// ":placeholder-shown" only works because we've put "<label>" after the "<input>"
+.field:focus-within .label,
+.input:not(:placeholder-shown) + .label {
+  transform: scale(0.8) translateY(-5rem); // smaller and further up the "Y" axis
+  opacity: 1;
 }

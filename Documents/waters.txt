@@ -1103,11 +1103,11 @@ createdAt: [
 
 [DEPLOY]
 -URL pentru Compass:
-mongodb+srv://adrian:ZbURtGAc1OBAIbYN@cluster0.qyqtz.mongodb.net/
+mongodb+srv://adrian:PASSWORD@cluster0.qyqtz.mongodb.net/
 -fisierul de configurare...
-mongodb+srv://adrian:ZbURtGAc1OBAIbYN@cluster0.qyqtz.mongodb.net/waters?retryWrites=true&w=majority
+mongodb+srv://adrian:PASSWORD@cluster0.qyqtz.mongodb.net/waters?retryWrites=true&w=majority
 ...si:
-CLUSTER_URI=mongodb+srv://adrian:ZbURtGAc1OBAIbYN@cluster0.qyqtz.mongodb.net/waters?retryWrites=true&w=majority
+CLUSTER_URI=mongodb+srv://adrian:PASSWORD@cluster0.qyqtz.mongodb.net/waters?retryWrites=true&w=majority
 CLUSTER_PORT=8080
 -a trebuit sa folosesc driver-ul "MongoDriver" in app.ts:
 const orm = await MikroORM.init<MongoDriver>({..})

@@ -11,14 +11,21 @@ namespace FoodSpyAPI.Helpers
 {
 	public static class Validator
 	{
+		#region Constants
+		private static double MIN_MEAL_QUANTITY = 0.1;
+		private static double MAX_MEAL_QUANTITY = 1000.0;
+		private static double MIN_CALORIES = 1;
+		private static double MAX_CALORIES = 10000.0;
+		#endregion
+
 		/// <summary>
-		/// Determines whether an id of type "string" is valid.
+		/// Determines whether a given id is of type "string".
 		/// </summary>
 		/// <param name="id">The identifier.</param>
 		/// <returns>
 		///   <c>true</c> if id is of type string, is not null and does not contain whitespace; otherwise, <c>false</c>.
 		/// </returns>
-		internal static bool IsValidId(string id)
+		internal static bool IsValidAndNotEmptyString(string id)
 		{
 			if (
 				 id.GetType() != typeof(string) ||
@@ -31,7 +38,7 @@ namespace FoodSpyAPI.Helpers
 			return true;
 		}
 
-		private static bool IsEmptyString(string str)
+		private static bool IsEmptyOrNullString(string str)
 		{
 			if (
 				 str == null ||
@@ -47,7 +54,7 @@ namespace FoodSpyAPI.Helpers
 
 		private static bool IsEmptySearchTerm(string searchTerm)
 		{
-			if (IsEmptyString(searchTerm)) {
+			if (IsEmptyOrNullString(searchTerm)) {
 				return true;
 			}
 
@@ -61,18 +68,6 @@ namespace FoodSpyAPI.Helpers
 			}
 
 			if (!(searchTerm.GetType() == typeof(string))) {
-				return false;
-			}
-
-			return true;
-		}
-
-
-		internal static bool IsValid24DigitHexString(string id)
-		{
-			if (
-				 id.Length != 24
-			) {
 				return false;
 			}
 
@@ -134,31 +129,18 @@ namespace FoodSpyAPI.Helpers
 			return true;
 		}
 
-		internal static bool IsValidIDArray(List<string> arrayOfIDs)
+		internal static bool IsValidGuidArray(List<Guid> arrayOfIDs)
 		{
 			if (arrayOfIDs == null) {
 				return false;
 			}
 
-			if (arrayOfIDs.GetType().IsArrayOf<string>()) {
+			if (arrayOfIDs.GetType().IsArrayOf<Guid>()) {
 				return false;
 			}
 
 			bool allUnique = arrayOfIDs.GroupBy(id => id).All(g => g.Count() == 1);
 			if (!allUnique) {
-				return false;
-			}
-
-			return true;
-		}
-
-		internal static bool IsValidIDArrayForPOSTRequest(List<string> arrayOfIDs)
-		{
-			if (!IsValidIDArray(arrayOfIDs)) {
-				return false;
-			}
-
-			if (arrayOfIDs.Count() == 0) {
 				return false;
 			}
 
@@ -218,6 +200,44 @@ namespace FoodSpyAPI.Helpers
 			bool valid = name.All(letter => Alphabet.ALLOWED_CHARACTERS.Contains(letter));
 
 			return valid;
+		}
+
+		internal static bool IsValidGuid(string id)
+		{
+			bool valid = Guid.TryParse(id, out _);
+			return valid;
+		}
+
+		internal static bool IsValidMealQuantity(double quantity)
+		{
+			if (
+				quantity >= MIN_MEAL_QUANTITY &&
+				quantity <= MAX_MEAL_QUANTITY
+			) {
+				return true;
+			}
+			return false;
+		}
+
+		internal static bool IsValidFoodUnit(string unit)
+		{
+			string firstLetterUppercased = unit.FirstLetterUppercased();
+
+			bool valid = Enum.IsDefined(typeof(FoodUnit), firstLetterUppercased);
+			if (!valid) { return false; }
+
+			return true;
+		}
+
+		internal static bool IsValidIntakeCalories(double calories)
+		{
+			if (
+				calories >= MIN_CALORIES &&
+				calories <= MAX_CALORIES
+		) {
+				return true;
+			}
+			return false;
 		}
 	}
 

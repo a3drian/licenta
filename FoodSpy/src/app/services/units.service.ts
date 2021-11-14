@@ -13,7 +13,7 @@ export class UnitsService {
       this.units =
          [
             new Unit({ unit: 'grams' }),
-            new Unit({ unit: 'pieces' })
+            // new Unit({ unit: 'pieces' })
          ];
    }
 

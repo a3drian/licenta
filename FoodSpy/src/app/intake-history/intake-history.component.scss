@@ -1,1 +1,77 @@
 @import "../styles/classes.scss";
+@import "../styles/measurements.scss";
+@import "../../styles.scss";
+
+div.mainDiv {
+  color: $fourth;
+}
+
+.food {
+  font-size: 1.25rem;
+}
+
+$transition: 0.5s;
+$height: 20px;
+
+.primary-text {
+  color: $primary;
+}
+
+.white-text {
+  color: $white;
+}
+
+.progress {
+  position: relative;
+  z-index: 5;
+  background: $secondary;
+  border-radius: $border-radius;
+  display: inline-block;
+  border: 1px solid $ternary;
+}
+.progress-text {
+  position: absolute;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  top: 0;
+  left: 0;
+  user-select: none;
+}
+.progress,
+.progress-bar,
+.progress-text {
+  width: 200px;
+  max-width: 200px;
+  height: $height;
+}
+.progress .progress-text:first-child {
+  z-index: 5;
+  color: $white;
+}
+.progress .progress-text:last-child {
+  z-index: 10;
+  color: $secondary;
+}
+.progress-bar {
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  border-radius: $border-radius;
+  width: 0;
+  -moz-transition: width $transition linear;
+  -webkit-transition: width $transition linear;
+  -o-transition: width $transition linear;
+  transition: width $transition linear;
+}
+
+/* Aqua Style */
+.progress.aqua .progress-bar {
+  background-color: $green;
+  background-image: -moz-linear-gradient(left, $red 0%, $green 100%);
+  background-image: -webkit-linear-gradient(left, $red 0%, $green 100%);
+  background-image: -o-linear-gradient(left, $red 0%, $green 100%);
+  background-image: -ms-linear-gradient(left, $red 0%, $green 100%);
+  background-image: linear-gradient(to right, $red 0%, $green 100%);
+  background-size: 200px $height;
+}

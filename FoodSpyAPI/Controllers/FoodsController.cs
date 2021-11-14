@@ -50,21 +50,21 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
+				if (!Validator.IsValidAndNotEmptyString(id)) {
 					return BadRequest($"'id' parameter: '{id}' is invalid!");
 				}
 
-				if (!Validator.IsValid24DigitHexString(id)) {
+				if (!Validator.IsValidGuid(id)) {
 					return BadRequest($"'id' parameter: '{id}' is not a valid 24 digit hex string!");
 				}
 
-				Food meal = await _foodService.GetFoodById(id);
+				Food food = await _foodService.GetFoodById(id);
 
-				if (meal == null) {
+				if (food == null) {
 					return NotFound($"Food with id '{id}' was not found!");
 				}
 
-				FoodModel mappedFood = _mapper.Map<FoodModel>(meal);
+				FoodModel mappedFood = _mapper.Map<FoodModel>(food);
 				return mappedFood;
 
 			} catch (Exception e) {
@@ -73,23 +73,23 @@ namespace FoodSpyAPI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<FoodModel>> AddFood(Food meal)
+		public async Task<ActionResult<FoodModel>> AddFood(Food food)
 		{
 			try {
 
-				string name = meal.Name;
+				string name = food.Name;
 				if (!Validator.IsValidFoodName(name)) {
-					return BadRequest($"Name '{meal.Name}' is invalid or does not contain only allowed characters!");
+					return BadRequest($"Name '{food.Name}' is invalid or does not contain only allowed characters!");
 				}
 
 				string convertedName = CharacterConverter.ConvertDiacritics(name);
-				meal.Name = convertedName; // convert diacritics
-				meal.DisplayName = name;   // keep diacritics
+				food.Name = convertedName; // convert diacritics
+				food.DisplayName = name;   // keep diacritics
 
-				Food addedFood = await _foodService.AddFood(meal);
+				Food addedFood = await _foodService.AddFood(food);
 
 				string location = _linkGenerator.GetPathByAction(
-					 "GetFoodById",
+					 nameof(GetFoodById),
 					 "Foods",
 					 new { id = addedFood.Id }
 				);
@@ -97,7 +97,7 @@ namespace FoodSpyAPI.Controllers
 				_logger.LogInformation($"location: {location}");
 
 				if (string.IsNullOrWhiteSpace(location)) {
-					return BadRequest($"Id '{meal.Id}' is invalid and cannot be used to create a new Food!");
+					return BadRequest($"Id '{food.Id}' is invalid and cannot be used to create a new Food!");
 				}
 
 				FoodModel mappedFood = _mapper.Map<FoodModel>(addedFood);
@@ -109,11 +109,11 @@ namespace FoodSpyAPI.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<ActionResult<FoodModel>> UpdateFood(string id, Food meal)
+		public async Task<ActionResult<FoodModel>> UpdateFood(string id, Food food)
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
+				if (!Validator.IsValidAndNotEmptyString(id)) {
 					return BadRequest($"'id' parameter: '{id}' is invalid!");
 				}
 
@@ -122,13 +122,13 @@ namespace FoodSpyAPI.Controllers
 					return NotFound($"Food with id '{id}' was not found!");
 				}
 
-				string name = meal.Name;
+				string name = food.Name;
 				if (!Validator.IsValidFoodName(name)) {
-					return BadRequest($"Name '{meal.Name}' is invalid or does not contain only allowed characters!");
+					return BadRequest($"Name '{food.Name}' is invalid or does not contain only allowed characters!");
 				}
 
 				string convertedName = CharacterConverter.ConvertDiacritics(name);
-				Food updatedFood = new Food(meal)
+				Food updatedFood = new Food(food)
 				{
 					Id = oldFood.Id,
 					Name = convertedName,   // convert diacritics
@@ -152,21 +152,21 @@ namespace FoodSpyAPI.Controllers
 		{
 			try {
 
-				if (!Validator.IsValidId(id)) {
+				if (!Validator.IsValidAndNotEmptyString(id)) {
 					return BadRequest($"'id' parameter: '{id}' is invalid!");
 				}
 
-				Food meal = await _foodService.GetFoodById(id);
-				if (meal == null) {
+				Food food = await _foodService.GetFoodById(id);
+				if (food == null) {
 					return NotFound($"Food with id '{id}' was not found!");
 				}
 
-				bool deleted = await _foodService.DeleteFood(meal);
+				bool deleted = await _foodService.DeleteFood(food);
 				if (!deleted) {
 					return BadRequest("Invalid parameters for 'DELETE' request!");
 				}
 
-				return Ok($"Successfully deleted meal with id '{id}' ...");
+				return Ok($"Successfully deleted food with id '{id}' ...");
 
 			} catch (Exception e) {
 				return LogDatabaseException(e);
@@ -180,7 +180,7 @@ namespace FoodSpyAPI.Controllers
 
 				if (!Validator.IsValidFoodName(name)) {
 					// TO DO: return BAD REQUEST
-					return await GetFoods();
+					return new List<FoodModel>();
 				}
 
 				string convertedName = CharacterConverter.ConvertDiacritics(name);

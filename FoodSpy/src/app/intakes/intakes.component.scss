@@ -1,5 +1,129 @@
 @import "../styles/classes.scss";
+@import "../styles/colors.scss";
+@import "../styles/measurements.scss";
+@import "../../styles.scss";
 
-table th {
-   width: 300px;
+.history {
+  margin-bottom: 1rem;
+}
+
+.lastDiv {
+  @extend .intakes-section;
+  height: 0.5rem;
+  width: 3rem;
+  clear: both;
+  margin-bottom: 0.5rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: $secondary;
+  color: $white;
+  //   font-family: "DM Mono", monospace;
+}
+
+main {
+  padding: 0;
+  margin: 0;
+  background-color: $secondary;
+  color: $white;
+}
+
+.card-style {
+  color: $white;
+  height: $card-height;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: $secondary;
+  box-shadow: -1rem 0 3rem $black; // offset on X makes the shadow be placed on right side of the card => makes it look like it's hovering
+  margin: 0;
+}
+
+// each card is a column within that row, within ".card-list"
+.card {
+  @extend .card-style;
+  width: $card-width;
+
+  display: flex; // to be used as a column
+  flex-direction: column; // makes content flow vertically
+  transition: transform 0.2s; // makes the card move smoother
+  clear: both;
+  position: relative;
+}
+
+// animations
+// start with the card that is hovered on
+.card:hover {
+  transform: translateY(-1rem);
+}
+
+.card-header {
+  margin-bottom: auto;
+}
+
+.card-header p {
+  font-size: 14px;
+  margin: 0 0 1rem;
+  color: $fourth;
+}
+
+.card-header h2 {
+  font-size: 20px;
+  margin: 0.25rem 0 auto;
+  text-decoration: none;
+  color: inherit;
+  border: 0;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.card-header h2:hover {
+  color: $primary;
+}
+
+/*
+.half-circle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 48px;
+  fill: none;
+  stroke: $red;
+  stroke-width: 8;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+*/
+
+.tags button {
+  padding: 0.2rem 0.85rem 0.25rem;
+  position: relative;
+  margin-right: 0.5rem;
+}
+
+/*
+.tags button:hover {
+  border-color: $primary;
+  background: $secondary;
+  text-shadow: none;
+}
+*/
+
+.card-div-position {
+  float: left;
+  margin: 10px;
+}
+
+// intakes:
+.card-div {
+  @extend .card-div-position;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }

@@ -1,0 +1,11 @@
+<p *ngIf="isInDebugMode"><b>confirmation-dialogue</b> works!</p>
+
+<h2 mat-dialog-title>Confirm deletion</h2>
+
+<main>
+   <div>Are you sure you want to delete intake history for {{ createdAt | date: 'MMMM d, y' }}?</div>
+   <mat-dialog-actions>
+      <button mat-dialog-close (click)="getConfirmation(true)">Yes</button>
+      <button mat-dialog-close (click)="getConfirmation(false)">No</button>
+   </mat-dialog-actions>
+</main>

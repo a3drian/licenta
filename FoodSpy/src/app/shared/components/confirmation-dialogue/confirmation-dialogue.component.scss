@@ -1,0 +1,11 @@
+@import "../../../add-meal/edit-food-dialogue/edit-food-dialogue.component.scss";
+
+mat-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  margin-right: 0.5rem;
+}

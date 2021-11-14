@@ -1,0 +1,35 @@
+@import "../styles/classes.scss";
+
+$margin-size: 0.5rem;
+
+#wrapper {
+  display: flex;
+  align-items: center;
+}
+
+#wrapper > div {
+  flex: 1;
+}
+
+#first {
+  margin-right: $margin-size;
+  float: left;
+}
+
+#second {
+  margin-right: $margin-size;
+  margin-left: $margin-size;
+
+  font-size: 2em;
+  text-align: center;
+}
+
+#third {
+  margin-left: $margin-size;
+
+  float: right;
+}
+
+.elem {
+  //   flex: 0 0 33%;
+}

@@ -1,0 +1,22 @@
+<p *ngIf="isInDebugMode"><b>add-intake-card</b> works!</p>
+
+<main>
+   <div class="add-card-div">
+      <article class="add-intake-card">
+         <header id="add-card-header" class="card-header">
+            <p><b>Today</b>, {{ today | date: 'MMMM d' }}</p>
+            <h2 routerLink="add">Add a meal</h2>
+            <p *ngIf="!hasConsumed">
+               <b>No meals added today.</b>
+               <br>
+               Search for foods and add your first meal.
+            </p>
+            <p *ngIf="hasConsumed">
+               <b>You've already consumed a meal today.</b>
+               <br>
+               Search for foods to add more meals.
+            </p>
+         </header>
+      </article>
+   </div>
+</main>

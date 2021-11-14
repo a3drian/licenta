@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit {
   isInDebugMode: boolean = Constants.IN_DEBUG_MODE;
 
   isAuthenticated: boolean = false;
-  authenticatedUserEmail: string = '';
+  userEmail: string = '';
   user: IUser | null = null;
 
   constructor(
@@ -31,11 +31,11 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.userService.user;
     if (this.user) {
-      this.authenticatedUserEmail = this.user.email;
+      this.userEmail = this.user.email;
       this.isAuthenticated = this.userService.isAuthenticated;
-      log('header.ts', this.ngOnInit.name, 'this.user, this.authenticatedUserEmail:', this.authenticatedUserEmail);
+      log('header.ts', this.ngOnInit.name, 'this.user, this.userEmail:', this.userEmail);
     }
-    log('header.ts', this.ngOnInit.name, '!this.user, this.authenticatedUserEmail is empty!');
+    log('header.ts', this.ngOnInit.name, '!this.user, this.userEmail is empty!');
   }
 
   onLogout(): void {

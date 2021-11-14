@@ -12,19 +12,19 @@ namespace FoodSpyAPI.Models
 	public class Meal : IMeal
 	{
 		[BsonId]
-		[BsonRepresentation(BsonType.ObjectId)]
-		public string Id { get; set; }
+		[BsonElement(nameof(Id))]
+		public Guid Id { get; set; }
 
-		[BsonElement(nameof(Type))]
 		[Required]
+		[BsonElement(nameof(Type))]
 		public string Type { get; set; }
 
-		[BsonElement(nameof(CreatedAt))]
 		[Required]
+		[BsonElement(nameof(CreatedAt))]
 		public DateTime CreatedAt { get; set; }
 
-		[BsonElement(nameof(MealFoods))]
 		[Required]
+		[BsonElement(nameof(MealFoods))]
 		public List<MealFood> MealFoods { get; set; }
 
 		[BsonElement(nameof(Foods))]

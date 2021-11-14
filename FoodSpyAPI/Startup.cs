@@ -11,6 +11,9 @@ using FoodSpyAPI.Controllers;
 using FoodSpyAPI.Interfaces.Services;
 using FoodSpyAPI.Services;
 using FoodSpyAPI.Settings;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace FoodSpyAPI
 {
@@ -60,6 +63,12 @@ namespace FoodSpyAPI
 			services.AddSingleton<IFoodService, FoodService>();
 			services.AddSingleton<IMealService, MealService>();
 			services.AddSingleton<IIntakeService, IntakeService>();
+
+			//services.AddSingleton<IMealFoodService>();
+			//services.AddScoped<IMealFoodService>();
+
+			BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
+			BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 			// CORS
 			services.AddCors(options =>

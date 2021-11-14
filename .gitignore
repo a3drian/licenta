@@ -1,5 +1,7 @@
 FoodSpy/node_modules
+FoodSpy/dist
 api/node_modules
+api/dist
 
 # Resources/
 
@@ -21,3 +23,7 @@ FoodSpyAPIIntegrationTests/.vs
 FoodSpyAPIIntegrationTests/bin
 FoodSpyAPIIntegrationTests/obj
 FoodSpyAPIIntegrationTests/appsettings.json
+
+Tools/
+
+Foods/

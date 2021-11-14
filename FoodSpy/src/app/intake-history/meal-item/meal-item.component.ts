@@ -45,6 +45,7 @@ export class MealItemComponent implements OnInit {
   }
 
   async initializeFoods(foodIDs: string[]): Promise<void> {
+    /*
     await Promise.all(
       foodIDs.map(
         (
@@ -65,7 +66,7 @@ export class MealItemComponent implements OnInit {
         )
       )
     );
-
+    */
   }
 
 }
