@@ -1,0 +1,1 @@
+start cmd.exe /k "docker build -t foodspy-api ."

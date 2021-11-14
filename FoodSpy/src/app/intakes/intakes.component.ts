@@ -144,24 +144,6 @@ export class IntakesComponent implements OnInit, OnDestroy {
       );
   }
 
-  deleteIntake(intake: IIntake): void {
-    log('intakes.ts', this.deleteIntake.name, `Attempting to delete intake with id: '${intake.id}'`);
-    if (this.isAuthenticated) {
-      this.intakesService
-        .deleteIntake(intake)
-        .subscribe(
-          () => { },
-          (error: HttpErrorResponse) => {
-            log('intakes.ts', this.deleteIntake.name, 'Error occurred when deleting intake, error:', error);
-            this.errorResponse = error;
-          }
-        );
-      this.reloadPage(this.deleteIntake.name);
-    } else {
-      log('intakes.ts', this.deleteIntake.name, 'User is not authenticated!');
-    }
-  }
-
   addNewMeal(): void {
     if (this.isAuthenticated) {
       const url: string = 'dashboard/add';

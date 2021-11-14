@@ -1,5 +1,6 @@
 import { environment } from 'foodspy-shared';
 import { ENV_TOKEN_SECRET } from './env';
+import { environment as env } from '../../environments/environment';
 
 export { Constants };
 
@@ -14,15 +15,15 @@ class Constants {
          AUTH_URL: '/auth',
          LOGOUT_REDIRECT_URL: '/auth',
 
-         FOODS_BASE_URL: '/api/db/foods',
+         FOODS_BASE_URL: env.backend.baseURL + '/api/db/foods',
          FOODS_SERACH_URL: '/search?name=',
 
-         MEALS_BASE_URL: '/api/db/meals',
-         MEALS_SEARCH_URL: '/api/db/meals/search/',
+         MEALS_BASE_URL: env.backend.baseURL + '/api/db/meals',
+         MEALS_SEARCH_URL: '/search/',
 
-         INTAKES_BASE_URL: '/api/db/intakes',
-         INTAKES_SEARCH_URL: '/api/db/intakes/search/',
-         INTAKES_SEARCH_BY_EMAIL_AND_DATE: '/api/db/intakes/searchByEmailAndCreatedAt'
+         INTAKES_BASE_URL: env.backend.baseURL + '/api/db/intakes',
+         INTAKES_SEARCH_URL: '/search/',
+         INTAKES_SEARCH_BY_EMAIL_AND_DATE: '/searchByEmailAndCreatedAt'
       };
 
    static DASHBOARD_URL: string = '/dashboard';

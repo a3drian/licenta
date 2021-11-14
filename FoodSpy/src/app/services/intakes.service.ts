@@ -22,8 +22,8 @@ import { log } from '../shared/Logger';
 export class IntakesService {
 
    readonly BASE_URL: string = Constants.APIEndpoints.INTAKES_BASE_URL;
-   readonly SEARCH_URL: string = Constants.APIEndpoints.INTAKES_SEARCH_URL;
-   readonly SEARCH_BY_EMAIL_AND_DATE: string = Constants.APIEndpoints.INTAKES_SEARCH_BY_EMAIL_AND_DATE;
+   readonly SEARCH_URL: string = this.BASE_URL + Constants.APIEndpoints.INTAKES_SEARCH_URL;
+   readonly SEARCH_BY_EMAIL_AND_DATE: string = this.BASE_URL + Constants.APIEndpoints.INTAKES_SEARCH_BY_EMAIL_AND_DATE;
 
    constructor(
       private http: HttpClient,
@@ -86,6 +86,8 @@ export class IntakesService {
    getIntakesByEmail(
       email: string
    ): Observable<IIntake> {
+      log('intakes.service.ts', this.getIntakesByEmail.name, 'this.SEARCH_URL:', this.SEARCH_URL);
+
       const request = this.http
          .post<IIntake>(
             this.SEARCH_URL,

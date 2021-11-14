@@ -16,7 +16,7 @@ import { log } from '../shared/Logger';
 export class MealsService {
 
    readonly BASE_URL: string = Constants.APIEndpoints.MEALS_BASE_URL;
-   readonly SEARCH_URL: string = Constants.APIEndpoints.MEALS_SEARCH_URL;
+   readonly SEARCH_URL: string = this.BASE_URL + Constants.APIEndpoints.MEALS_SEARCH_URL;
 
    meals: IMeal[] = [];
 
